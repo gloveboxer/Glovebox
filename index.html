@@ -22,6 +22,12 @@
     .tabular-nums {
       font-variant-numeric: tabular-nums;
     }
+    .no-callout {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
     .watch-shelf::-webkit-scrollbar {
       height: 6px;
     }
@@ -585,7 +591,7 @@
       </div>
       <div class="relative inline-flex items-center justify-center">
         <img id="lightbox-img" src="" alt="Watch zoom view" draggable="false" class="max-h-[80vh] w-auto rounded-2xl border border-slate-800 shadow-2xl object-contain select-none" />
-        <span id="lightbox-before-badge" class="hidden pointer-events-none absolute bottom-3 left-3 text-xs font-semibold bg-slate-950/85 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3 py-1 rounded-full">Hold for Before</span>
+        <button type="button" id="lightbox-before-btn" class="hidden no-callout absolute bottom-3 right-3 text-xs font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3.5 py-1.5 rounded-full shadow-md cursor-pointer transition-colors">Hold for Before</button>
       </div>
     </div>
   </div>
@@ -1034,18 +1040,22 @@
         const imageHtml = defaultPhotoSrc
           ? `<img
               src="${defaultPhotoSrc}"
-              data-watch-id="${watch.id}"
-              ${hasMain && hasBefore ? 'data-has-before="true"' : ""}
+              data-watch-img="${watch.id}"
               alt="${escapeHtml(watch.brand)} ${escapeHtml(watch.model || watch.ref)}"
               draggable="false"
-              class="w-full h-full object-cover select-none ${hasMain && hasBefore ? "cursor-pointer" : ""}"
+              class="w-full h-full object-cover select-none"
             />`
           : renderDefaultWatchPlaceholder(watch.id);
 
         const beforeAfterToggle = (hasMain && hasBefore)
-          ? `<span data-before-badge="${watch.id}" class="pointer-events-none absolute bottom-3 left-3 text-[11px] font-semibold bg-slate-950/80 backdrop-blur-md text-slate-200 border border-slate-700/80 px-2.5 py-1 rounded-full">Hold for Before</span>`
+          ? `<button
+              type="button"
+              data-action="peek-before"
+              data-watch-id="${watch.id}"
+              class="no-callout absolute bottom-3 right-3 text-[11px] font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3 py-1.5 rounded-full shadow-md cursor-pointer transition-colors"
+            >Hold for Before</button>`
           : (hasBefore && !hasMain)
-            ? `<span class="pointer-events-none absolute bottom-3 left-3 text-[10px] font-semibold uppercase tracking-wider bg-slate-950/80 text-slate-300 border border-slate-700/80 px-2 py-0.5 rounded-full">Before</span>`
+            ? `<span class="pointer-events-none absolute bottom-3 right-3 text-[10px] font-semibold uppercase tracking-wider bg-slate-950/80 text-slate-300 border border-slate-700/80 px-2.5 py-1 rounded-full">Before</span>`
             : "";
 
         const zoomBtn = defaultPhotoSrc
@@ -1054,7 +1064,7 @@
               data-action="open-lightbox"
               data-watch-id="${watch.id}"
               title="Zoom photo"
-              class="absolute bottom-3 right-3 p-1.5 rounded-full bg-slate-950/75 hover:bg-slate-900 backdrop-blur-md border border-slate-700/80 text-slate-300 hover:text-white transition-colors cursor-pointer"
+              class="absolute bottom-3 left-3 p-1.5 rounded-full bg-slate-950/75 hover:bg-slate-900 backdrop-blur-md border border-slate-700/80 text-slate-300 hover:text-white transition-colors cursor-pointer"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="7" />
@@ -1701,30 +1711,30 @@
       if (watch && watch.image) {
         document.getElementById("lightbox-img").src = watch.image;
       }
-      const badge = document.getElementById("lightbox-before-badge");
-      if (badge && !badge.classList.contains("hidden")) {
-        badge.textContent = "Hold for Before";
-        badge.className = "pointer-events-none absolute bottom-3 left-3 text-xs font-semibold bg-slate-950/85 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3 py-1 rounded-full";
+      const btn = document.getElementById("lightbox-before-btn");
+      if (btn && !btn.classList.contains("hidden")) {
+        btn.textContent = "Hold for Before";
+        btn.className = "no-callout absolute bottom-3 right-3 text-xs font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3.5 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
       }
       lightboxPeeking = false;
     }
 
-    document.getElementById("lightbox-img").addEventListener("pointerdown", function () {
+    const lbBeforeBtn = document.getElementById("lightbox-before-btn");
+    lbBeforeBtn.addEventListener("contextmenu", (e) => e.preventDefault());
+    lbBeforeBtn.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
       if (lightboxWatchId === null) return;
       const watch = watches.find((w) => w.id === lightboxWatchId);
       if (!watch || !watch.image || !watch.beforeImage) return;
       lightboxPeeking = true;
-      this.src = watch.beforeImage;
-      const badge = document.getElementById("lightbox-before-badge");
-      if (badge) {
-        badge.textContent = "Before";
-        badge.className = "pointer-events-none absolute bottom-3 left-3 text-xs font-semibold bg-amber-500 text-slate-950 px-3 py-1 rounded-full";
-      }
+      document.getElementById("lightbox-img").src = watch.beforeImage;
+      this.textContent = "Before";
+      this.className = "no-callout absolute bottom-3 right-3 text-xs font-semibold bg-amber-500 text-slate-950 px-3.5 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
     });
 
     window.addEventListener("pointerup", restoreLightboxImg);
     window.addEventListener("pointercancel", restoreLightboxImg);
-    document.getElementById("lightbox-img").addEventListener("pointerleave", restoreLightboxImg);
+    lbBeforeBtn.addEventListener("pointerleave", restoreLightboxImg);
 
     function closeLightbox() {
       restoreLightboxImg();
@@ -1737,43 +1747,50 @@
       if (event.target === this) closeLightbox();
     });
 
-    // Press-and-hold on watch photo to peek at Before photo, release to return to After
-    let activePeekImg = null;
+    // Press-and-hold on the Hold for Before pill button to peek at Before photo
+    let activePeekBtn = null;
 
     function restorePeekImg() {
-      if (!activePeekImg) return;
-      const watchId = Number(activePeekImg.dataset.watchId);
+      if (!activePeekBtn) return;
+      const watchId = Number(activePeekBtn.dataset.watchId);
       const watch = watches.find((w) => w.id === watchId);
-      if (watch && watch.image) {
-        activePeekImg.src = watch.image;
+      const img = document.querySelector('img[data-watch-img="' + watchId + '"]');
+      if (img && watch && watch.image) {
+        img.src = watch.image;
       }
-      const badge = document.querySelector('[data-before-badge="' + watchId + '"]');
-      if (badge) {
-        badge.textContent = "Hold for Before";
-        badge.className = "pointer-events-none absolute bottom-3 left-3 text-[11px] font-semibold bg-slate-950/80 backdrop-blur-md text-slate-200 border border-slate-700/80 px-2.5 py-1 rounded-full";
-      }
-      activePeekImg = null;
+      activePeekBtn.textContent = "Hold for Before";
+      activePeekBtn.className = "no-callout absolute bottom-3 right-3 text-[11px] font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
+      activePeekBtn = null;
     }
 
-    document.getElementById("watch-list").addEventListener("pointerdown", function (event) {
-      const img = event.target.closest('img[data-has-before="true"]');
-      if (!img) return;
-      const watchId = Number(img.dataset.watchId);
-      const watch = watches.find((w) => w.id === watchId);
-      if (!watch || !watch.beforeImage) return;
-
-      activePeekImg = img;
-      img.src = watch.beforeImage;
-      const badge = document.querySelector('[data-before-badge="' + watchId + '"]');
-      if (badge) {
-        badge.textContent = "Before";
-        badge.className = "pointer-events-none absolute bottom-3 left-3 text-[11px] font-semibold bg-amber-500 text-slate-950 px-2.5 py-1 rounded-full";
+    document.getElementById("watch-list").addEventListener("contextmenu", function (event) {
+      if (event.target.closest('button[data-action="peek-before"]')) {
+        event.preventDefault();
       }
+    });
+
+    document.getElementById("watch-list").addEventListener("pointerdown", function (event) {
+      const btn = event.target.closest('button[data-action="peek-before"]');
+      if (!btn) return;
+      event.preventDefault();
+      const watchId = Number(btn.dataset.watchId);
+      const watch = watches.find((w) => w.id === watchId);
+      const img = document.querySelector('img[data-watch-img="' + watchId + '"]');
+      if (!watch || !watch.beforeImage || !img) return;
+
+      activePeekBtn = btn;
+      img.src = watch.beforeImage;
+      btn.textContent = "Before";
+      btn.className = "no-callout absolute bottom-3 right-3 text-[11px] font-semibold bg-amber-500 text-slate-950 px-3 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
     });
 
     window.addEventListener("pointerup", restorePeekImg);
     window.addEventListener("pointercancel", restorePeekImg);
-    document.getElementById("watch-list").addEventListener("pointerleave", restorePeekImg, true);
+    document.getElementById("watch-list").addEventListener("pointerleave", function (event) {
+      if (event.target.closest('button[data-action="peek-before"]')) {
+        restorePeekImg();
+      }
+    }, true);
 
     // Card Click Delegation
     document.getElementById("watch-list").addEventListener("click", function (event) {
@@ -1787,15 +1804,13 @@
             lightboxWatchId = watch.id;
             lightboxPeeking = false;
             const lbImg = document.getElementById("lightbox-img");
-            const lbBadge = document.getElementById("lightbox-before-badge");
+            const lbBtn = document.getElementById("lightbox-before-btn");
             lbImg.src = src;
             if (watch.image && watch.beforeImage) {
-              lbImg.classList.add("cursor-pointer");
-              lbBadge.textContent = "Hold for Before";
-              lbBadge.className = "pointer-events-none absolute bottom-3 left-3 text-xs font-semibold bg-slate-950/85 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3 py-1 rounded-full";
+              lbBtn.textContent = "Hold for Before";
+              lbBtn.className = "no-callout absolute bottom-3 right-3 text-xs font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3.5 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
             } else {
-              lbImg.classList.remove("cursor-pointer");
-              lbBadge.classList.add("hidden");
+              lbBtn.classList.add("hidden");
             }
             document.getElementById("lightbox-caption").textContent =
               `${watch.brand}${watch.model ? " " + watch.model : ""}`;
