@@ -874,7 +874,7 @@
         const purchase = w.purchasePrice !== null && w.purchasePrice !== "" && !isNaN(Number(w.purchasePrice))
           ? Number(w.purchasePrice)
           : 0;
-        const partsTotal = (w.parts || []).reduce((sum, p) => sum + (Number(p.price) || 0), 0);
+        const partsTotal = (w.parts || []).reduce((sum, p) => sum + (p.sourced ? (Number(p.price) || 0) : 0), 0);
         const sale = w.salePrice !== null && w.salePrice !== "" && !isNaN(Number(w.salePrice))
           ? Number(w.salePrice)
           : 0;
@@ -922,7 +922,7 @@
 
       listEl.innerHTML = filteredWatches.map((watch) => {
         const parts = watch.parts || [];
-        const partsTotal = parts.reduce((sum, part) => sum + (Number(part.price) || 0), 0);
+        const partsTotal = parts.reduce((sum, part) => sum + (part.sourced ? (Number(part.price) || 0) : 0), 0);
         const hasPurchase = watch.purchasePrice !== null && watch.purchasePrice !== "" && !isNaN(Number(watch.purchasePrice));
         const purchaseNum = hasPurchase ? Number(watch.purchasePrice) : 0;
         const totalInvested = purchaseNum + partsTotal;
