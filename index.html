@@ -261,165 +261,179 @@
       </div>
     </section>
 
-    <!-- Section 4 (Bottom): Add a Watch Form -->
-    <section class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 sm:p-6">
-      <h2 class="text-base font-semibold text-white mb-4">Add a Watch to Your Bench</h2>
-      <form id="add-watch-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div>
-          <label for="watch-brand" class="block text-xs font-medium text-slate-400 mb-1">Brand *</label>
-          <input
-            id="watch-brand"
-            type="text"
-            required
-            placeholder="e.g. Omega"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
+    <!-- Section 4: Caliber-Linked Tech Sheets Library (Mostly Collapsed by Default) -->
+    <section class="mb-6 bg-slate-900/70 border border-slate-800/80 rounded-2xl overflow-hidden" aria-label="Tech Sheets Library">
+      <div class="p-5 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <button
+          type="button"
+          id="toggle-techsheets-btn"
+          class="flex items-center gap-2.5 text-left cursor-pointer group"
+        >
+          <h2 class="text-base font-semibold text-white group-hover:text-amber-300 transition-colors">
+            Tech Sheets Library (<span id="techsheet-count" class="tabular-nums">0</span>)
+          </h2>
+          <span id="techsheets-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
+        </button>
 
-        <div>
-          <label for="watch-model" class="block text-xs font-medium text-slate-400 mb-1">Model</label>
-          <input
-            id="watch-model"
-            type="text"
-            placeholder="e.g. Seamaster 300"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
+        <input
+          id="techsheet-search-input"
+          type="search"
+          placeholder="Search caliber or title..."
+          class="w-full sm:w-56 rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+        />
+      </div>
 
-        <div>
-          <label for="watch-ref" class="block text-xs font-medium text-slate-400 mb-1">Reference Number *</label>
-          <input
-            id="watch-ref"
-            type="text"
-            required
-            placeholder="e.g. 166.024"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
+      <div id="techsheets-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-1 border-t border-slate-800/70">
+        <p class="text-xs text-slate-400 mb-4 mt-3">
+          Store movement PDFs, oiling charts, or links once by caliber—matching watch cards link to them automatically.
+        </p>
 
-        <div>
-          <label for="watch-caliber" class="block text-xs font-medium text-slate-400 mb-1">Caliber / Movement</label>
-          <input
-            id="watch-caliber"
-            type="text"
-            placeholder="e.g. Cal. 565"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
+        <div id="techsheet-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-5"></div>
 
-        <div>
-          <label for="watch-year" class="block text-xs font-medium text-slate-400 mb-1">Year</label>
-          <input
-            id="watch-year"
-            type="number"
-            min="1800"
-            max="2099"
-            placeholder="e.g. 1968"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
-
-        <div>
-          <label for="watch-stage" class="block text-xs font-medium text-slate-400 mb-1">Stage</label>
-          <select
-            id="watch-stage"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          >
-            <option value="Triage">Triage</option>
-            <option value="Sourcing">Sourcing</option>
-            <option value="On Bench">On Bench</option>
-            <option value="Testing">Testing</option>
-            <option value="Listed">Listed</option>
-            <option value="Sold">Sold</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="watch-purchase" class="block text-xs font-medium text-slate-400 mb-1">Purchase Price ($)</label>
-          <input
-            id="watch-purchase"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="e.g. 250.00"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
-
-        <div>
-          <label for="watch-sale" class="block text-xs font-medium text-slate-400 mb-1">Sale Price ($)</label>
-          <input
-            id="watch-sale"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="Leave blank if unsold"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
-
-        <div class="sm:col-span-2">
-          <label for="watch-album" class="block text-xs font-medium text-slate-400 mb-1">Google Photos Album Link</label>
-          <input
-            id="watch-album"
-            type="url"
-            placeholder="https://photos.app.goo.gl/..."
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
-
-        <div>
-          <label for="watch-image" class="block text-xs font-medium text-slate-400 mb-1">After / Main Photo</label>
-          <div class="flex flex-col gap-1.5">
-            <button
-              type="button"
-              id="add-pick-gphotos-btn"
-              class="w-full rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer"
-            >
-              Pick from Google Photos
-            </button>
+        <form id="add-techsheet-form" class="pt-4 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <label for="ts-caliber" class="block text-xs font-medium text-slate-400 mb-1">Caliber *</label>
             <input
-              id="watch-image"
-              type="file"
-              accept="image/*"
-              class="w-full text-[11px] text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-500/15 file:text-amber-300 hover:file:bg-amber-500/25 cursor-pointer"
+              id="ts-caliber"
+              type="text"
+              required
+              placeholder="e.g. Cal. 6139B"
+              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
             />
-            <span id="add-picked-photo-status" class="hidden text-[11px] text-emerald-300 font-medium"></span>
           </div>
-        </div>
 
-        <div>
-          <label for="watch-before-image" class="block text-xs font-medium text-slate-400 mb-1">Before Photo (Optional)</label>
-          <div class="flex flex-col gap-1.5">
-            <button
-              type="button"
-              id="add-pick-before-gphotos-btn"
-              class="w-full rounded-xl border border-slate-700 bg-slate-800/70 hover:bg-slate-800 text-slate-300 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer"
-            >
-              Pick Before Photo
-            </button>
+          <div>
+            <label for="ts-title" class="block text-xs font-medium text-slate-400 mb-1">Document Title *</label>
             <input
-              id="watch-before-image"
-              type="file"
-              accept="image/*"
-              class="w-full text-[11px] text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-500/15 file:text-amber-300 hover:file:bg-amber-500/25 cursor-pointer"
+              id="ts-title"
+              type="text"
+              required
+              placeholder="e.g. Technical Guide & Oiling"
+              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
             />
-            <span id="add-picked-before-status" class="hidden text-[11px] text-emerald-300 font-medium"></span>
           </div>
-        </div>
 
-        <div class="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-between gap-3 pt-2">
-          <p id="form-feedback" class="text-xs text-slate-500">
-            Data saves automatically on your device via IndexedDB.
-          </p>
-          <button
-            type="submit"
-            class="inline-flex items-center justify-center rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-semibold px-5 py-2.5 transition-colors cursor-pointer shadow-sm"
-          >
-            + Add Watch
-          </button>
-        </div>
-      </form>
+          <div>
+            <label for="ts-url" class="block text-xs font-medium text-slate-400 mb-1">PDF / Drive Link (Optional)</label>
+            <input
+              id="ts-url"
+              type="url"
+              placeholder="https://..."
+              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+            />
+          </div>
+
+          <div>
+            <label for="ts-file" class="block text-xs font-medium text-slate-400 mb-1">Or Upload PDF / Image</label>
+            <input
+              id="ts-file"
+              type="file"
+              accept="application/pdf,image/*"
+              class="w-full text-[11px] text-slate-400 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-500/15 file:text-amber-300 hover:file:bg-amber-500/25 cursor-pointer"
+            />
+          </div>
+
+          <div class="sm:col-span-2 lg:col-span-4 flex justify-end pt-1">
+            <button
+              type="submit"
+              class="rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-semibold px-4 py-2 transition-colors cursor-pointer"
+            >
+              + Add Tech Sheet
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Section 5 (Bottom): Add a Watch Form (Collapsed by Default) -->
+    <section class="bg-slate-900/70 border border-slate-800/80 rounded-2xl overflow-hidden">
+      <button
+        type="button"
+        id="toggle-add-watch-btn"
+        class="w-full p-5 sm:px-6 sm:py-4 flex items-center justify-between text-left hover:bg-slate-900/90 transition-colors cursor-pointer"
+      >
+        <h2 class="text-base font-semibold text-white">+ Add a Watch to Your Bench</h2>
+        <span id="add-watch-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
+      </button>
+
+      <div id="add-watch-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
+        <form id="add-watch-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div>
+            <label for="watch-brand" class="block text-xs font-medium text-slate-400 mb-1">Brand *</label>
+            <input id="watch-brand" type="text" required placeholder="e.g. Omega" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div>
+            <label for="watch-model" class="block text-xs font-medium text-slate-400 mb-1">Model</label>
+            <input id="watch-model" type="text" placeholder="e.g. Seamaster 300" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div>
+            <label for="watch-ref" class="block text-xs font-medium text-slate-400 mb-1">Reference Number *</label>
+            <input id="watch-ref" type="text" required placeholder="e.g. 166.024" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div>
+            <label for="watch-caliber" class="block text-xs font-medium text-slate-400 mb-1">Caliber / Movement</label>
+            <input id="watch-caliber" type="text" placeholder="e.g. Cal. 565" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div>
+            <label for="watch-year" class="block text-xs font-medium text-slate-400 mb-1">Year</label>
+            <input id="watch-year" type="number" min="1800" max="2099" placeholder="e.g. 1968" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div>
+            <label for="watch-stage" class="block text-xs font-medium text-slate-400 mb-1">Stage</label>
+            <select id="watch-stage" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70">
+              <option value="Triage">Triage</option>
+              <option value="Sourcing">Sourcing</option>
+              <option value="On Bench">On Bench</option>
+              <option value="Testing">Testing</option>
+              <option value="Listed">Listed</option>
+              <option value="Sold">Sold</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="watch-purchase" class="block text-xs font-medium text-slate-400 mb-1">Purchase Price ($)</label>
+            <input id="watch-purchase" type="number" step="0.01" min="0" placeholder="e.g. 250.00" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div>
+            <label for="watch-sale" class="block text-xs font-medium text-slate-400 mb-1">Sale Price ($)</label>
+            <input id="watch-sale" type="number" step="0.01" min="0" placeholder="Leave blank if unsold" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="watch-album" class="block text-xs font-medium text-slate-400 mb-1">Google Photos Album Link</label>
+            <input id="watch-album" type="url" placeholder="https://photos.app.goo.gl/..." class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div>
+            <label for="watch-image" class="block text-xs font-medium text-slate-400 mb-1">After / Main Photo</label>
+            <div class="flex flex-col gap-1.5">
+              <button type="button" id="add-pick-gphotos-btn" class="w-full rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer">Pick from Google Photos</button>
+              <input id="watch-image" type="file" accept="image/*" class="w-full text-[11px] text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-500/15 file:text-amber-300 hover:file:bg-amber-500/25 cursor-pointer" />
+              <span id="add-picked-photo-status" class="hidden text-[11px] text-emerald-300 font-medium"></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="watch-before-image" class="block text-xs font-medium text-slate-400 mb-1">Before Photo (Optional)</label>
+            <div class="flex flex-col gap-1.5">
+              <button type="button" id="add-pick-before-gphotos-btn" class="w-full rounded-xl border border-slate-700 bg-slate-800/70 hover:bg-slate-800 text-slate-300 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer">Pick Before Photo</button>
+              <input id="watch-before-image" type="file" accept="image/*" class="w-full text-[11px] text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-500/15 file:text-amber-300 hover:file:bg-amber-500/25 cursor-pointer" />
+              <span id="add-picked-before-status" class="hidden text-[11px] text-emerald-300 font-medium"></span>
+            </div>
+          </div>
+
+          <div class="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-between gap-3 pt-2">
+            <p id="form-feedback" class="text-xs text-slate-500">Data saves automatically on your device via IndexedDB.</p>
+            <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-semibold px-5 py-2.5 transition-colors cursor-pointer shadow-sm">+ Add Watch</button>
+          </div>
+        </form>
+      </div>
     </section>
   </div>
 
@@ -596,11 +610,47 @@
     </div>
   </div>
 
+  <!-- Tech Sheet Viewer Modal -->
+  <div
+    id="techsheet-viewer-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-4 sm:p-5 flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <div class="min-w-0">
+          <h3 id="ts-viewer-title" class="text-sm sm:text-base font-semibold text-white truncate"></h3>
+          <p id="ts-viewer-caliber" class="text-xs text-amber-300"></p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <a
+            id="ts-viewer-download"
+            href="#"
+            download="tech-sheet"
+            class="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors"
+          >
+            Download
+          </a>
+          <button
+            type="button"
+            id="close-ts-viewer-btn"
+            class="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 cursor-pointer"
+          >
+            Close ✕
+          </button>
+        </div>
+      </div>
+      <div id="ts-viewer-body" class="flex-1 min-h-[60vh] overflow-auto rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center"></div>
+    </div>
+  </div>
+
   <script>
     const LEGACY_STORAGE_KEY = "watch_restoration_catalog_v1";
     const IDB_NAME = "glovebox_db";
     const IDB_STORE = "catalog";
     const IDB_KEY = "watches";
+    const IDB_TECH_KEY = "techSheets";
     const GEMINI_KEY_STORAGE = "glovebox_gemini_api_key";
     const GOOGLE_CLIENT_ID = "640094166478-fmkd1b8au3qifgml1viqet581ss6s2cu.apps.googleusercontent.com";
     const PHOTOS_PICKER_SCOPE = "https://www.googleapis.com/auth/photospicker.mediaitems.readonly";
@@ -705,6 +755,42 @@
       saveWatchesToDB(watches);
     }
 
+    async function loadTechSheetsFromDB() {
+      try {
+        const db = await openGloveboxDB();
+        const result = await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, "readonly");
+          const store = tx.objectStore(IDB_STORE);
+          const getReq = store.get(IDB_TECH_KEY);
+          getReq.onsuccess = () => resolve(getReq.result);
+          getReq.onerror = () => reject(getReq.error);
+        });
+        if (Array.isArray(result)) return result;
+      } catch (err) {
+        // Ignore
+      }
+      return [];
+    }
+
+    async function saveTechSheetsToDB(data) {
+      try {
+        const db = await openGloveboxDB();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, "readwrite");
+          const store = tx.objectStore(IDB_STORE);
+          const putReq = store.put(data, IDB_TECH_KEY);
+          putReq.onsuccess = () => resolve();
+          putReq.onerror = () => reject(putReq.error);
+        });
+      } catch (err) {
+        showStatus("Could not save tech sheet to device storage.", true);
+      }
+    }
+
+    function saveTechSheets() {
+      saveTechSheetsToDB(techSheets);
+    }
+
     function loadGeminiKey() {
       try {
         return localStorage.getItem(GEMINI_KEY_STORAGE) || "";
@@ -714,6 +800,8 @@
     }
 
     let watches = defaultWatches;
+    let techSheets = [];
+    let techSheetQuery = "";
     let activeFilter = "all";
     let searchQuery = "";
     const expandedWatches = new Set();
@@ -730,10 +818,28 @@
     let nextId = 300;
 
     function recomputeNextId() {
-      nextId = watches.reduce((max, w) => {
+      const watchMax = watches.reduce((max, w) => {
         const partMax = (w.parts || []).reduce((pm, p) => Math.max(pm, p.id || 0), 0);
         return Math.max(max, w.id || 0, partMax);
-      }, 200) + 1;
+      }, 200);
+      const tsMax = techSheets.reduce((max, ts) => Math.max(max, ts.id || 0), 200);
+      nextId = Math.max(watchMax, tsMax) + 1;
+    }
+
+    function normalizeCaliber(str) {
+      return String(str || "")
+        .toLowerCase()
+        .replace(/caliber|cal\.?/g, "")
+        .replace(/[^a-z0-9]/g, "");
+    }
+
+    function getMatchingTechSheets(caliber) {
+      const norm = normalizeCaliber(caliber);
+      if (!norm) return [];
+      return techSheets.filter((ts) => {
+        const tsNorm = normalizeCaliber(ts.caliber);
+        return tsNorm && (tsNorm === norm || tsNorm.includes(norm) || norm.includes(tsNorm));
+      });
     }
 
     function showStatus(message, isError = false) {
@@ -1146,6 +1252,21 @@
               </button>
 
               <div class="${isExpanded ? "px-4 sm:px-5 pb-4 pt-1 flex flex-col justify-between" : "hidden"}">
+                ${(() => {
+                  const matched = getMatchingTechSheets(watch.caliber);
+                  if (matched.length === 0) return "";
+                  return `
+                    <div class="mb-3 rounded-xl bg-sky-500/10 border border-sky-500/25 p-2.5">
+                      <p class="text-[10px] font-semibold uppercase tracking-wider text-sky-300 mb-1.5">Tech Sheets (${escapeHtml(watch.caliber)})</p>
+                      <div class="flex flex-wrap gap-1.5">
+                        ${matched.map((ts) => ts.fileData
+                          ? `<button type="button" data-action="open-techsheet" data-ts-id="${ts.id}" class="text-xs font-medium text-sky-200 hover:text-white bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/30 rounded-lg px-2.5 py-1 transition-colors cursor-pointer">${escapeHtml(ts.title)} (${ts.fileType === "pdf" ? "PDF" : "Image"})</button>`
+                          : `<a href="${escapeHtml(ts.url)}" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-sky-200 hover:text-white bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/30 rounded-lg px-2.5 py-1 transition-colors">${escapeHtml(ts.title)} ↗</a>`
+                        ).join("")}
+                      </div>
+                    </div>
+                  `;
+                })()}
                 ${benchLogHtml}
 
                 <ul class="mb-3 max-h-48 overflow-y-auto pr-1">
@@ -1454,7 +1575,7 @@
 
     // Export & Import JSON Backup
     document.getElementById("export-json-btn").addEventListener("click", function () {
-      const dataStr = JSON.stringify(watches, null, 2);
+      const dataStr = JSON.stringify({ watches, techSheets }, null, 2);
       const blob = new Blob([dataStr], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -1474,12 +1595,22 @@
       reader.onload = function (e) {
         try {
           const parsed = JSON.parse(e.target.result);
-          if (!Array.isArray(parsed)) throw new Error("Invalid format");
-          watches = parsed;
+          if (Array.isArray(parsed)) {
+            watches = parsed;
+          } else if (parsed && Array.isArray(parsed.watches)) {
+            watches = parsed.watches;
+            if (Array.isArray(parsed.techSheets)) {
+              techSheets = parsed.techSheets;
+              saveTechSheets();
+            }
+          } else {
+            throw new Error("Invalid format");
+          }
           recomputeNextId();
           saveWatches();
+          renderTechSheets();
           renderCatalog();
-          showStatus(`Imported ${watches.length} watch(es) from backup.`);
+          showStatus(`Imported ${watches.length} watch(es) and ${techSheets.length} tech sheet(s).`);
         } catch (err) {
           showStatus("Could not import that file—make sure it is a valid JSON backup.", true);
         }
@@ -1820,6 +1951,12 @@
         return;
       }
 
+      const openTsBtn = event.target.closest('button[data-action="open-techsheet"]');
+      if (openTsBtn) {
+        openTechSheetViewer(Number(openTsBtn.dataset.tsId));
+        return;
+      }
+
       const openEditBtn = event.target.closest('button[data-action="open-edit"]');
       if (openEditBtn) {
         const watchId = Number(openEditBtn.dataset.watchId);
@@ -1923,10 +2060,161 @@
       }
     });
 
-    // Boot: Load from IndexedDB (with automatic localStorage migration)
+    function renderTechSheets() {
+      const listEl = document.getElementById("techsheet-list");
+      const tsCountEl = document.getElementById("techsheet-count");
+      if (tsCountEl) tsCountEl.textContent = techSheets.length;
+      if (!listEl) return;
+      const q = techSheetQuery.trim().toLowerCase();
+      const filtered = techSheets.filter((ts) => {
+        if (!q) return true;
+        return (ts.caliber + " " + ts.title).toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `
+          <div class="sm:col-span-2 lg:col-span-3 rounded-xl border border-dashed border-slate-800 bg-slate-950/40 p-6 text-center text-xs text-slate-500">
+            ${techSheets.length === 0 ? "No tech sheets added yet. Add a caliber PDF, image, or link below." : "No tech sheets match your filter."}
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map((ts) => {
+        const badge = ts.fileData ? (ts.fileType === "pdf" ? "PDF" : "Image") : "Link";
+        const openControl = ts.fileData
+          ? `<button type="button" data-action="open-techsheet" data-ts-id="${ts.id}" class="text-xs font-medium text-sky-300 hover:text-sky-200 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/25 rounded-lg px-2.5 py-1 transition-colors cursor-pointer">View</button>`
+          : `<a href="${escapeHtml(ts.url)}" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-sky-300 hover:text-sky-200 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/25 rounded-lg px-2.5 py-1 transition-colors">Open ↗</a>`;
+
+        return `
+          <div class="rounded-xl border border-slate-800 bg-slate-950/60 p-3.5 flex flex-col justify-between gap-2.5">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <span class="text-[11px] font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/25 rounded-md px-2 py-0.5 truncate">${escapeHtml(ts.caliber)}</span>
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">${badge}</span>
+              </div>
+              <p class="text-sm font-medium text-slate-100 truncate">${escapeHtml(ts.title)}</p>
+            </div>
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/70">
+              ${openControl}
+              <button type="button" data-action="delete-techsheet" data-ts-id="${ts.id}" class="text-xs text-slate-500 hover:text-rose-400 transition-colors cursor-pointer">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function openTechSheetViewer(tsId) {
+      const ts = techSheets.find((t) => t.id === tsId);
+      if (!ts || !ts.fileData) return;
+      document.getElementById("ts-viewer-title").textContent = ts.title;
+      document.getElementById("ts-viewer-caliber").textContent = ts.caliber;
+      const dl = document.getElementById("ts-viewer-download");
+      dl.href = ts.fileData;
+      dl.download = (ts.caliber + "-" + ts.title).replace(/[^a-z0-9_-]+/gi, "_") + (ts.fileType === "pdf" ? ".pdf" : ".png");
+
+      const body = document.getElementById("ts-viewer-body");
+      if (ts.fileType === "pdf") {
+        body.innerHTML = `<iframe src="${ts.fileData}" class="w-full h-[65vh] rounded-xl border-0" title="${escapeHtml(ts.title)}"></iframe>`;
+      } else {
+        body.innerHTML = `<img src="${ts.fileData}" alt="${escapeHtml(ts.title)}" class="max-h-[65vh] w-auto object-contain rounded-xl" />`;
+      }
+      document.getElementById("techsheet-viewer-modal").classList.remove("hidden");
+    }
+
+    document.getElementById("close-ts-viewer-btn").addEventListener("click", function () {
+      document.getElementById("techsheet-viewer-modal").classList.add("hidden");
+      document.getElementById("ts-viewer-body").innerHTML = "";
+    });
+    document.getElementById("techsheet-viewer-modal").addEventListener("click", function (event) {
+      if (event.target === this) {
+        this.classList.add("hidden");
+        document.getElementById("ts-viewer-body").innerHTML = "";
+      }
+    });
+
+    document.getElementById("toggle-techsheets-btn").addEventListener("click", function () {
+      const body = document.getElementById("techsheets-body");
+      const chevron = document.getElementById("techsheets-chevron");
+      body.classList.toggle("hidden");
+      chevron.classList.toggle("rotate-180");
+    });
+
+    document.getElementById("toggle-add-watch-btn").addEventListener("click", function () {
+      const body = document.getElementById("add-watch-body");
+      const chevron = document.getElementById("add-watch-chevron");
+      body.classList.toggle("hidden");
+      chevron.classList.toggle("rotate-180");
+    });
+
+    document.getElementById("techsheet-search-input").addEventListener("input", function (event) {
+      techSheetQuery = event.target.value;
+      if (techSheetQuery.trim() !== "") {
+        document.getElementById("techsheets-body").classList.remove("hidden");
+        document.getElementById("techsheets-chevron").classList.add("rotate-180");
+      }
+      renderTechSheets();
+    });
+
+    document.getElementById("add-techsheet-form").addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const caliber = document.getElementById("ts-caliber").value.trim();
+      const title = document.getElementById("ts-title").value.trim();
+      const url = document.getElementById("ts-url").value.trim();
+      const file = document.getElementById("ts-file").files[0];
+
+      if (!caliber || !title) return;
+      if (!file && !isSafeUrl(url)) {
+        showStatus("Upload a PDF/image or paste a valid https:// link.", true);
+        return;
+      }
+
+      let fileData = "";
+      let fileType = "";
+      if (file) {
+        fileType = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf") ? "pdf" : "image";
+        fileData = await readFileAsDataUrl(file);
+      }
+
+      techSheets.unshift({
+        id: ++nextId,
+        caliber,
+        title,
+        url: isSafeUrl(url) ? url : "",
+        fileData,
+        fileType
+      });
+
+      event.target.reset();
+      saveTechSheets();
+      renderTechSheets();
+      renderCatalog();
+      showStatus(`Added tech sheet for ${caliber}.`);
+    });
+
+    document.getElementById("techsheet-list").addEventListener("click", function (event) {
+      const openBtn = event.target.closest('button[data-action="open-techsheet"]');
+      if (openBtn) {
+        openTechSheetViewer(Number(openBtn.dataset.tsId));
+        return;
+      }
+      const delBtn = event.target.closest('button[data-action="delete-techsheet"]');
+      if (delBtn) {
+        const tsId = Number(delBtn.dataset.tsId);
+        techSheets = techSheets.filter((t) => t.id !== tsId);
+        saveTechSheets();
+        renderTechSheets();
+        renderCatalog();
+        showStatus("Tech sheet removed.");
+      }
+    });
+
+    // Boot: Load from IndexedDB
     (async function initApp() {
       watches = await loadWatchesFromDB();
+      techSheets = await loadTechSheetsFromDB();
       recomputeNextId();
+      renderTechSheets();
       renderCatalog();
     })();
   </script>
