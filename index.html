@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#020617" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Glovebox</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23f59e0b' stroke-width='3.5'/%3E%3Cpath d='M32 22v10l6 4' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Glovebox%22%2C%22short_name%22%3A%22Glovebox%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23020617%22%2C%22theme_color%22%3A%22%23020617%22%7D" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .watch-shelf::-webkit-scrollbar {
+      height: 6px;
+    }
+    .watch-shelf::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 9999px;
+    }
+    .watch-shelf::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    .watch-shelf::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-amber-500/30 selection:text-amber-200">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-7 sm:py-9">
+    <!-- Minimal Brand Header -->
+    <header class="mb-6 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shadow-sm">
+        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5.5" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.5v2.5l1.5 1M9.5 3h5M9.5 21h5" />
+        </svg>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Glovebox</h1>
+    </header>
+
+    <!-- Toast / Status Message -->
+    <div id="status-banner" class="hidden mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-medium text-emerald-300"></div>
+
+    <!-- Section 1 (Top): Search, Filter & Horizontal Watch Collection -->
+    <section class="mb-9">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+        <div class="flex flex-wrap items-center gap-1.5 bg-slate-900/80 border border-slate-800/80 p-1 rounded-full self-start">
+          <button
+            type="button"
+            data-filter="all"
+            class="filter-btn rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer bg-amber-500 text-slate-950 shadow-sm"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            data-filter="active"
+            class="filter-btn rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer text-slate-400 hover:text-slate-100 hover:bg-slate-800/70"
+          >
+            Active Projects
+          </button>
+          <button
+            type="button"
+            data-filter="unsold"
+            class="filter-btn rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer text-slate-400 hover:text-slate-100 hover:bg-slate-800/70"
+          >
+            Unsold
+          </button>
+          <button
+            type="button"
+            data-filter="sold"
+            class="filter-btn rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer text-slate-400 hover:text-slate-100 hover:bg-slate-800/70"
+          >
+            Sold
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1 md:flex-initial">
+            <input
+              id="search-input"
+              type="search"
+              placeholder="Search brand, model, ref, year..."
+              class="w-full md:w-64 rounded-xl border border-slate-800 bg-slate-900/90 text-slate-100 placeholder-slate-500 px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70 focus:border-amber-500/50 transition-all"
+            />
+          </div>
+          <button
+            type="button"
+            id="scroll-left-btn"
+            aria-label="Scroll collection left"
+            class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white text-sm transition-colors shrink-0 cursor-pointer"
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            id="scroll-right-btn"
+            aria-label="Scroll collection right"
+            class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white text-sm transition-colors shrink-0 cursor-pointer"
+          >
+            →
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="watch-list"
+        class="watch-shelf flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory items-start"
+      ></div>
+    </section>
+
+    <!-- Section 2 (Below Horizontal Scroll): Regulated Gemini Part-Sourcing Search -->
+    <section class="bg-slate-900/70 border border-sky-500/20 rounded-2xl shadow-sm p-5 sm:p-6 mb-8" aria-label="Gemini Part Sourcing Search">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-base font-semibold text-white flex items-center gap-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]"></span>
+            Gemini Part-Sourcing Search
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Builds a structured watchmaker query (caliber, OEM part #, compatible donors, and suppliers) for your Gemini account.
+          </p>
+        </div>
+        <button
+          type="button"
+          id="toggle-api-settings-btn"
+          class="text-xs font-medium text-sky-300 hover:text-sky-200 border border-sky-500/25 bg-sky-500/10 hover:bg-sky-500/15 rounded-xl px-3 py-1.5 self-start sm:self-auto transition-colors cursor-pointer"
+        >
+          API Key Settings
+        </button>
+      </div>
+
+      <!-- Optional API Key Drawer -->
+      <div id="api-settings-panel" class="hidden mb-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+        <label for="gemini-api-key" class="block text-xs font-medium text-slate-300 mb-1.5">
+          Optional: Gemini API Key (saved only in this browser for instant in-app results)
+        </label>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input
+            id="gemini-api-key"
+            type="password"
+            placeholder="Paste your Google AI Studio API key..."
+            class="flex-1 rounded-xl border border-slate-800 bg-slate-900 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+          />
+          <button
+            type="button"
+            id="save-api-key-btn"
+            class="rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-semibold px-4 py-2 transition-colors cursor-pointer"
+          >
+            Save Key
+          </button>
+        </div>
+      </div>
+
+      <form id="gemini-search-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div>
+          <label for="gemini-watch-select" class="block text-xs font-medium text-slate-400 mb-1">Select Watch</label>
+          <select
+            id="gemini-watch-select"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+          ></select>
+        </div>
+
+        <div>
+          <label for="gemini-part-query" class="block text-xs font-medium text-slate-400 mb-1">Part Needed *</label>
+          <input
+            id="gemini-part-query"
+            type="text"
+            required
+            placeholder="e.g. Mainspring, Crown, Stem"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="gemini-scope" class="block text-xs font-medium text-slate-400 mb-1">Search Focus</label>
+          <select
+            id="gemini-scope"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+          >
+            <option value="oem-and-suppliers">OEM Part # &amp; Suppliers</option>
+            <option value="donor-compatibility">Compatible Donor Movements</option>
+            <option value="dimensions-specs">Exact Dimensions &amp; Specs</option>
+          </select>
+        </div>
+
+        <div class="flex items-end gap-2">
+          <button
+            type="submit"
+            class="flex-1 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs sm:text-sm font-semibold px-3.5 py-2.5 transition-colors cursor-pointer shadow-sm"
+          >
+            Search in Gemini ↗
+          </button>
+          <button
+            type="button"
+            id="run-in-app-btn"
+            class="rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-sky-200 text-xs font-semibold px-3.5 py-2.5 transition-colors shrink-0 cursor-pointer"
+            title="Run directly here using your saved Gemini API key"
+          >
+            In-App
+          </button>
+        </div>
+      </form>
+
+      <!-- Regulated Prompt Preview / In-App Results -->
+      <div id="gemini-output-box" class="hidden mt-4 rounded-xl bg-slate-950/90 border border-slate-800 p-4">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span id="gemini-output-label" class="text-[11px] font-semibold uppercase tracking-wider text-sky-300">
+            Regulated Search Prompt (Copied to Clipboard)
+          </span>
+          <button
+            type="button"
+            id="copy-prompt-btn"
+            class="text-xs text-slate-400 hover:text-white border border-slate-800 bg-slate-900 rounded-lg px-2.5 py-1 transition-colors cursor-pointer"
+          >
+            Copy Prompt
+          </button>
+        </div>
+        <div id="gemini-output-content" class="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed"></div>
+      </div>
+    </section>
+
+    <!-- Section 3: Grand Total Summary Bar + Collection Count & JSON Backup -->
+    <section class="mb-8" aria-label="Collective Totals and Backup">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
+        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-4 sm:p-5">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Invested (Watches + Parts)</p>
+          <p id="grand-invested" class="text-2xl font-bold text-white mt-1.5 tabular-nums">$0.00</p>
+        </div>
+        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-4 sm:p-5">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Sales</p>
+          <p id="grand-sales" class="text-2xl font-bold text-white mt-1.5 tabular-nums">$0.00</p>
+        </div>
+        <div class="bg-slate-900/70 border border-amber-500/25 rounded-2xl p-4 sm:p-5">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Grand Total (Net)</p>
+          <p id="grand-net" class="text-2xl font-bold text-white mt-1.5 tabular-nums">$0.00</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/70 border border-slate-800/80 rounded-xl px-4 py-2.5">
+        <div class="text-xs text-slate-400">
+          Collection: <span id="watch-count" class="font-semibold text-white tabular-nums">0</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            id="export-json-btn"
+            class="rounded-lg border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors cursor-pointer"
+          >
+            Export JSON
+          </button>
+          <label class="rounded-lg border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors cursor-pointer">
+            Import JSON
+            <input id="import-json-input" type="file" accept=".json,application/json" class="hidden" />
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4 (Bottom): Add a Watch Form -->
+    <section class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 sm:p-6">
+      <h2 class="text-base font-semibold text-white mb-4">Add a Watch to Your Bench</h2>
+      <form id="add-watch-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div>
+          <label for="watch-brand" class="block text-xs font-medium text-slate-400 mb-1">Brand *</label>
+          <input
+            id="watch-brand"
+            type="text"
+            required
+            placeholder="e.g. Omega"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="watch-model" class="block text-xs font-medium text-slate-400 mb-1">Model</label>
+          <input
+            id="watch-model"
+            type="text"
+            placeholder="e.g. Seamaster 300"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="watch-ref" class="block text-xs font-medium text-slate-400 mb-1">Reference Number *</label>
+          <input
+            id="watch-ref"
+            type="text"
+            required
+            placeholder="e.g. 166.024"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="watch-year" class="block text-xs font-medium text-slate-400 mb-1">Year</label>
+          <input
+            id="watch-year"
+            type="number"
+            min="1800"
+            max="2099"
+            placeholder="e.g. 1968"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="watch-purchase" class="block text-xs font-medium text-slate-400 mb-1">Purchase Price ($)</label>
+          <input
+            id="watch-purchase"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="e.g. 250.00"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="watch-sale" class="block text-xs font-medium text-slate-400 mb-1">Sale Price ($)</label>
+          <input
+            id="watch-sale"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Leave blank if unsold"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="watch-album" class="block text-xs font-medium text-slate-400 mb-1">Google Photos Album Link</label>
+          <input
+            id="watch-album"
+            type="url"
+            placeholder="https://photos.app.goo.gl/..."
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="watch-image" class="block text-xs font-medium text-slate-400 mb-1">Watch Photo</label>
+          <input
+            id="watch-image"
+            type="file"
+            accept="image/*"
+            class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-500/15 file:text-amber-300 hover:file:bg-amber-500/25 cursor-pointer"
+          />
+        </div>
+
+        <div class="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-between gap-3 pt-2">
+          <p id="form-feedback" class="text-xs text-slate-500">
+            Data saves automatically in this browser.
+          </p>
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-semibold px-5 py-2.5 transition-colors cursor-pointer shadow-sm"
+          >
+            + Add Watch
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- Edit Watch Modal -->
+  <div
+    id="edit-watch-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="edit-modal-title"
+  >
+    <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-5 sm:p-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <h2 id="edit-modal-title" class="text-lg font-semibold text-white">Edit Watch Details</h2>
+        <button
+          type="button"
+          id="close-edit-modal-btn"
+          aria-label="Close edit dialog"
+          class="text-slate-400 hover:text-white text-lg px-2 py-1 rounded-lg hover:bg-slate-800 cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <form id="edit-watch-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <input type="hidden" id="edit-watch-id" />
+
+        <div>
+          <label for="edit-watch-brand" class="block text-xs font-medium text-slate-400 mb-1">Brand *</label>
+          <input
+            id="edit-watch-brand"
+            type="text"
+            required
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="edit-watch-model" class="block text-xs font-medium text-slate-400 mb-1">Model</label>
+          <input
+            id="edit-watch-model"
+            type="text"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="edit-watch-ref" class="block text-xs font-medium text-slate-400 mb-1">Reference Number *</label>
+          <input
+            id="edit-watch-ref"
+            type="text"
+            required
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="edit-watch-year" class="block text-xs font-medium text-slate-400 mb-1">Year</label>
+          <input
+            id="edit-watch-year"
+            type="number"
+            min="1800"
+            max="2099"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="edit-watch-purchase" class="block text-xs font-medium text-slate-400 mb-1">Purchase Price ($)</label>
+          <input
+            id="edit-watch-purchase"
+            type="number"
+            step="0.01"
+            min="0"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div>
+          <label for="edit-watch-sale" class="block text-xs font-medium text-slate-400 mb-1">Sale Price ($)</label>
+          <input
+            id="edit-watch-sale"
+            type="number"
+            step="0.01"
+            min="0"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="edit-watch-album" class="block text-xs font-medium text-slate-400 mb-1">Google Photos Album Link</label>
+          <input
+            id="edit-watch-album"
+            type="url"
+            placeholder="https://photos.app.goo.gl/..."
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="edit-watch-image" class="block text-xs font-medium text-slate-400 mb-1">Replace Photo</label>
+          <input
+            id="edit-watch-image"
+            type="file"
+            accept="image/*"
+            class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-500/15 file:text-amber-300 hover:file:bg-amber-500/25 cursor-pointer"
+          />
+          <label class="mt-2.5 inline-flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
+            <input id="edit-remove-image" type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500" />
+            Remove existing photo
+          </label>
+        </div>
+
+        <div class="sm:col-span-2 flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+          <button
+            type="button"
+            id="cancel-edit-modal-btn"
+            class="rounded-xl border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-sm font-medium px-4 py-2 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-semibold px-4 py-2 transition-colors cursor-pointer"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "watch_restoration_catalog_v1";
+    const GEMINI_KEY_STORAGE = "glovebox_gemini_api_key";
+
+    const defaultWatches = [
+      {
+        id: 1,
+        brand: "Seiko",
+        model: "Pogue Chronograph",
+        ref: "6139-6002",
+        year: "1972",
+        image: "",
+        albumUrl: "",
+        purchasePrice: 320.00,
+        salePrice: null,
+        activeProject: true,
+        parts: [
+          { id: 101, name: "Replacement Crystal (Hardlex)", price: 24.00, sourced: true },
+          { id: 102, name: "Caseback & Crown Gasket Kit", price: 14.50, sourced: false }
+        ]
+      }
+    ];
+
+    function loadWatches() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (err) {
+        // Fallback cleanly if storage is unavailable
+      }
+      return defaultWatches;
+    }
+
+    function saveWatches() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(watches));
+      } catch (err) {
+        showStatus("Browser storage is full—try smaller photos or export a JSON backup.", true);
+      }
+    }
+
+    function loadGeminiKey() {
+      try {
+        return localStorage.getItem(GEMINI_KEY_STORAGE) || "";
+      } catch (err) {
+        return "";
+      }
+    }
+
+    let watches = loadWatches();
+    let activeFilter = "all";
+    let searchQuery = "";
+    const expandedWatches = new Set();
+    let pendingDeleteId = null;
+    let lastGeneratedPrompt = "";
+    let nextId = watches.reduce((max, w) => {
+      const partMax = (w.parts || []).reduce((pm, p) => Math.max(pm, p.id || 0), 0);
+      return Math.max(max, w.id || 0, partMax);
+    }, 200) + 1;
+
+    function showStatus(message, isError = false) {
+      const banner = document.getElementById("status-banner");
+      if (!banner) return;
+      banner.textContent = message;
+      banner.className = isError
+        ? "mb-5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-medium text-rose-300"
+        : "mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-medium text-emerald-300";
+      setTimeout(() => {
+        banner.className = "hidden";
+      }, 4500);
+    }
+
+    function formatMoney(amount, showPlus = false) {
+      const num = Number(amount) || 0;
+      const abs = Math.abs(num).toFixed(2);
+      if (num < 0) return "-$" + abs;
+      if (showPlus && num > 0) return "+$" + abs;
+      return "$" + abs;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function isSafeUrl(url) {
+      return typeof url === "string" && /^https?:\/\//i.test(url.trim());
+    }
+
+    function copyTextToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+      }
+      fallbackCopy(text);
+      return Promise.resolve();
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+      } catch (err) {
+        // Ignore if blocked
+      }
+      document.body.removeChild(ta);
+    }
+
+    const defaultWatchSvg = `
+      <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-800/70 to-slate-900 text-slate-500">
+        <svg class="w-14 h-14 mb-2 opacity-75" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="6" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3l2 1.5M9 3h6m-6 18h6" />
+        </svg>
+        <span class="text-xs font-medium tracking-wide text-slate-400">No photo yet</span>
+      </div>
+    `;
+
+    function updateGeminiWatchSelector() {
+      const selectEl = document.getElementById("gemini-watch-select");
+      if (!selectEl) return;
+      const previousVal = selectEl.value;
+
+      const optionsHtml = watches.map((w) => {
+        const label = [w.brand, w.model, `(${w.ref})`, w.year].filter(Boolean).join(" ");
+        return `<option value="${w.id}">${escapeHtml(label)}</option>`;
+      }).join("") + `<option value="custom">General / Other Watch</option>`;
+
+      selectEl.innerHTML = optionsHtml;
+      if (previousVal && Array.from(selectEl.options).some((o) => o.value === previousVal)) {
+        selectEl.value = previousVal;
+      }
+    }
+
+    function buildRegulatedGeminiPrompt() {
+      const selectVal = document.getElementById("gemini-watch-select").value;
+      const partName = document.getElementById("gemini-part-query").value.trim();
+      const scope = document.getElementById("gemini-scope").value;
+
+      const watch = watches.find((w) => String(w.id) === selectVal);
+      const watchContext = watch
+        ? `${watch.brand}${watch.model ? " " + watch.model : ""} (Ref: ${watch.ref}${watch.year ? ", Year: " + watch.year : ""})`
+        : "Vintage mechanical watch (unspecified reference)";
+
+      const scopeInstructions = {
+        "oem-and-suppliers": "Provide: (1) likely caliber/movement, (2) exact OEM part number(s), (3) reputable watch-part suppliers (e.g., Cousins UK, Esslinger, Otto Frei, Jules Borel, or eBay search keywords), and (4) typical price range.",
+        "donor-compatibility": "Provide: (1) likely caliber/movement, (2) exact compatible donor calibers/watches that share this part, and (3) any subtle dimensional differences to verify before buying.",
+        "dimensions-specs": "Provide: (1) likely caliber/movement, (2) exact dimensions/measurements (diameter, height, thread/post size, or strength), and (3) equivalent generic/aftermarket part codes."
+      }[scope];
+
+      return [
+        "Act as a vintage watchmaking parts specialist. Keep the response structured, factual, and concise.",
+        `Watch: ${watchContext}`,
+        `Part Needed: ${partName}`,
+        scopeInstructions,
+        "Rule: If any OEM part number or dimension is uncertain, state that clearly instead of guessing."
+      ].join("\n");
+    }
+
+    function renderCatalog() {
+      const listEl = document.getElementById("watch-list");
+      const countEl = document.getElementById("watch-count");
+      const grandInvestedEl = document.getElementById("grand-invested");
+      const grandSalesEl = document.getElementById("grand-sales");
+      const grandNetEl = document.getElementById("grand-net");
+
+      countEl.textContent = watches.length;
+      updateGeminiWatchSelector();
+
+      let totalInvestedAll = 0;
+      let totalSalesAll = 0;
+
+      watches.forEach((w) => {
+        const purchase = w.purchasePrice !== null && w.purchasePrice !== "" && !isNaN(Number(w.purchasePrice))
+          ? Number(w.purchasePrice)
+          : 0;
+        const partsTotal = (w.parts || []).reduce((sum, p) => sum + (Number(p.price) || 0), 0);
+        const sale = w.salePrice !== null && w.salePrice !== "" && !isNaN(Number(w.salePrice))
+          ? Number(w.salePrice)
+          : 0;
+        totalInvestedAll += purchase + partsTotal;
+        totalSalesAll += sale;
+      });
+
+      const netAll = totalSalesAll - totalInvestedAll;
+      grandInvestedEl.textContent = formatMoney(totalInvestedAll);
+      grandSalesEl.textContent = formatMoney(totalSalesAll);
+      grandNetEl.textContent = formatMoney(netAll, true);
+      grandNetEl.className = "text-2xl font-bold mt-1.5 tabular-nums " + (
+        netAll > 0 ? "text-emerald-400" : netAll < 0 ? "text-rose-400" : "text-white"
+      );
+
+      const q = searchQuery.trim().toLowerCase();
+      const filteredWatches = watches
+        .filter((w) => {
+          const hasSale = w.salePrice !== null && w.salePrice !== "" && !isNaN(Number(w.salePrice));
+          if (activeFilter === "active" && !w.activeProject) return false;
+          if (activeFilter === "sold" && !hasSale) return false;
+          if (activeFilter === "unsold" && hasSale) return false;
+
+          if (q) {
+            const haystack = [w.brand, w.model, w.ref, w.year].filter(Boolean).join(" ").toLowerCase();
+            if (!haystack.includes(q)) return false;
+          }
+          return true;
+        })
+        .sort((a, b) => (b.activeProject ? 1 : 0) - (a.activeProject ? 1 : 0));
+
+      if (filteredWatches.length === 0) {
+        const emptyMsg = watches.length === 0
+          ? "No watches in your catalog yet. Add your first project below."
+          : "No watches match your current search or filter.";
+        listEl.innerHTML = `
+          <div class="w-full bg-slate-900/60 border border-dashed border-slate-800 rounded-2xl p-10 text-center text-slate-400">
+            <p class="text-sm font-medium text-slate-300">${emptyMsg}</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = filteredWatches.map((watch) => {
+        const parts = watch.parts || [];
+        const partsTotal = parts.reduce((sum, part) => sum + (Number(part.price) || 0), 0);
+        const hasPurchase = watch.purchasePrice !== null && watch.purchasePrice !== "" && !isNaN(Number(watch.purchasePrice));
+        const purchaseNum = hasPurchase ? Number(watch.purchasePrice) : 0;
+        const totalInvested = purchaseNum + partsTotal;
+
+        const hasSale = watch.salePrice !== null && watch.salePrice !== "" && !isNaN(Number(watch.salePrice));
+        const saleNum = hasSale ? Number(watch.salePrice) : null;
+        const netWatch = hasSale ? saleNum - totalInvested : null;
+        const isActive = Boolean(watch.activeProject);
+
+        const profitBadge = hasSale
+          ? `<span class="text-xs font-semibold tabular-nums px-2.5 py-1 rounded-lg ${
+              netWatch >= 0
+                ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/25"
+                : "bg-rose-500/15 text-rose-300 border border-rose-500/25"
+            }">Net ${formatMoney(netWatch, true)}</span>`
+          : `<span class="text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-400 border border-slate-700/60">Unsold</span>`;
+
+        const albumSection = isSafeUrl(watch.albumUrl)
+          ? `<a
+              href="${escapeHtml(watch.albumUrl.trim())}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-xs font-medium text-sky-300 hover:text-sky-200 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/25 rounded-lg px-2.5 py-1 transition-colors"
+            >
+              Google Photos Album ↗
+            </a>`
+          : `<span class="text-[11px] text-slate-500">No album linked</span>`;
+
+        const isExpanded = expandedWatches.has(watch.id);
+        const sourcedCount = parts.filter((p) => p.sourced).length;
+        const partsSummaryText = parts.length === 0
+          ? "Parts (0)"
+          : `Parts (${sourcedCount}/${parts.length} sourced)`;
+
+        const partsHtml = parts.length === 0
+          ? `<li class="text-xs text-slate-500 py-2">No parts added yet. Add a part below.</li>`
+          : parts.map((part) => {
+              const isSourced = Boolean(part.sourced);
+              return `
+              <li class="flex items-center justify-between gap-2 py-2 border-b border-slate-800/70 last:border-b-0 text-sm">
+                <div class="flex items-center gap-2 min-w-0">
+                  <button
+                    type="button"
+                    data-action="toggle-part-sourced"
+                    data-watch-id="${watch.id}"
+                    data-part-id="${part.id}"
+                    title="${isSourced ? "Sourced (click to mark needed)" : "Need to source (click to mark sourced)"}"
+                    class="p-1 rounded-md border transition-colors shrink-0 cursor-pointer ${
+                      isSourced
+                        ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
+                        : "bg-slate-800/80 border-slate-700 text-slate-400 hover:text-amber-300"
+                    }"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 5h12l-1.8 6.5a4.5 4.5 0 0 1-8.4 0L6 5Z" />
+                      <ellipse cx="12" cy="5" rx="6" ry="1.8" />
+                      <circle cx="12" cy="14.5" r="4" />
+                    </svg>
+                  </button>
+                  <span class="truncate ${isSourced ? "line-through text-slate-500" : "text-slate-200"}">${escapeHtml(part.name)}</span>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                  <span class="font-medium tabular-nums ${isSourced ? "text-slate-500" : "text-white"}">${formatMoney(part.price)}</span>
+                  <button
+                    type="button"
+                    data-action="delete-part"
+                    data-watch-id="${watch.id}"
+                    data-part-id="${part.id}"
+                    class="text-xs text-slate-500 hover:text-rose-400 transition-colors cursor-pointer"
+                    title="Remove part"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </li>
+            `;
+            }).join("");
+
+        const imageHtml = watch.image
+          ? `<img src="${watch.image}" alt="${escapeHtml(watch.brand)} ${escapeHtml(watch.model || watch.ref)}" class="w-full h-full object-cover" />`
+          : defaultWatchSvg;
+
+        const cardBorder = isActive
+          ? "border-amber-500/45 shadow-[0_0_24px_-8px_rgba(245,158,11,0.28)]"
+          : "border-slate-800/90 hover:border-slate-700";
+
+        return `
+          <article class="w-[82vw] sm:w-[340px] shrink-0 snap-start bg-slate-900/90 border ${cardBorder} rounded-2xl shadow-lg overflow-hidden flex flex-col transition-all duration-200">
+            <!-- 4:5 Gallery Photo -->
+            <div class="w-full aspect-[4/5] overflow-hidden border-b border-slate-800/80 bg-slate-900 relative">
+              ${imageHtml}
+              <div class="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5"></div>
+            </div>
+
+            <!-- Watch Details -->
+            <div class="p-4 sm:p-5 border-b border-slate-800/80">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <h3 class="text-base font-bold text-white truncate tracking-tight">${escapeHtml(watch.brand)}</h3>
+                  ${watch.model ? `<p class="text-sm font-medium text-amber-300/95 truncate">${escapeHtml(watch.model)}</p>` : ""}
+                  <p class="text-xs text-slate-400 mt-0.5">
+                    Ref <span class="font-medium text-slate-200">${escapeHtml(watch.ref)}</span>
+                    ${watch.year ? ` · <span>${escapeHtml(watch.year)}</span>` : ""}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  data-action="toggle-active"
+                  data-watch-id="${watch.id}"
+                  title="${isActive ? "Active project (click to unpin)" : "Mark as active project"}"
+                  class="p-1.5 rounded-xl border transition-colors shrink-0 cursor-pointer ${
+                    isActive
+                      ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
+                      : "bg-slate-800/70 border-slate-700/80 text-slate-400 hover:text-amber-300"
+                  }"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.5v2.5l1.5 1M9.5 3h5M9.5 21h5" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Investment & Profit Row -->
+              <div class="mt-3 flex flex-wrap items-center gap-1.5">
+                <div class="inline-flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/25 rounded-lg px-2.5 py-1">
+                  <span class="text-xs text-amber-300/90 font-medium">Invested</span>
+                  <span class="text-xs font-bold text-amber-200 tabular-nums">${formatMoney(totalInvested)}</span>
+                </div>
+                ${profitBadge}
+              </div>
+
+              <!-- Google Photos Album Link -->
+              <div class="mt-2.5 flex flex-wrap items-center gap-2">
+                ${albumSection}
+              </div>
+            </div>
+
+            <!-- Compact Purchase, Sale & Album Inputs -->
+            <div class="px-4 sm:px-5 py-3 bg-slate-950/35 border-b border-slate-800/80 grid grid-cols-2 gap-2">
+              <label class="block">
+                <span class="block text-[11px] font-medium text-slate-400 mb-1">Purchase ($)</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  data-action="update-purchase"
+                  data-watch-id="${watch.id}"
+                  value="${hasPurchase ? purchaseNum : ""}"
+                  placeholder="0.00"
+                  class="w-full rounded-lg border border-slate-800 bg-slate-900/90 text-slate-100 placeholder-slate-600 px-2.5 py-1.5 text-xs tabular-nums focus:outline-none focus:ring-2 focus:ring-amber-500/60"
+                />
+              </label>
+              <label class="block">
+                <span class="block text-[11px] font-medium text-slate-400 mb-1">Sale ($)</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  data-action="update-sale"
+                  data-watch-id="${watch.id}"
+                  value="${hasSale ? saleNum : ""}"
+                  placeholder="Unsold"
+                  class="w-full rounded-lg border border-slate-800 bg-slate-900/90 text-slate-100 placeholder-slate-600 px-2.5 py-1.5 text-xs tabular-nums focus:outline-none focus:ring-2 focus:ring-amber-500/60"
+                />
+              </label>
+              <label class="block col-span-2">
+                <span class="block text-[11px] font-medium text-slate-400 mb-1">Google Photos Album URL</span>
+                <input
+                  type="url"
+                  data-action="update-album"
+                  data-watch-id="${watch.id}"
+                  value="${escapeHtml(watch.albumUrl || "")}"
+                  placeholder="https://photos.app.goo.gl/..."
+                  class="w-full rounded-lg border border-slate-800 bg-slate-900/90 text-slate-100 placeholder-slate-600 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/60"
+                />
+              </label>
+            </div>
+
+            <!-- Collapsible Parts & Actions Drawer -->
+            <div class="bg-slate-950/55">
+              <button
+                type="button"
+                data-action="toggle-parts"
+                data-watch-id="${watch.id}"
+                class="w-full px-4 sm:px-5 py-3 flex items-center justify-between text-left hover:bg-slate-900/60 transition-colors cursor-pointer"
+              >
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  ${partsSummaryText}
+                </span>
+                <span class="text-xs text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}">▾</span>
+              </button>
+
+              <div class="${isExpanded ? "px-4 sm:px-5 pb-4 pt-1 flex flex-col justify-between" : "hidden"}">
+                <ul class="mb-3 max-h-48 overflow-y-auto pr-1">
+                  ${partsHtml}
+                </ul>
+
+                <!-- Add Part Form -->
+                <form data-action="add-part" data-watch-id="${watch.id}" class="flex flex-col sm:flex-row gap-2 pt-2.5 border-t border-slate-800/80">
+                  <input
+                    type="text"
+                    name="partName"
+                    required
+                    placeholder="Part name (e.g. Mainspring)"
+                    class="flex-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-100 placeholder-slate-500 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/60"
+                  />
+                  <input
+                    type="number"
+                    name="partPrice"
+                    step="0.01"
+                    min="0"
+                    required
+                    placeholder="Price"
+                    class="w-full sm:w-20 rounded-lg border border-slate-800 bg-slate-900 text-slate-100 placeholder-slate-500 px-2.5 py-1.5 text-xs tabular-nums focus:outline-none focus:ring-2 focus:ring-amber-500/60"
+                  />
+                  <button
+                    type="submit"
+                    class="rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3 py-1.5 transition-colors shrink-0 cursor-pointer"
+                  >
+                    + Part
+                  </button>
+                </form>
+
+                <!-- Edit / Delete inside collapsed drawer -->
+                <div class="mt-3 pt-2.5 border-t border-slate-800/70 flex items-center justify-end gap-2">
+                  ${pendingDeleteId === watch.id ? `
+                    <span class="text-[11px] text-rose-300 mr-auto">Delete this watch?</span>
+                    <button
+                      type="button"
+                      data-action="confirm-delete-watch"
+                      data-watch-id="${watch.id}"
+                      class="text-xs font-semibold text-rose-200 hover:text-white bg-rose-500/20 hover:bg-rose-600 border border-rose-500/40 rounded-lg px-2.5 py-1 transition-colors cursor-pointer"
+                    >
+                      Confirm
+                    </button>
+                    <button
+                      type="button"
+                      data-action="cancel-delete-watch"
+                      data-watch-id="${watch.id}"
+                      class="text-xs text-slate-400 hover:text-slate-200 px-2 py-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  ` : `
+                    <button
+                      type="button"
+                      data-action="open-edit"
+                      data-watch-id="${watch.id}"
+                      class="text-xs text-slate-400 hover:text-amber-300 font-medium px-2.5 py-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      data-action="request-delete-watch"
+                      data-watch-id="${watch.id}"
+                      class="text-xs text-slate-400 hover:text-rose-400 font-medium px-2.5 py-1 rounded-lg hover:bg-rose-500/10 transition-colors cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  `}
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    // Gemini Part-Sourcing Search
+    document.getElementById("toggle-api-settings-btn").addEventListener("click", function () {
+      const panel = document.getElementById("api-settings-panel");
+      panel.classList.toggle("hidden");
+      const keyInput = document.getElementById("gemini-api-key");
+      if (!panel.classList.contains("hidden")) {
+        keyInput.value = loadGeminiKey();
+      }
+    });
+
+    document.getElementById("save-api-key-btn").addEventListener("click", function () {
+      const val = document.getElementById("gemini-api-key").value.trim();
+      try {
+        if (val) {
+          localStorage.setItem(GEMINI_KEY_STORAGE, val);
+          showStatus("Gemini API key saved in this browser.");
+        } else {
+          localStorage.removeItem(GEMINI_KEY_STORAGE);
+          showStatus("Gemini API key cleared.");
+        }
+      } catch (err) {
+        showStatus("Could not save API key to browser storage.", true);
+      }
+      document.getElementById("api-settings-panel").classList.add("hidden");
+    });
+
+    document.getElementById("gemini-search-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const partName = document.getElementById("gemini-part-query").value.trim();
+      if (!partName) return;
+
+      lastGeneratedPrompt = buildRegulatedGeminiPrompt();
+      copyTextToClipboard(lastGeneratedPrompt);
+
+      const box = document.getElementById("gemini-output-box");
+      const label = document.getElementById("gemini-output-label");
+      const content = document.getElementById("gemini-output-content");
+      box.classList.remove("hidden");
+      label.textContent = "Regulated Search Prompt (Copied — Paste in Gemini)";
+      content.textContent = lastGeneratedPrompt;
+
+      window.open("https://gemini.google.com/app", "_blank", "noopener,noreferrer");
+      showStatus("Prompt copied! Paste it into your Gemini tab to search.");
+    });
+
+    document.getElementById("run-in-app-btn").addEventListener("click", async function () {
+      const partName = document.getElementById("gemini-part-query").value.trim();
+      if (!partName) {
+        showStatus("Enter the part you are trying to source first.", true);
+        return;
+      }
+      const apiKey = loadGeminiKey();
+      if (!apiKey) {
+        document.getElementById("api-settings-panel").classList.remove("hidden");
+        showStatus("Add your Gemini API key above to run searches directly in Glovebox.", true);
+        return;
+      }
+
+      lastGeneratedPrompt = buildRegulatedGeminiPrompt();
+      const box = document.getElementById("gemini-output-box");
+      const label = document.getElementById("gemini-output-label");
+      const content = document.getElementById("gemini-output-content");
+      box.classList.remove("hidden");
+      label.textContent = "Gemini Sourcing Results";
+      content.textContent = "Searching part references and suppliers...";
+
+      try {
+        const res = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(apiKey),
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: lastGeneratedPrompt }] }]
+            })
+          }
+        );
+        if (!res.ok) throw new Error("API returned status " + res.status);
+        const data = await res.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        content.textContent = text || "No response returned. Try opening in Gemini instead.";
+      } catch (err) {
+        content.textContent = "Could not reach Gemini API (" + err.message + "). Check your API key or use 'Search in Gemini ↗' instead.";
+      }
+    });
+
+    document.getElementById("copy-prompt-btn").addEventListener("click", function () {
+      const text = lastGeneratedPrompt || buildRegulatedGeminiPrompt();
+      copyTextToClipboard(text);
+      showStatus("Prompt copied to clipboard.");
+    });
+
+    // Search & Filter
+    document.getElementById("search-input").addEventListener("input", function (event) {
+      searchQuery = event.target.value;
+      renderCatalog();
+    });
+
+    document.querySelectorAll(".filter-btn").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        activeFilter = btn.dataset.filter;
+        document.querySelectorAll(".filter-btn").forEach((b) => {
+          if (b.dataset.filter === activeFilter) {
+            b.className = "filter-btn rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer bg-amber-500 text-slate-950 shadow-sm";
+          } else {
+            b.className = "filter-btn rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer text-slate-400 hover:text-slate-100 hover:bg-slate-800/70";
+          }
+        });
+        renderCatalog();
+      });
+    });
+
+    // Horizontal scroll buttons
+    document.getElementById("scroll-left-btn").addEventListener("click", function () {
+      document.getElementById("watch-list").scrollBy({ left: -360, behavior: "smooth" });
+    });
+
+    document.getElementById("scroll-right-btn").addEventListener("click", function () {
+      document.getElementById("watch-list").scrollBy({ left: 360, behavior: "smooth" });
+    });
+
+    // Export & Import JSON Backup
+    document.getElementById("export-json-btn").addEventListener("click", function () {
+      const dataStr = JSON.stringify(watches, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "glovebox-backup.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showStatus("Backup exported as glovebox-backup.json.");
+    });
+
+    document.getElementById("import-json-input").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!Array.isArray(parsed)) throw new Error("Invalid format");
+          watches = parsed;
+          nextId = watches.reduce((max, w) => {
+            const partMax = (w.parts || []).reduce((pm, p) => Math.max(pm, p.id || 0), 0);
+            return Math.max(max, w.id || 0, partMax);
+          }, 200) + 1;
+          saveWatches();
+          renderCatalog();
+          showStatus(`Imported ${watches.length} watch(es) from backup.`);
+        } catch (err) {
+          showStatus("Could not import that file—make sure it is a valid JSON backup.", true);
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    });
+
+    // Handle adding a new watch
+    document.getElementById("add-watch-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const brand = document.getElementById("watch-brand").value.trim();
+      const model = document.getElementById("watch-model").value.trim();
+      const ref = document.getElementById("watch-ref").value.trim();
+      const year = document.getElementById("watch-year").value.trim();
+      const purchaseVal = document.getElementById("watch-purchase").value.trim();
+      const saleVal = document.getElementById("watch-sale").value.trim();
+      const albumUrl = document.getElementById("watch-album").value.trim();
+      const fileInput = document.getElementById("watch-image");
+      const file = fileInput.files[0];
+
+      if (!brand || !ref) return;
+
+      const saveWatch = (imageDataUrl) => {
+        watches.unshift({
+          id: ++nextId,
+          brand,
+          model,
+          ref,
+          year,
+          image: imageDataUrl || "",
+          albumUrl,
+          purchasePrice: purchaseVal !== "" ? parseFloat(purchaseVal) : null,
+          salePrice: saleVal !== "" ? parseFloat(saleVal) : null,
+          activeProject: false,
+          parts: []
+        });
+        event.target.reset();
+        saveWatches();
+        renderCatalog();
+        showStatus(`Added ${brand}${model ? " " + model : ""} to Glovebox.`);
+      };
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          saveWatch(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        saveWatch("");
+      }
+    });
+
+    // Handle adding a part inside a watch card
+    document.getElementById("watch-list").addEventListener("submit", function (event) {
+      const form = event.target.closest('form[data-action="add-part"]');
+      if (!form) return;
+
+      event.preventDefault();
+      const watchId = Number(form.dataset.watchId);
+      const watch = watches.find((w) => w.id === watchId);
+      if (!watch) return;
+
+      const nameInput = form.querySelector('input[name="partName"]');
+      const priceInput = form.querySelector('input[name="partPrice"]');
+      const name = nameInput.value.trim();
+      const price = parseFloat(priceInput.value);
+
+      if (!name || isNaN(price) || price < 0) return;
+
+      watch.parts.push({
+        id: ++nextId,
+        name,
+        price,
+        sourced: false
+      });
+
+      saveWatches();
+      renderCatalog();
+    });
+
+    // Handle updating purchase price, sale price, or Google Photos album link
+    document.getElementById("watch-list").addEventListener("change", function (event) {
+      const purchaseInput = event.target.closest('input[data-action="update-purchase"]');
+      if (purchaseInput) {
+        const watchId = Number(purchaseInput.dataset.watchId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) {
+          const val = purchaseInput.value.trim();
+          watch.purchasePrice = val === "" ? null : parseFloat(val);
+          saveWatches();
+          renderCatalog();
+        }
+        return;
+      }
+
+      const saleInput = event.target.closest('input[data-action="update-sale"]');
+      if (saleInput) {
+        const watchId = Number(saleInput.dataset.watchId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) {
+          const val = saleInput.value.trim();
+          watch.salePrice = val === "" ? null : parseFloat(val);
+          saveWatches();
+          renderCatalog();
+        }
+        return;
+      }
+
+      const albumInput = event.target.closest('input[data-action="update-album"]');
+      if (albumInput) {
+        const watchId = Number(albumInput.dataset.watchId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) {
+          watch.albumUrl = albumInput.value.trim();
+          saveWatches();
+          renderCatalog();
+        }
+      }
+    });
+
+    // Edit Modal Helpers
+    function openEditModal(watch) {
+      document.getElementById("edit-watch-id").value = watch.id;
+      document.getElementById("edit-watch-brand").value = watch.brand || "";
+      document.getElementById("edit-watch-model").value = watch.model || "";
+      document.getElementById("edit-watch-ref").value = watch.ref || "";
+      document.getElementById("edit-watch-year").value = watch.year || "";
+      document.getElementById("edit-watch-purchase").value =
+        watch.purchasePrice !== null && watch.purchasePrice !== undefined ? watch.purchasePrice : "";
+      document.getElementById("edit-watch-sale").value =
+        watch.salePrice !== null && watch.salePrice !== undefined ? watch.salePrice : "";
+      document.getElementById("edit-watch-album").value = watch.albumUrl || "";
+      document.getElementById("edit-watch-image").value = "";
+      document.getElementById("edit-remove-image").checked = false;
+      document.getElementById("edit-watch-modal").classList.remove("hidden");
+    }
+
+    function closeEditModal() {
+      document.getElementById("edit-watch-modal").classList.add("hidden");
+    }
+
+    document.getElementById("close-edit-modal-btn").addEventListener("click", closeEditModal);
+    document.getElementById("cancel-edit-modal-btn").addEventListener("click", closeEditModal);
+    document.getElementById("edit-watch-modal").addEventListener("click", function (event) {
+      if (event.target === this) closeEditModal();
+    });
+
+    document.getElementById("edit-watch-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const watchId = Number(document.getElementById("edit-watch-id").value);
+      const watch = watches.find((w) => w.id === watchId);
+      if (!watch) return;
+
+      const brand = document.getElementById("edit-watch-brand").value.trim();
+      const model = document.getElementById("edit-watch-model").value.trim();
+      const ref = document.getElementById("edit-watch-ref").value.trim();
+      const year = document.getElementById("edit-watch-year").value.trim();
+      const purchaseVal = document.getElementById("edit-watch-purchase").value.trim();
+      const saleVal = document.getElementById("edit-watch-sale").value.trim();
+      const albumUrl = document.getElementById("edit-watch-album").value.trim();
+      const removeImg = document.getElementById("edit-remove-image").checked;
+      const file = document.getElementById("edit-watch-image").files[0];
+
+      if (!brand || !ref) return;
+
+      const applyChanges = (newImage) => {
+        watch.brand = brand;
+        watch.model = model;
+        watch.ref = ref;
+        watch.year = year;
+        watch.purchasePrice = purchaseVal !== "" ? parseFloat(purchaseVal) : null;
+        watch.salePrice = saleVal !== "" ? parseFloat(saleVal) : null;
+        watch.albumUrl = albumUrl;
+        if (newImage !== undefined) {
+          watch.image = newImage;
+        } else if (removeImg) {
+          watch.image = "";
+        }
+        saveWatches();
+        closeEditModal();
+        renderCatalog();
+        showStatus(`Updated ${brand}${model ? " " + model : ""}.`);
+      };
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          applyChanges(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        applyChanges(undefined);
+      }
+    });
+
+    // Handle toggling parts accordion, loupe sourced state, active project, edit/delete, or deleting a part
+    document.getElementById("watch-list").addEventListener("click", function (event) {
+      const openEditBtn = event.target.closest('button[data-action="open-edit"]');
+      if (openEditBtn) {
+        const watchId = Number(openEditBtn.dataset.watchId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) openEditModal(watch);
+        return;
+      }
+
+      const reqDeleteBtn = event.target.closest('button[data-action="request-delete-watch"]');
+      if (reqDeleteBtn) {
+        pendingDeleteId = Number(reqDeleteBtn.dataset.watchId);
+        renderCatalog();
+        return;
+      }
+
+      const cancelDeleteBtn = event.target.closest('button[data-action="cancel-delete-watch"]');
+      if (cancelDeleteBtn) {
+        pendingDeleteId = null;
+        renderCatalog();
+        return;
+      }
+
+      const confirmDeleteBtn = event.target.closest('button[data-action="confirm-delete-watch"]');
+      if (confirmDeleteBtn) {
+        const watchId = Number(confirmDeleteBtn.dataset.watchId);
+        watches = watches.filter((w) => w.id !== watchId);
+        pendingDeleteId = null;
+        saveWatches();
+        renderCatalog();
+        showStatus("Watch removed from Glovebox.");
+        return;
+      }
+
+      const togglePartsBtn = event.target.closest('button[data-action="toggle-parts"]');
+      if (togglePartsBtn) {
+        const watchId = Number(togglePartsBtn.dataset.watchId);
+        if (expandedWatches.has(watchId)) {
+          expandedWatches.delete(watchId);
+        } else {
+          expandedWatches.add(watchId);
+        }
+        renderCatalog();
+        return;
+      }
+
+      const toggleSourcedBtn = event.target.closest('button[data-action="toggle-part-sourced"]');
+      if (toggleSourcedBtn) {
+        const watchId = Number(toggleSourcedBtn.dataset.watchId);
+        const partId = Number(toggleSourcedBtn.dataset.partId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) {
+          const part = (watch.parts || []).find((p) => p.id === partId);
+          if (part) {
+            part.sourced = !part.sourced;
+            saveWatches();
+            renderCatalog();
+          }
+        }
+        return;
+      }
+
+      const toggleActiveBtn = event.target.closest('button[data-action="toggle-active"]');
+      if (toggleActiveBtn) {
+        const watchId = Number(toggleActiveBtn.dataset.watchId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) {
+          watch.activeProject = !watch.activeProject;
+          saveWatches();
+          renderCatalog();
+        }
+        return;
+      }
+
+      const deletePartBtn = event.target.closest('button[data-action="delete-part"]');
+      if (deletePartBtn) {
+        const watchId = Number(deletePartBtn.dataset.watchId);
+        const partId = Number(deletePartBtn.dataset.partId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) {
+          watch.parts = watch.parts.filter((p) => p.id !== partId);
+          saveWatches();
+          renderCatalog();
+        }
+      }
+    });
+
+    renderCatalog();
+  </script>
+</body>
+</html>
