@@ -369,8 +369,8 @@
           </div>
 
           <div>
-            <label for="watch-ref" class="block text-xs font-medium text-slate-400 mb-1">Reference Number *</label>
-            <input id="watch-ref" type="text" required placeholder="e.g. 166.024" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+            <label for="watch-ref" class="block text-xs font-medium text-slate-400 mb-1">Reference Number</label>
+            <input id="watch-ref" type="text" placeholder="e.g. 166.024" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
           </div>
 
           <div>
@@ -472,8 +472,8 @@
         </div>
 
         <div>
-          <label for="edit-watch-ref" class="block text-xs font-medium text-slate-400 mb-1">Reference Number *</label>
-          <input id="edit-watch-ref" type="text" required class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          <label for="edit-watch-ref" class="block text-xs font-medium text-slate-400 mb-1">Reference Number</label>
+          <input id="edit-watch-ref" type="text" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
         </div>
 
         <div>
@@ -967,7 +967,7 @@
 
       const watch = watches.find((w) => String(w.id) === selectVal);
       const watchContext = watch
-        ? `${watch.brand}${watch.model ? " " + watch.model : ""} (Ref: ${watch.ref}${watch.caliber ? ", Caliber: " + watch.caliber : ""}${watch.year ? ", Year: " + watch.year : ""})`
+        ? `${watch.brand}${watch.model ? " " + watch.model : ""} (${[watch.ref ? "Ref: " + watch.ref : "", watch.caliber ? "Caliber: " + watch.caliber : "", watch.year ? "Year: " + watch.year : ""].filter(Boolean).join(", ") || "No ref/caliber"})`
         : "Vintage mechanical watch (unspecified reference)";
 
       const scopeInstructions = {
@@ -1218,11 +1218,13 @@
                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 ${getStageBadgeStyle(stage)}">${escapeHtml(stage)}</span>
                   </div>
                   ${watch.model ? `<p class="text-sm font-medium text-amber-300/95 truncate mt-0.5">${escapeHtml(watch.model)}</p>` : ""}
-                  <p class="text-xs text-slate-400 mt-0.5 truncate">
-                    Ref <span class="font-medium text-slate-200">${escapeHtml(watch.ref)}</span>
-                    ${watch.caliber ? ` · <span class="text-slate-300">${escapeHtml(watch.caliber)}</span>` : ""}
-                    ${watch.year ? ` · <span>${escapeHtml(watch.year)}</span>` : ""}
-                  </p>
+                  ${(() => {
+                    const metaParts = [];
+                    if (watch.ref) metaParts.push(`Ref <span class="font-medium text-slate-200">${escapeHtml(watch.ref)}</span>`);
+                    if (watch.caliber) metaParts.push(`<span class="text-slate-300">${escapeHtml(watch.caliber)}</span>`);
+                    if (watch.year) metaParts.push(`<span>${escapeHtml(watch.year)}</span>`);
+                    return metaParts.length ? `<p class="text-xs text-slate-400 mt-0.5 truncate">${metaParts.join(" · ")}</p>` : "";
+                  })()}
                 </div>
                 <button
                   type="button"
@@ -1661,7 +1663,7 @@
       const saleVal = document.getElementById("watch-sale").value.trim();
       const albumUrl = document.getElementById("watch-album").value.trim();
 
-      if (!brand || !ref) return;
+      if (!brand) return;
 
       const mainFile = document.getElementById("watch-image").files[0];
       const beforeFile = document.getElementById("watch-before-image").files[0];
@@ -1801,7 +1803,7 @@
       const brand = document.getElementById("edit-watch-brand").value.trim();
       const model = document.getElementById("edit-watch-model").value.trim();
       const ref = document.getElementById("edit-watch-ref").value.trim();
-      if (!brand || !ref) return;
+      if (!brand) return;
 
       watch.brand = brand;
       watch.model = model;
