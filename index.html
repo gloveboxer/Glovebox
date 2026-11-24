@@ -6,11 +6,10 @@
   <meta name="theme-color" content="#020617" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>Glovebox</title>
+  <title>Pegwood</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23f59e0b' stroke-width='3.5'/%3E%3Cpath d='M32 22v10l6 4' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Glovebox%22%2C%22short_name%22%3A%22Glovebox%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23020617%22%2C%22theme_color%22%3A%22%23020617%22%7D" />
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Pegwood%22%2C%22short_name%22%3A%22Pegwood%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23020617%22%2C%22theme_color%22%3A%22%23020617%22%7D" />
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -54,7 +53,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.5v2.5l1.5 1M9.5 3h5M9.5 21h5" />
         </svg>
       </div>
-      <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Glovebox</h1>
+      <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Pegwood</h1>
     </header>
 
     <!-- Toast / Status Message -->
@@ -112,50 +111,26 @@
       ></div>
     </section>
 
-    <!-- Section 2 (Below Horizontal Scroll): Regulated Gemini Part-Sourcing Search -->
-    <section class="bg-slate-900/70 border border-sky-500/20 rounded-2xl shadow-sm p-5 sm:p-6 mb-8" aria-label="Gemini Part Sourcing Search">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-        <div>
-          <h2 class="text-base font-semibold text-white flex items-center gap-2">
-            <span class="inline-block w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]"></span>
-            Gemini Part-Sourcing Search
-          </h2>
-          <p class="text-xs text-slate-400 mt-0.5">
-            Uses your watch's brand, caliber, and reference to build a structured watchmaker query.
-          </p>
-        </div>
-        <button
-          type="button"
-          id="toggle-api-settings-btn"
-          class="text-xs font-medium text-sky-300 hover:text-sky-200 border border-sky-500/25 bg-sky-500/10 hover:bg-sky-500/15 rounded-xl px-3 py-1.5 self-start sm:self-auto transition-colors cursor-pointer"
-        >
-          API Key Settings
-        </button>
-      </div>
+    <!-- Section 2 (Below Horizontal Scroll): Regulated Gemini Sourcing Search (Collapsed by Default) -->
+    <section class="bg-slate-900/70 border border-sky-500/20 rounded-2xl shadow-sm mb-8 overflow-hidden" aria-label="Gemini Sourcing Search">
+      <button
+        type="button"
+        id="toggle-gemini-search-btn"
+        class="w-full p-5 sm:px-6 sm:py-4 flex items-center justify-between text-left hover:bg-slate-900/90 transition-colors cursor-pointer"
+      >
+        <h2 class="text-base font-semibold text-white flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]"></span>
+          Gemini Sourcing Search
+        </h2>
+        <span id="gemini-search-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
+      </button>
 
-      <!-- Optional API Key Drawer -->
-      <div id="api-settings-panel" class="hidden mb-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800">
-        <label for="gemini-api-key" class="block text-xs font-medium text-slate-300 mb-1.5">
-          Optional: Gemini API Key (saved only in this browser for instant in-app results)
-        </label>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input
-            id="gemini-api-key"
-            type="password"
-            placeholder="Paste your Google AI Studio API key..."
-            class="flex-1 rounded-xl border border-slate-800 bg-slate-900 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
-          />
-          <button
-            type="button"
-            id="save-api-key-btn"
-            class="rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-semibold px-4 py-2 transition-colors cursor-pointer"
-          >
-            Save Key
-          </button>
-        </div>
-      </div>
+      <div id="gemini-search-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
+        <p class="text-xs text-slate-400 mb-4">
+          Builds a structured watchmaker query for parts or tech sheets, copies it to your clipboard, and opens Gemini so you can paste and search.
+        </p>
 
-      <form id="gemini-search-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <form id="gemini-search-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div>
           <label for="gemini-watch-select" class="block text-xs font-medium text-slate-400 mb-1">Select Watch</label>
           <select
@@ -165,7 +140,20 @@
         </div>
 
         <div>
-          <label for="gemini-part-query" class="block text-xs font-medium text-slate-400 mb-1">Part Needed *</label>
+          <label for="gemini-scope" class="block text-xs font-medium text-slate-400 mb-1">What Are You Sourcing?</label>
+          <select
+            id="gemini-scope"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+          >
+            <option value="oem-and-suppliers">Parts: OEM # &amp; Suppliers</option>
+            <option value="donor-compatibility">Parts: Compatible Donors</option>
+            <option value="dimensions-specs">Parts: Dimensions &amp; Specs</option>
+            <option value="tech-sheet">Tech Sheet / Oiling Chart</option>
+          </select>
+        </div>
+
+        <div>
+          <label id="gemini-query-label" for="gemini-part-query" class="block text-xs font-medium text-slate-400 mb-1">Part Needed *</label>
           <input
             id="gemini-part-query"
             type="text"
@@ -175,41 +163,21 @@
           />
         </div>
 
-        <div>
-          <label for="gemini-scope" class="block text-xs font-medium text-slate-400 mb-1">Search Focus</label>
-          <select
-            id="gemini-scope"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
-          >
-            <option value="oem-and-suppliers">OEM Part # &amp; Suppliers</option>
-            <option value="donor-compatibility">Compatible Donor Movements</option>
-            <option value="dimensions-specs">Exact Dimensions &amp; Specs</option>
-          </select>
-        </div>
-
-        <div class="flex items-end gap-2">
+        <div class="flex items-end">
           <button
             type="submit"
-            class="flex-1 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs sm:text-sm font-semibold px-3.5 py-2.5 transition-colors cursor-pointer shadow-sm"
+            class="w-full rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors cursor-pointer shadow-sm"
           >
-            Search in Gemini ↗
-          </button>
-          <button
-            type="button"
-            id="run-in-app-btn"
-            class="rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-sky-200 text-xs font-semibold px-3.5 py-2.5 transition-colors shrink-0 cursor-pointer"
-            title="Run directly here using your saved Gemini API key"
-          >
-            In-App
+            Copy &amp; Open Gemini ↗
           </button>
         </div>
       </form>
 
-      <!-- Regulated Prompt Preview / In-App Results -->
+      <!-- Regulated Prompt Preview -->
       <div id="gemini-output-box" class="hidden mt-4 rounded-xl bg-slate-950/90 border border-slate-800 p-4">
         <div class="flex items-center justify-between gap-2 mb-2">
           <span id="gemini-output-label" class="text-[11px] font-semibold uppercase tracking-wider text-sky-300">
-            Regulated Search Prompt (Copied to Clipboard)
+            Prompt Copied — Paste in Gemini
           </span>
           <button
             type="button"
@@ -221,43 +189,6 @@
         </div>
         <div id="gemini-output-content" class="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed"></div>
       </div>
-    </section>
-
-    <!-- Section 3: Grand Total Summary Bar + Collection Count & JSON Backup -->
-    <section class="mb-8" aria-label="Collective Totals and Backup">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
-        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-4 sm:p-5">
-          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Invested (Watches + Parts)</p>
-          <p id="grand-invested" class="text-2xl font-bold text-white mt-1.5 tabular-nums">$0.00</p>
-        </div>
-        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-4 sm:p-5">
-          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Sales</p>
-          <p id="grand-sales" class="text-2xl font-bold text-white mt-1.5 tabular-nums">$0.00</p>
-        </div>
-        <div class="bg-slate-900/70 border border-amber-500/25 rounded-2xl p-4 sm:p-5">
-          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Grand Total (Net)</p>
-          <p id="grand-net" class="text-2xl font-bold text-white mt-1.5 tabular-nums">$0.00</p>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/70 border border-slate-800/80 rounded-xl px-4 py-2.5">
-        <div class="text-xs text-slate-400">
-          Collection: <span id="watch-count" class="font-semibold text-white tabular-nums">0</span>
-          <span class="ml-2 text-slate-600">· Stored in IndexedDB</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <button
-            type="button"
-            id="export-json-btn"
-            class="rounded-lg border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors cursor-pointer"
-          >
-            Export JSON
-          </button>
-          <label class="rounded-lg border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors cursor-pointer">
-            Import JSON
-            <input id="import-json-input" type="file" accept=".json,application/json" class="hidden" />
-          </label>
-        </div>
       </div>
     </section>
 
@@ -345,6 +276,39 @@
       </div>
     </section>
 
+    <!-- Section 4: By the numbers (Collapsed by Default) -->
+    <section class="mb-6 bg-slate-900/70 border border-slate-800/80 rounded-2xl overflow-hidden" aria-label="By the numbers">
+      <button
+        type="button"
+        id="toggle-totals-btn"
+        class="w-full p-5 sm:px-6 sm:py-4 flex items-center justify-between text-left hover:bg-slate-900/90 transition-colors cursor-pointer"
+      >
+        <h2 class="text-base font-semibold text-white">By the numbers</h2>
+        <span id="totals-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
+      </button>
+
+      <div id="totals-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 sm:p-5">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Watches</p>
+            <p id="by-numbers-watch-count" class="text-2xl font-bold text-white mt-1.5 tabular-nums">0</p>
+          </div>
+          <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 sm:p-5">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Invested (Watches + Parts)</p>
+            <p id="grand-invested" class="text-2xl font-bold text-white mt-1.5 tabular-nums">$0.00</p>
+          </div>
+          <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 sm:p-5">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Sales</p>
+            <p id="grand-sales" class="text-2xl font-bold text-white mt-1.5 tabular-nums">$0.00</p>
+          </div>
+          <div class="bg-slate-950/60 border border-amber-500/25 rounded-2xl p-4 sm:p-5">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Grand Total (Net)</p>
+            <p id="grand-net" class="text-2xl font-bold text-white mt-1.5 tabular-nums">$0.00</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Section 5 (Bottom): Add a Watch Form (Collapsed by Default) -->
     <section class="bg-slate-900/70 border border-slate-800/80 rounded-2xl overflow-hidden">
       <button
@@ -406,26 +370,26 @@
           </div>
 
           <div class="sm:col-span-2">
+            <span class="block text-xs font-medium text-slate-400 mb-1">Primary Photo</span>
+            <label class="block w-full rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-xs font-semibold px-3 py-2.5 text-center transition-colors cursor-pointer">
+              Choose Primary Photo
+              <input id="watch-image" type="file" accept="image/*" class="hidden" />
+            </label>
+            <span id="add-picked-photo-status" class="hidden block mt-1 text-[11px] text-emerald-300 font-medium truncate"></span>
+          </div>
+
+          <div class="sm:col-span-2">
+            <span class="block text-xs font-medium text-slate-400 mb-1">Secondary Photo (before photo, movement)</span>
+            <label class="block w-full rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-200 text-xs font-semibold px-3 py-2.5 text-center transition-colors cursor-pointer">
+              Choose Secondary Photo
+              <input id="watch-before-image" type="file" accept="image/*" class="hidden" />
+            </label>
+            <span id="add-picked-before-status" class="hidden block mt-1 text-[11px] text-emerald-300 font-medium truncate"></span>
+          </div>
+
+          <div class="sm:col-span-2 lg:col-span-4">
             <label for="watch-album" class="block text-xs font-medium text-slate-400 mb-1">Google Photos Album Link</label>
             <input id="watch-album" type="url" placeholder="https://photos.app.goo.gl/..." class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
-          </div>
-
-          <div>
-            <label for="watch-image" class="block text-xs font-medium text-slate-400 mb-1">After / Main Photo</label>
-            <div class="flex flex-col gap-1.5">
-              <button type="button" id="add-pick-gphotos-btn" class="w-full rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer">Pick from Google Photos</button>
-              <input id="watch-image" type="file" accept="image/*" class="w-full text-[11px] text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-500/15 file:text-amber-300 hover:file:bg-amber-500/25 cursor-pointer" />
-              <span id="add-picked-photo-status" class="hidden text-[11px] text-emerald-300 font-medium"></span>
-            </div>
-          </div>
-
-          <div>
-            <label for="watch-before-image" class="block text-xs font-medium text-slate-400 mb-1">Before Photo (Optional)</label>
-            <div class="flex flex-col gap-1.5">
-              <button type="button" id="add-pick-before-gphotos-btn" class="w-full rounded-xl border border-slate-700 bg-slate-800/70 hover:bg-slate-800 text-slate-300 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer">Pick Before Photo</button>
-              <input id="watch-before-image" type="file" accept="image/*" class="w-full text-[11px] text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-500/15 file:text-amber-300 hover:file:bg-amber-500/25 cursor-pointer" />
-              <span id="add-picked-before-status" class="hidden text-[11px] text-emerald-300 font-medium"></span>
-            </div>
           </div>
 
           <div class="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-between gap-3 pt-2">
@@ -433,6 +397,27 @@
             <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-semibold px-5 py-2.5 transition-colors cursor-pointer shadow-sm">+ Add Watch</button>
           </div>
         </form>
+      </div>
+    </section>
+
+    <!-- Section 6 (Very Bottom): Collection Count & JSON Backup -->
+    <section class="mt-6 flex flex-wrap items-center justify-between gap-3 bg-slate-900/70 border border-slate-800/80 rounded-xl px-4 py-2.5" aria-label="Backup">
+      <div class="text-xs text-slate-400">
+        Collection: <span id="watch-count" class="font-semibold text-white tabular-nums">0</span>
+        <span class="ml-2 text-slate-600">· Stored in IndexedDB</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          id="export-json-btn"
+          class="rounded-lg border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors cursor-pointer"
+        >
+          Export JSON
+        </button>
+        <label class="rounded-lg border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors cursor-pointer">
+          Import JSON
+          <input id="import-json-input" type="file" accept=".json,application/json" class="hidden" />
+        </label>
       </div>
     </section>
   </div>
@@ -508,11 +493,6 @@
           <input id="edit-watch-sale" type="number" step="0.01" min="0" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
         </div>
 
-        <div class="sm:col-span-2">
-          <label for="edit-watch-album" class="block text-xs font-medium text-slate-400 mb-1">Google Photos Album Link</label>
-          <input id="edit-watch-album" type="url" placeholder="https://photos.app.goo.gl/..." class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
-        </div>
-
         <!-- Timegrapher & Service Date -->
         <div class="sm:col-span-2 pt-2 border-t border-slate-800">
           <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Timegrapher &amp; Service Log</p>
@@ -540,36 +520,37 @@
           </label>
         </div>
 
-        <!-- Photos: After / Main & Before -->
+        <!-- Photos: Primary & Secondary -->
         <div class="sm:col-span-2 pt-2 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div>
-            <label for="edit-watch-image" class="block text-xs font-medium text-slate-400 mb-1">After / Main Photo</label>
-            <div class="flex flex-col gap-2">
-              <button type="button" id="edit-pick-gphotos-btn" class="rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer">
-                Pick from Google Photos
-              </button>
-              <input id="edit-watch-image" type="file" accept="image/*" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-500/15 file:text-amber-300 cursor-pointer" />
-            </div>
-            <span id="edit-picked-photo-status" class="hidden block mt-1 text-[11px] text-emerald-300 font-medium"></span>
+            <span class="block text-xs font-medium text-slate-400 mb-1">Primary Photo</span>
+            <label class="block w-full rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-xs font-semibold px-3 py-2.5 text-center transition-colors cursor-pointer">
+              Choose Primary Photo
+              <input id="edit-watch-image" type="file" accept="image/*" class="hidden" />
+            </label>
+            <span id="edit-picked-photo-status" class="hidden block mt-1 text-[11px] text-emerald-300 font-medium truncate"></span>
             <label class="mt-2 inline-flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
               <input id="edit-remove-image" type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500" />
-              Remove main photo
+              Remove primary photo
             </label>
           </div>
 
           <div>
-            <label for="edit-watch-before-image" class="block text-xs font-medium text-slate-400 mb-1">Before Photo</label>
-            <div class="flex flex-col gap-2">
-              <button type="button" id="edit-pick-before-gphotos-btn" class="rounded-xl border border-slate-700 bg-slate-800/70 hover:bg-slate-800 text-slate-300 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer">
-                Pick Before Photo
-              </button>
-              <input id="edit-watch-before-image" type="file" accept="image/*" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-500/15 file:text-amber-300 cursor-pointer" />
-            </div>
-            <span id="edit-picked-before-status" class="hidden block mt-1 text-[11px] text-emerald-300 font-medium"></span>
+            <span class="block text-xs font-medium text-slate-400 mb-1">Secondary Photo (before photo, movement)</span>
+            <label class="block w-full rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-200 text-xs font-semibold px-3 py-2.5 text-center transition-colors cursor-pointer">
+              Choose Secondary Photo
+              <input id="edit-watch-before-image" type="file" accept="image/*" class="hidden" />
+            </label>
+            <span id="edit-picked-before-status" class="hidden block mt-1 text-[11px] text-emerald-300 font-medium truncate"></span>
             <label class="mt-2 inline-flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
               <input id="edit-remove-before-image" type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500" />
-              Remove before photo
+              Remove secondary photo
             </label>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="edit-watch-album" class="block text-xs font-medium text-slate-400 mb-1">Google Photos Album Link</label>
+            <input id="edit-watch-album" type="url" placeholder="https://photos.app.goo.gl/..." class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
           </div>
         </div>
 
@@ -605,7 +586,84 @@
       </div>
       <div class="relative inline-flex items-center justify-center">
         <img id="lightbox-img" src="" alt="Watch zoom view" draggable="false" class="max-h-[80vh] w-auto rounded-2xl border border-slate-800 shadow-2xl object-contain select-none" />
-        <button type="button" id="lightbox-before-btn" class="hidden no-callout absolute bottom-3 right-3 text-xs font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3.5 py-1.5 rounded-full shadow-md cursor-pointer transition-colors">Hold for Before</button>
+        <button type="button" id="lightbox-before-btn" class="hidden no-callout absolute bottom-3 right-3 text-xs font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3.5 py-1.5 rounded-full shadow-md cursor-pointer transition-colors">Hold for Secondary</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo Crop & Zoom Modal -->
+  <div
+    id="photo-crop-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="crop-modal-title"
+  >
+    <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-5 flex flex-col">
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <div>
+          <h3 id="crop-modal-title" class="text-sm font-semibold text-white">Adjust Photo (4:5 Card Frame)</h3>
+          <p class="text-[11px] text-slate-400">Drag to position · Slide to zoom</p>
+        </div>
+        <button
+          type="button"
+          id="close-crop-modal-btn"
+          aria-label="Cancel photo crop"
+          class="text-slate-400 hover:text-white text-base px-2 py-1 rounded-lg hover:bg-slate-800 cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div
+        id="crop-frame"
+        class="w-full max-w-[272px] aspect-[4/5] mx-auto overflow-hidden rounded-2xl border-2 border-amber-500/50 bg-slate-950 relative touch-none select-none cursor-grab active:cursor-grabbing shadow-inner"
+      >
+        <img
+          id="crop-preview-img"
+          src=""
+          alt="Crop preview"
+          draggable="false"
+          class="absolute left-1/2 top-1/2 pointer-events-none select-none"
+          style="max-width: none; max-height: none;"
+        />
+      </div>
+
+      <div class="mt-4 flex items-center gap-3">
+        <span class="text-[11px] font-medium text-slate-400 shrink-0">Zoom</span>
+        <input
+          id="crop-zoom-slider"
+          type="range"
+          min="1"
+          max="3"
+          step="0.02"
+          value="1"
+          class="flex-1 accent-amber-500 cursor-pointer"
+        />
+        <button
+          type="button"
+          id="crop-reset-btn"
+          class="text-xs text-slate-400 hover:text-white border border-slate-700 bg-slate-800/80 rounded-lg px-2.5 py-1 transition-colors cursor-pointer shrink-0"
+        >
+          Reset
+        </button>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+        <button
+          type="button"
+          id="cancel-crop-btn"
+          class="rounded-xl border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-xs font-medium px-3.5 py-2 transition-colors cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          id="apply-crop-btn"
+          class="rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-4 py-2 transition-colors cursor-pointer"
+        >
+          Apply Crop
+        </button>
       </div>
     </div>
   </div>
@@ -661,15 +719,76 @@
     </div>
   </div>
 
+  <!-- Sell Listing Generator Modal -->
+  <div
+    id="sell-listing-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="sell-modal-title"
+  >
+    <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-5 sm:p-6 flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 id="sell-modal-title" class="text-base sm:text-lg font-semibold text-white">Generate Sales Listing</h2>
+          <p id="sell-watch-subtitle" class="text-xs text-amber-300 mt-0.5"></p>
+        </div>
+        <button
+          type="button"
+          id="close-sell-modal-btn"
+          aria-label="Close listing generator"
+          class="text-slate-400 hover:text-white text-lg px-2 py-1 rounded-lg hover:bg-slate-800 cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+        <div>
+          <label for="sell-format-select" class="block text-xs font-medium text-slate-400 mb-1">Listing Style</label>
+          <select id="sell-format-select" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/70">
+            <option value="marketplace">Marketplace (eBay / Chrono24 / Forum)</option>
+            <option value="social">Short Social Post (IG / Story)</option>
+          </select>
+        </div>
+        <div>
+          <label for="sell-asking-price" class="block text-xs font-medium text-slate-400 mb-1">Asking Price ($)</label>
+          <input id="sell-asking-price" type="number" step="0.01" min="0" placeholder="Optional" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-xs tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500/70" />
+        </div>
+      </div>
+
+      <label for="sell-listing-text" class="block text-xs font-medium text-slate-400 mb-1">Generated Listing (editable)</label>
+      <textarea
+        id="sell-listing-text"
+        rows="12"
+        class="w-full flex-1 rounded-xl border border-slate-800 bg-slate-950/80 text-slate-100 p-3 text-xs sm:text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-emerald-500/70"
+      ></textarea>
+
+      <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+        <button
+          type="button"
+          id="cancel-sell-modal-btn"
+          class="rounded-xl border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-xs font-medium px-4 py-2 transition-colors cursor-pointer"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          id="copy-sell-listing-btn"
+          class="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-semibold px-4 py-2 transition-colors cursor-pointer"
+        >
+          Copy Listing
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const LEGACY_STORAGE_KEY = "watch_restoration_catalog_v1";
     const IDB_NAME = "glovebox_db";
     const IDB_STORE = "catalog";
     const IDB_KEY = "watches";
     const IDB_TECH_KEY = "techSheets";
-    const GEMINI_KEY_STORAGE = "glovebox_gemini_api_key";
-    const GOOGLE_CLIENT_ID = "640094166478-fmkd1b8au3qifgml1viqet581ss6s2cu.apps.googleusercontent.com";
-    const PHOTOS_PICKER_SCOPE = "https://www.googleapis.com/auth/photospicker.mediaitems.readonly";
 
     const defaultWatches = [
       {
@@ -807,14 +926,6 @@
       saveTechSheetsToDB(techSheets);
     }
 
-    function loadGeminiKey() {
-      try {
-        return localStorage.getItem(GEMINI_KEY_STORAGE) || "";
-      } catch (err) {
-        return "";
-      }
-    }
-
     let watches = defaultWatches;
     let techSheets = [];
     let techSheetQuery = "";
@@ -825,12 +936,6 @@
     let pendingDeleteId = null;
     let editingPart = null;
     let lastGeneratedPrompt = "";
-    let googleAccessToken = "";
-    let addPickedImageDataUrl = "";
-    let addPickedBeforeImageDataUrl = "";
-    let editPickedImageDataUrl = undefined;
-    let editPickedBeforeImageDataUrl = undefined;
-    let activePickerPollTimer = null;
     let nextId = 300;
 
     function recomputeNextId() {
@@ -962,13 +1067,23 @@
 
     function buildRegulatedGeminiPrompt() {
       const selectVal = document.getElementById("gemini-watch-select").value;
-      const partName = document.getElementById("gemini-part-query").value.trim();
+      const queryText = document.getElementById("gemini-part-query").value.trim();
       const scope = document.getElementById("gemini-scope").value;
 
       const watch = watches.find((w) => String(w.id) === selectVal);
       const watchContext = watch
         ? `${watch.brand}${watch.model ? " " + watch.model : ""} (${[watch.ref ? "Ref: " + watch.ref : "", watch.caliber ? "Caliber: " + watch.caliber : "", watch.year ? "Year: " + watch.year : ""].filter(Boolean).join(", ") || "No ref/caliber"})`
         : "Vintage mechanical watch (unspecified reference)";
+
+      if (scope === "tech-sheet") {
+        return [
+          "Act as a vintage watchmaking technical archivist. Keep the response structured, factual, and concise.",
+          `Watch: ${watchContext}`,
+          queryText ? `Specific Focus / Notes: ${queryText}` : "Target: Official technical guide, service manual, and oiling chart.",
+          "Provide: (1) confirmed caliber/movement family, (2) where to find the official tech sheet, service manual, or oiling chart PDF (e.g., Cousins UK technical documents, Ranfft, EmmyWatch, MyRetroWatches, or exact PDF search queries), and (3) key bench specs if known (lift angle, beat rate, mainspring/lubrication notes).",
+          "Rule: Only share verified links or exact search terms; if a spec or document is uncertain, state that clearly instead of guessing."
+        ].join("\n");
+      }
 
       const scopeInstructions = {
         "oem-and-suppliers": "Provide: (1) caliber/movement confirmation, (2) exact OEM part number(s), (3) reputable watch-part suppliers (e.g., Cousins UK, Esslinger, Otto Frei, Jules Borel, or eBay search keywords), and (4) typical price range.",
@@ -979,7 +1094,7 @@
       return [
         "Act as a vintage watchmaking parts specialist. Keep the response structured, factual, and concise.",
         `Watch: ${watchContext}`,
-        `Part Needed: ${partName}`,
+        `Part Needed: ${queryText}`,
         scopeInstructions,
         "Rule: If any OEM part number or dimension is uncertain, state that clearly instead of guessing."
       ].join("\n");
@@ -993,6 +1108,8 @@
       const grandNetEl = document.getElementById("grand-net");
 
       countEl.textContent = watches.length;
+      const byNumbersCountEl = document.getElementById("by-numbers-watch-count");
+      if (byNumbersCountEl) byNumbersCountEl.textContent = watches.length;
       updateGeminiWatchSelector();
 
       let totalInvestedAll = 0;
@@ -1175,9 +1292,9 @@
               data-action="peek-before"
               data-watch-id="${watch.id}"
               class="no-callout absolute bottom-3 right-3 text-[11px] font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3 py-1.5 rounded-full shadow-md cursor-pointer transition-colors"
-            >Hold for Before</button>`
+            >Hold for Secondary</button>`
           : (hasBefore && !hasMain)
-            ? `<span class="pointer-events-none absolute bottom-3 right-3 text-[10px] font-semibold uppercase tracking-wider bg-slate-950/80 text-slate-300 border border-slate-700/80 px-2.5 py-1 rounded-full">Before</span>`
+            ? `<span class="pointer-events-none absolute bottom-3 right-3 text-[10px] font-semibold uppercase tracking-wider bg-slate-950/80 text-slate-300 border border-slate-700/80 px-2.5 py-1 rounded-full">Secondary</span>`
             : "";
 
         const zoomBtn = defaultPhotoSrc
@@ -1305,6 +1422,7 @@
                     <button type="button" data-action="confirm-delete-watch" data-watch-id="${watch.id}" class="text-xs font-semibold text-rose-200 hover:text-white bg-rose-500/20 hover:bg-rose-600 border border-rose-500/40 rounded-lg px-2.5 py-1 transition-colors cursor-pointer">Confirm</button>
                     <button type="button" data-action="cancel-delete-watch" data-watch-id="${watch.id}" class="text-xs text-slate-400 hover:text-slate-200 px-2 py-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">Cancel</button>
                   ` : `
+                    <button type="button" data-action="open-sell-listing" data-watch-id="${watch.id}" class="text-xs text-emerald-300 hover:text-emerald-200 font-medium px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 transition-colors cursor-pointer mr-auto">Sell Listing</button>
                     <button type="button" data-action="open-edit" data-watch-id="${watch.id}" class="text-xs text-slate-400 hover:text-amber-300 font-medium px-2.5 py-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">Edit &amp; Bench Log</button>
                     <button type="button" data-action="request-delete-watch" data-watch-id="${watch.id}" class="text-xs text-slate-400 hover:text-rose-400 font-medium px-2.5 py-1 rounded-lg hover:bg-rose-500/10 transition-colors cursor-pointer">Delete</button>
                   `}
@@ -1316,7 +1434,7 @@
       }).join("");
     }
 
-    // Google Photos Picker API Integration
+    // Image Compression & Device Photo Status Helpers
     function compressImageBlobToDataUrl(blob, maxDim = 900, quality = 0.84) {
       return new Promise((resolve, reject) => {
         const img = new Image();
@@ -1349,166 +1467,208 @@
       });
     }
 
-    function requestGooglePhotosToken() {
-      return new Promise((resolve, reject) => {
-        if (!window.google || !google.accounts || !google.accounts.oauth2) {
-          reject(new Error("Google Sign-In library is still loading or blocked."));
-          return;
-        }
-        const client = google.accounts.oauth2.initTokenClient({
-          client_id: GOOGLE_CLIENT_ID,
-          scope: PHOTOS_PICKER_SCOPE,
-          callback: (resp) => {
-            if (resp && resp.access_token) {
-              googleAccessToken = resp.access_token;
-              resolve(resp.access_token);
-            } else {
-              reject(new Error(resp?.error_description || "Authorization cancelled."));
-            }
-          }
-        });
-        client.requestAccessToken({ prompt: googleAccessToken ? "" : "consent" });
-      });
+    // 4:5 Photo Crop & Zoom Workflow
+    const pendingCroppedImages = {};
+    let cropState = null;
+
+    function updateCropPreviewTransform() {
+      if (!cropState) return;
+      const frame = document.getElementById("crop-frame");
+      const frameW = frame.clientWidth || 272;
+      const frameH = frame.clientHeight || 340;
+      const totalScale = cropState.baseScale * cropState.zoom;
+      const maxX = Math.max(0, (cropState.natW * totalScale - frameW) / 2);
+      const maxY = Math.max(0, (cropState.natH * totalScale - frameH) / 2);
+      cropState.offsetX = Math.max(-maxX, Math.min(maxX, cropState.offsetX));
+      cropState.offsetY = Math.max(-maxY, Math.min(maxY, cropState.offsetY));
+
+      const imgEl = document.getElementById("crop-preview-img");
+      imgEl.style.width = cropState.natW + "px";
+      imgEl.style.height = cropState.natH + "px";
+      imgEl.style.transform = `translate(calc(-50% + ${cropState.offsetX}px), calc(-50% + ${cropState.offsetY}px)) scale(${totalScale})`;
     }
 
-    async function pickPhotoFromGooglePhotos(targetKey) {
-      const statusMap = {
-        "add-main": "add-picked-photo-status",
-        "add-before": "add-picked-before-status",
-        "edit-main": "edit-picked-photo-status",
-        "edit-before": "edit-picked-before-status"
+    function openCropModal(file, inputId, statusId, removeCheckboxId) {
+      const objUrl = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const modal = document.getElementById("photo-crop-modal");
+        modal.classList.remove("hidden");
+        const frame = document.getElementById("crop-frame");
+        const frameW = frame.clientWidth || 272;
+        const frameH = frame.clientHeight || 340;
+        const baseScale = Math.max(frameW / img.width, frameH / img.height);
+
+        cropState = {
+          img,
+          objUrl,
+          inputId,
+          statusId,
+          removeCheckboxId,
+          fileName: file.name,
+          natW: img.width,
+          natH: img.height,
+          baseScale,
+          zoom: 1,
+          offsetX: 0,
+          offsetY: 0,
+          dragging: false,
+          startX: 0,
+          startY: 0,
+          startOffsetX: 0,
+          startOffsetY: 0
+        };
+
+        document.getElementById("crop-zoom-slider").value = "1";
+        document.getElementById("crop-preview-img").src = objUrl;
+        updateCropPreviewTransform();
       };
-      const statusEl = document.getElementById(statusMap[targetKey]);
-      try {
-        if (activePickerPollTimer) {
-          clearInterval(activePickerPollTimer);
-          activePickerPollTimer = null;
-        }
-        showStatus("Connecting to Google Photos...");
-        const token = await requestGooglePhotosToken();
-
-        const createRes = await fetch("https://photospicker.googleapis.com/v1/sessions", {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ pickingConfig: { maxItemCount: "1" } })
-        });
-        if (!createRes.ok) throw new Error("Session creation failed (" + createRes.status + ")");
-        const session = await createRes.json();
-
-        window.open(session.pickerUri + "/autoclose", "_blank");
-        showStatus("Select your watch photo in the Google Photos tab...");
-
-        const startTime = Date.now();
-        activePickerPollTimer = setInterval(async () => {
-          if (Date.now() - startTime > 180000) {
-            clearInterval(activePickerPollTimer);
-            activePickerPollTimer = null;
-            showStatus("Google Photos selection timed out.", true);
-            return;
-          }
-          try {
-            const pollRes = await fetch(
-              "https://photospicker.googleapis.com/v1/sessions/" + encodeURIComponent(session.id),
-              { headers: { "Authorization": "Bearer " + token } }
-            );
-            if (!pollRes.ok) return;
-            const pollData = await pollRes.json();
-            if (!pollData.mediaItemsSet) return;
-
-            clearInterval(activePickerPollTimer);
-            activePickerPollTimer = null;
-
-            const itemsRes = await fetch(
-              "https://photospicker.googleapis.com/v1/mediaItems?sessionId=" + encodeURIComponent(session.id),
-              { headers: { "Authorization": "Bearer " + token } }
-            );
-            const itemsData = await itemsRes.json();
-            const firstItem = itemsData?.mediaItems?.[0];
-            const baseUrl = firstItem?.mediaFile?.baseUrl;
-
-            if (baseUrl) {
-              const imgRes = await fetch(baseUrl + "=w900-h1125", {
-                headers: { "Authorization": "Bearer " + token }
-              });
-              if (!imgRes.ok) throw new Error("Failed to load picked photo");
-              const blob = await imgRes.blob();
-              const compressedDataUrl = await compressImageBlobToDataUrl(blob);
-
-              if (targetKey === "add-main") {
-                addPickedImageDataUrl = compressedDataUrl;
-                document.getElementById("watch-image").value = "";
-              } else if (targetKey === "add-before") {
-                addPickedBeforeImageDataUrl = compressedDataUrl;
-                document.getElementById("watch-before-image").value = "";
-              } else if (targetKey === "edit-main") {
-                editPickedImageDataUrl = compressedDataUrl;
-                document.getElementById("edit-watch-image").value = "";
-                document.getElementById("edit-remove-image").checked = false;
-              } else if (targetKey === "edit-before") {
-                editPickedBeforeImageDataUrl = compressedDataUrl;
-                document.getElementById("edit-watch-before-image").value = "";
-                document.getElementById("edit-remove-before-image").checked = false;
-              }
-              if (statusEl) {
-                statusEl.textContent = "Google Photo selected ✓";
-                statusEl.classList.remove("hidden");
-              }
-              showStatus("Google Photo attached!");
-            }
-
-            fetch("https://photospicker.googleapis.com/v1/sessions/" + encodeURIComponent(session.id), {
-              method: "DELETE",
-              headers: { "Authorization": "Bearer " + token }
-            }).catch(() => {});
-          } catch (pollErr) {
-            clearInterval(activePickerPollTimer);
-            activePickerPollTimer = null;
-            showStatus("Could not fetch selected photo: " + pollErr.message, true);
-          }
-        }, 2500);
-      } catch (err) {
-        showStatus("Google Photos Picker: " + err.message, true);
-      }
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        showStatus("Could not load that image.", true);
+      };
+      img.src = objUrl;
     }
 
-    document.getElementById("add-pick-gphotos-btn").addEventListener("click", () => pickPhotoFromGooglePhotos("add-main"));
-    document.getElementById("add-pick-before-gphotos-btn").addEventListener("click", () => pickPhotoFromGooglePhotos("add-before"));
-    document.getElementById("edit-pick-gphotos-btn").addEventListener("click", () => pickPhotoFromGooglePhotos("edit-main"));
-    document.getElementById("edit-pick-before-gphotos-btn").addEventListener("click", () => pickPhotoFromGooglePhotos("edit-before"));
+    function closeCropModal(clearInput) {
+      if (cropState) {
+        if (clearInput) {
+          const input = document.getElementById(cropState.inputId);
+          if (input) input.value = "";
+        }
+        URL.revokeObjectURL(cropState.objUrl);
+        cropState = null;
+      }
+      document.getElementById("photo-crop-modal").classList.add("hidden");
+    }
 
-    // Gemini Part-Sourcing Search
-    document.getElementById("toggle-api-settings-btn").addEventListener("click", function () {
-      const panel = document.getElementById("api-settings-panel");
-      panel.classList.toggle("hidden");
-      const keyInput = document.getElementById("gemini-api-key");
-      if (!panel.classList.contains("hidden")) {
-        keyInput.value = loadGeminiKey();
+    const cropFrameEl = document.getElementById("crop-frame");
+    cropFrameEl.addEventListener("pointerdown", function (e) {
+      if (!cropState) return;
+      e.preventDefault();
+      cropState.dragging = true;
+      cropState.startX = e.clientX;
+      cropState.startY = e.clientY;
+      cropState.startOffsetX = cropState.offsetX;
+      cropState.startOffsetY = cropState.offsetY;
+      if (cropFrameEl.setPointerCapture) {
+        cropFrameEl.setPointerCapture(e.pointerId);
       }
     });
 
-    document.getElementById("save-api-key-btn").addEventListener("click", function () {
-      const val = document.getElementById("gemini-api-key").value.trim();
-      try {
-        if (val) {
-          localStorage.setItem(GEMINI_KEY_STORAGE, val);
-          showStatus("Gemini API key saved in this browser.");
-        } else {
-          localStorage.removeItem(GEMINI_KEY_STORAGE);
-          showStatus("Gemini API key cleared.");
-        }
-      } catch (err) {
-        showStatus("Could not save API key to browser storage.", true);
+    cropFrameEl.addEventListener("pointermove", function (e) {
+      if (!cropState || !cropState.dragging) return;
+      cropState.offsetX = cropState.startOffsetX + (e.clientX - cropState.startX);
+      cropState.offsetY = cropState.startOffsetY + (e.clientY - cropState.startY);
+      updateCropPreviewTransform();
+    });
+
+    function endCropDrag() {
+      if (cropState) cropState.dragging = false;
+    }
+    cropFrameEl.addEventListener("pointerup", endCropDrag);
+    cropFrameEl.addEventListener("pointercancel", endCropDrag);
+
+    document.getElementById("crop-zoom-slider").addEventListener("input", function () {
+      if (!cropState) return;
+      cropState.zoom = parseFloat(this.value) || 1;
+      updateCropPreviewTransform();
+    });
+
+    document.getElementById("crop-reset-btn").addEventListener("click", function () {
+      if (!cropState) return;
+      cropState.zoom = 1;
+      cropState.offsetX = 0;
+      cropState.offsetY = 0;
+      document.getElementById("crop-zoom-slider").value = "1";
+      updateCropPreviewTransform();
+    });
+
+    document.getElementById("close-crop-modal-btn").addEventListener("click", () => closeCropModal(true));
+    document.getElementById("cancel-crop-btn").addEventListener("click", () => closeCropModal(true));
+
+    document.getElementById("apply-crop-btn").addEventListener("click", function () {
+      if (!cropState) return;
+      const frame = document.getElementById("crop-frame");
+      const frameW = frame.clientWidth || 272;
+      const outW = 720;
+      const outH = 900;
+      const outRatio = outW / frameW;
+      const totalScale = cropState.baseScale * cropState.zoom;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = outW;
+      canvas.height = outH;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, outW, outH);
+      ctx.save();
+      ctx.translate(outW / 2 + cropState.offsetX * outRatio, outH / 2 + cropState.offsetY * outRatio);
+      ctx.scale(totalScale * outRatio, totalScale * outRatio);
+      ctx.drawImage(cropState.img, -cropState.natW / 2, -cropState.natH / 2);
+      ctx.restore();
+
+      pendingCroppedImages[cropState.inputId] = canvas.toDataURL("image/jpeg", 0.86);
+
+      const status = document.getElementById(cropState.statusId);
+      if (status) {
+        status.textContent = "Ready: " + cropState.fileName + " ✓";
+        status.classList.remove("hidden");
       }
-      document.getElementById("api-settings-panel").classList.add("hidden");
+      if (cropState.removeCheckboxId) {
+        const cb = document.getElementById(cropState.removeCheckboxId);
+        if (cb) cb.checked = false;
+      }
+      closeCropModal(false);
+    });
+
+    function bindPhotoInputStatus(inputId, statusId, removeCheckboxId) {
+      const input = document.getElementById(inputId);
+      const status = document.getElementById(statusId);
+      if (!input || !status) return;
+      input.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+          openCropModal(file, inputId, statusId, removeCheckboxId);
+        } else {
+          delete pendingCroppedImages[inputId];
+          status.classList.add("hidden");
+        }
+      });
+    }
+
+    bindPhotoInputStatus("watch-image", "add-picked-photo-status");
+    bindPhotoInputStatus("watch-before-image", "add-picked-before-status");
+    bindPhotoInputStatus("edit-watch-image", "edit-picked-photo-status", "edit-remove-image");
+    bindPhotoInputStatus("edit-watch-before-image", "edit-picked-before-status", "edit-remove-before-image");
+
+    // Gemini Sourcing Search (Copy & Paste for Parts & Tech Sheets)
+    document.getElementById("toggle-gemini-search-btn").addEventListener("click", function () {
+      const body = document.getElementById("gemini-search-body");
+      const chevron = document.getElementById("gemini-search-chevron");
+      body.classList.toggle("hidden");
+      chevron.classList.toggle("rotate-180");
+    });
+    document.getElementById("gemini-scope").addEventListener("change", function () {
+      const isTechSheet = this.value === "tech-sheet";
+      const labelEl = document.getElementById("gemini-query-label");
+      const inputEl = document.getElementById("gemini-part-query");
+      if (isTechSheet) {
+        labelEl.textContent = "Tech Sheet Focus (Optional)";
+        inputEl.required = false;
+        inputEl.placeholder = "e.g. Oiling chart, lift angle, service manual";
+      } else {
+        labelEl.textContent = "Part Needed *";
+        inputEl.required = true;
+        inputEl.placeholder = "e.g. Mainspring, Crown, Stem";
+      }
     });
 
     document.getElementById("gemini-search-form").addEventListener("submit", function (event) {
       event.preventDefault();
-      const partName = document.getElementById("gemini-part-query").value.trim();
-      if (!partName) return;
+      const scope = document.getElementById("gemini-scope").value;
+      const queryText = document.getElementById("gemini-part-query").value.trim();
+      if (scope !== "tech-sheet" && !queryText) return;
 
       lastGeneratedPrompt = buildRegulatedGeminiPrompt();
       copyTextToClipboard(lastGeneratedPrompt);
@@ -1517,52 +1677,11 @@
       const label = document.getElementById("gemini-output-label");
       const content = document.getElementById("gemini-output-content");
       box.classList.remove("hidden");
-      label.textContent = "Regulated Search Prompt (Copied — Paste in Gemini)";
+      label.textContent = "Prompt Copied — Paste in Gemini";
       content.textContent = lastGeneratedPrompt;
 
       window.open("https://gemini.google.com/app", "_blank", "noopener,noreferrer");
       showStatus("Prompt copied! Paste it into your Gemini tab to search.");
-    });
-
-    document.getElementById("run-in-app-btn").addEventListener("click", async function () {
-      const partName = document.getElementById("gemini-part-query").value.trim();
-      if (!partName) {
-        showStatus("Enter the part you are trying to source first.", true);
-        return;
-      }
-      const apiKey = loadGeminiKey();
-      if (!apiKey) {
-        document.getElementById("api-settings-panel").classList.remove("hidden");
-        showStatus("Add your Gemini API key above to run searches directly in Glovebox.", true);
-        return;
-      }
-
-      lastGeneratedPrompt = buildRegulatedGeminiPrompt();
-      const box = document.getElementById("gemini-output-box");
-      const label = document.getElementById("gemini-output-label");
-      const content = document.getElementById("gemini-output-content");
-      box.classList.remove("hidden");
-      label.textContent = "Gemini Sourcing Results";
-      content.textContent = "Searching part references and suppliers...";
-
-      try {
-        const res = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(apiKey),
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: lastGeneratedPrompt }] }]
-            })
-          }
-        );
-        if (!res.ok) throw new Error("API returned status " + res.status);
-        const data = await res.json();
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        content.textContent = text || "No response returned. Try opening in Gemini instead.";
-      } catch (err) {
-        content.textContent = "Could not reach Gemini API (" + err.message + "). Check your API key or use 'Search in Gemini ↗' instead.";
-      }
     });
 
     document.getElementById("copy-prompt-btn").addEventListener("click", function () {
@@ -1598,12 +1717,12 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "glovebox-backup.json";
+      a.download = "pegwood-backup.json";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showStatus("Backup exported as glovebox-backup.json.");
+      showStatus("Backup exported as pegwood-backup.json.");
     });
 
     document.getElementById("import-json-input").addEventListener("change", function (event) {
@@ -1668,8 +1787,10 @@
       const mainFile = document.getElementById("watch-image").files[0];
       const beforeFile = document.getElementById("watch-before-image").files[0];
 
-      const mainImg = mainFile ? await readFileAsDataUrl(mainFile) : (addPickedImageDataUrl || "");
-      const beforeImg = beforeFile ? await readFileAsDataUrl(beforeFile) : (addPickedBeforeImageDataUrl || "");
+      const mainImg = pendingCroppedImages["watch-image"] || (mainFile ? await compressImageBlobToDataUrl(mainFile) : "");
+      const beforeImg = pendingCroppedImages["watch-before-image"] || (beforeFile ? await compressImageBlobToDataUrl(beforeFile) : "");
+      delete pendingCroppedImages["watch-image"];
+      delete pendingCroppedImages["watch-before-image"];
 
       watches.unshift({
         id: ++nextId,
@@ -1693,14 +1814,12 @@
         parts: []
       });
 
-      addPickedImageDataUrl = "";
-      addPickedBeforeImageDataUrl = "";
       document.getElementById("add-picked-photo-status").classList.add("hidden");
       document.getElementById("add-picked-before-status").classList.add("hidden");
       event.target.reset();
       saveWatches();
       renderCatalog();
-      showStatus(`Added ${brand}${model ? " " + model : ""} to Glovebox.`);
+      showStatus(`Added ${brand}${model ? " " + model : ""} to Pegwood.`);
     });
 
     // Handle adding or editing a part inside a watch card
@@ -1773,8 +1892,8 @@
       document.getElementById("edit-watch-service-date").value = watch.serviceDate || "";
       document.getElementById("edit-watch-notes").value = watch.benchNotes || "";
 
-      editPickedImageDataUrl = undefined;
-      editPickedBeforeImageDataUrl = undefined;
+      delete pendingCroppedImages["edit-watch-image"];
+      delete pendingCroppedImages["edit-watch-before-image"];
       document.getElementById("edit-picked-photo-status").classList.add("hidden");
       document.getElementById("edit-picked-before-status").classList.add("hidden");
       document.getElementById("edit-watch-image").value = "";
@@ -1826,20 +1945,22 @@
 
       const mainFile = document.getElementById("edit-watch-image").files[0];
       const removeMain = document.getElementById("edit-remove-image").checked;
-      if (mainFile) {
-        watch.image = await readFileAsDataUrl(mainFile);
-      } else if (editPickedImageDataUrl !== undefined) {
-        watch.image = editPickedImageDataUrl;
+      if (pendingCroppedImages["edit-watch-image"]) {
+        watch.image = pendingCroppedImages["edit-watch-image"];
+        delete pendingCroppedImages["edit-watch-image"];
+      } else if (mainFile) {
+        watch.image = await compressImageBlobToDataUrl(mainFile);
       } else if (removeMain) {
         watch.image = "";
       }
 
       const beforeFile = document.getElementById("edit-watch-before-image").files[0];
       const removeBefore = document.getElementById("edit-remove-before-image").checked;
-      if (beforeFile) {
-        watch.beforeImage = await readFileAsDataUrl(beforeFile);
-      } else if (editPickedBeforeImageDataUrl !== undefined) {
-        watch.beforeImage = editPickedBeforeImageDataUrl;
+      if (pendingCroppedImages["edit-watch-before-image"]) {
+        watch.beforeImage = pendingCroppedImages["edit-watch-before-image"];
+        delete pendingCroppedImages["edit-watch-before-image"];
+      } else if (beforeFile) {
+        watch.beforeImage = await compressImageBlobToDataUrl(beforeFile);
       } else if (removeBefore) {
         watch.beforeImage = "";
       }
@@ -1862,7 +1983,7 @@
       }
       const btn = document.getElementById("lightbox-before-btn");
       if (btn && !btn.classList.contains("hidden")) {
-        btn.textContent = "Hold for Before";
+        btn.textContent = "Hold for Secondary";
         btn.className = "no-callout absolute bottom-3 right-3 text-xs font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3.5 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
       }
       lightboxPeeking = false;
@@ -1877,7 +1998,7 @@
       if (!watch || !watch.image || !watch.beforeImage) return;
       lightboxPeeking = true;
       document.getElementById("lightbox-img").src = watch.beforeImage;
-      this.textContent = "Before";
+      this.textContent = "Secondary";
       this.className = "no-callout absolute bottom-3 right-3 text-xs font-semibold bg-amber-500 text-slate-950 px-3.5 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
     });
 
@@ -1896,7 +2017,7 @@
       if (event.target === this) closeLightbox();
     });
 
-    // Press-and-hold on the Hold for Before pill button to peek at Before photo
+    // Press-and-hold on the Hold for Secondary pill button to peek at Before photo
     let activePeekBtn = null;
 
     function restorePeekImg() {
@@ -1907,7 +2028,7 @@
       if (img && watch && watch.image) {
         img.src = watch.image;
       }
-      activePeekBtn.textContent = "Hold for Before";
+      activePeekBtn.textContent = "Hold for Secondary";
       activePeekBtn.className = "no-callout absolute bottom-3 right-3 text-[11px] font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
       activePeekBtn = null;
     }
@@ -1929,7 +2050,7 @@
 
       activePeekBtn = btn;
       img.src = watch.beforeImage;
-      btn.textContent = "Before";
+      btn.textContent = "Secondary";
       btn.className = "no-callout absolute bottom-3 right-3 text-[11px] font-semibold bg-amber-500 text-slate-950 px-3 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
     });
 
@@ -1940,6 +2061,99 @@
         restorePeekImg();
       }
     }, true);
+
+    // Sales Listing Generator Helpers
+    let sellListingWatchId = null;
+
+    function buildSalesListingText(watch, style, askingPrice) {
+      const titleParts = [watch.year, watch.brand, watch.model, watch.ref ? `Ref. ${watch.ref}` : ""].filter(Boolean);
+      const title = titleParts.join(" ");
+      const sourcedParts = (watch.parts || []).filter((p) => p.sourced).map((p) => p.name);
+      const priceText = askingPrice !== "" && !isNaN(Number(askingPrice))
+        ? formatMoney(Number(askingPrice))
+        : "[Asking Price]";
+
+      const timegrapherParts = [
+        watch.rate ? `Rate: ${watch.rate}` : "",
+        watch.amplitude ? `Amplitude: ${watch.amplitude}` : "",
+        watch.beatError ? `Beat Error: ${watch.beatError}` : ""
+      ].filter(Boolean);
+
+      if (style === "social") {
+        const lines = [
+          `FS: ${title}`,
+          watch.caliber ? `Movement: ${watch.caliber}` : "",
+          sourcedParts.length ? `Freshly restored (${sourcedParts.join(", ")})` : "Freshly serviced & ready to wear.",
+          timegrapherParts.length ? `Timegrapher: ${timegrapherParts.join(" | ")}` : "",
+          watch.serviceDate ? `Serviced: ${watch.serviceDate}` : "",
+          `Asking: ${priceText}`,
+          "DM for more photos or details."
+        ].filter(Boolean);
+        return lines.join("\n");
+      }
+
+      const lines = [
+        title,
+        "",
+        "SPECS",
+        `• Brand: ${watch.brand}`,
+        watch.model ? `• Model: ${watch.model}` : "",
+        watch.ref ? `• Reference: ${watch.ref}` : "",
+        watch.caliber ? `• Caliber / Movement: ${watch.caliber}` : "",
+        watch.year ? `• Year: ${watch.year}` : "",
+        "",
+        "RESTORATION & SERVICE"
+      ].filter((l) => l !== "");
+
+      if (sourcedParts.length > 0) {
+        sourcedParts.forEach((name) => lines.push(`• Installed / Replaced: ${name}`));
+      } else {
+        lines.push("• Inspected and cleaned on the bench.");
+      }
+      if (watch.serviceDate) lines.push(`• Service Date: ${watch.serviceDate}`);
+      if (timegrapherParts.length) lines.push(`• Timegrapher: ${timegrapherParts.join(" · ")}`);
+      if (watch.benchNotes) lines.push(`• Notes: ${watch.benchNotes}`);
+
+      lines.push("", `Asking Price: ${priceText}`);
+      return lines.join("\n");
+    }
+
+    function refreshSellListingOutput() {
+      const watch = watches.find((w) => w.id === sellListingWatchId);
+      if (!watch) return;
+      const style = document.getElementById("sell-format-select").value;
+      const asking = document.getElementById("sell-asking-price").value.trim();
+      document.getElementById("sell-listing-text").value = buildSalesListingText(watch, style, asking);
+    }
+
+    function openSellListingModal(watch) {
+      sellListingWatchId = watch.id;
+      document.getElementById("sell-watch-subtitle").textContent =
+        [watch.brand, watch.model, watch.ref].filter(Boolean).join(" · ");
+      document.getElementById("sell-asking-price").value =
+        watch.salePrice !== null && watch.salePrice !== undefined ? watch.salePrice : "";
+      refreshSellListingOutput();
+      document.getElementById("sell-listing-modal").classList.remove("hidden");
+    }
+
+    function closeSellListingModal() {
+      sellListingWatchId = null;
+      document.getElementById("sell-listing-modal").classList.add("hidden");
+    }
+
+    document.getElementById("sell-format-select").addEventListener("change", refreshSellListingOutput);
+    document.getElementById("sell-asking-price").addEventListener("input", refreshSellListingOutput);
+    document.getElementById("close-sell-modal-btn").addEventListener("click", closeSellListingModal);
+    document.getElementById("cancel-sell-modal-btn").addEventListener("click", closeSellListingModal);
+    document.getElementById("sell-listing-modal").addEventListener("click", function (event) {
+      if (event.target === this) closeSellListingModal();
+    });
+
+    document.getElementById("copy-sell-listing-btn").addEventListener("click", function () {
+      const text = document.getElementById("sell-listing-text").value;
+      copyTextToClipboard(text);
+      showStatus("Sales listing copied to clipboard!");
+    });
 
     // Card Click Delegation
     document.getElementById("watch-list").addEventListener("click", function (event) {
@@ -1956,7 +2170,7 @@
             const lbBtn = document.getElementById("lightbox-before-btn");
             lbImg.src = src;
             if (watch.image && watch.beforeImage) {
-              lbBtn.textContent = "Hold for Before";
+              lbBtn.textContent = "Hold for Secondary";
               lbBtn.className = "no-callout absolute bottom-3 right-3 text-xs font-semibold bg-slate-950/85 hover:bg-slate-900 backdrop-blur-md text-slate-200 border border-slate-700/80 px-3.5 py-1.5 rounded-full shadow-md cursor-pointer transition-colors";
             } else {
               lbBtn.classList.add("hidden");
@@ -1972,6 +2186,14 @@
       const openTsBtn = event.target.closest('button[data-action="open-techsheet"]');
       if (openTsBtn) {
         openTechSheetViewer(Number(openTsBtn.dataset.tsId));
+        return;
+      }
+
+      const openSellBtn = event.target.closest('button[data-action="open-sell-listing"]');
+      if (openSellBtn) {
+        const watchId = Number(openSellBtn.dataset.watchId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) openSellListingModal(watch);
         return;
       }
 
@@ -2004,7 +2226,7 @@
         pendingDeleteId = null;
         saveWatches();
         renderCatalog();
-        showStatus("Watch removed from Glovebox.");
+        showStatus("Watch removed from Pegwood.");
         return;
       }
 
@@ -2220,6 +2442,13 @@
     document.getElementById("close-ts-viewer-btn").addEventListener("click", closeTechSheetViewer);
     document.getElementById("techsheet-viewer-modal").addEventListener("click", function (event) {
       if (event.target === this) closeTechSheetViewer();
+    });
+
+    document.getElementById("toggle-totals-btn").addEventListener("click", function () {
+      const body = document.getElementById("totals-body");
+      const chevron = document.getElementById("totals-chevron");
+      body.classList.toggle("hidden");
+      chevron.classList.toggle("rotate-180");
     });
 
     document.getElementById("toggle-techsheets-btn").addEventListener("click", function () {
