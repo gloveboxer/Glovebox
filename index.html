@@ -3,13 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#020617" />
+  <meta name="theme-color" content="#121210" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Pegwood</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23f59e0b' stroke-width='3.5'/%3E%3Cpath d='M32 22v10l6 4' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Pegwood%22%2C%22short_name%22%3A%22Pegwood%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23020617%22%2C%22theme_color%22%3A%22%23020617%22%7D" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1916'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23d4a853' stroke-width='3.5'/%3E%3Cpath d='M32 22v10l6 4' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Pegwood%22%2C%22short_name%22%3A%22Pegwood%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23121210%22%2C%22theme_color%22%3A%22%23121210%22%7D" />
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            slate: {
+              950: '#121210',
+              900: '#1a1916',
+              800: '#2a2824',
+              700: '#3d3a34',
+              600: '#57534a',
+              500: '#787368',
+              400: '#a19b8e',
+              300: '#c8c2b6',
+              200: '#e2ddd3',
+              100: '#f3f0e8'
+            },
+            amber: {
+              500: '#d4a853',
+              400: '#e0b96a',
+              300: '#ebd094',
+              200: '#f5e4bc'
+            }
+          }
+        }
+      }
+    };
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -31,15 +60,15 @@
       height: 6px;
     }
     .watch-shelf::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(26, 25, 22, 0.6);
       border-radius: 9999px;
     }
     .watch-shelf::-webkit-scrollbar-thumb {
-      background: #334155;
+      background: #3d3a34;
       border-radius: 9999px;
     }
     .watch-shelf::-webkit-scrollbar-thumb:hover {
-      background: #475569;
+      background: #57534a;
     }
   </style>
 </head>
@@ -85,24 +114,6 @@
             class="flex-1 sm:w-64 sm:flex-initial rounded-xl border border-slate-800 bg-slate-900/90 text-slate-100 placeholder-slate-500 px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70 transition-all"
           />
         </div>
-        <div class="flex items-center gap-2 self-end sm:self-auto">
-          <button
-            type="button"
-            id="scroll-left-btn"
-            aria-label="Scroll collection left"
-            class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white text-sm transition-colors shrink-0 cursor-pointer"
-          >
-            ←
-          </button>
-          <button
-            type="button"
-            id="scroll-right-btn"
-            aria-label="Scroll collection right"
-            class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white text-sm transition-colors shrink-0 cursor-pointer"
-          >
-            →
-          </button>
-        </div>
       </div>
 
       <div
@@ -112,22 +123,22 @@
     </section>
 
     <!-- Section 2 (Below Horizontal Scroll): Regulated Gemini Sourcing Search (Collapsed by Default) -->
-    <section class="bg-slate-900/70 border border-sky-500/20 rounded-2xl shadow-sm mb-8 overflow-hidden" aria-label="Gemini Sourcing Search">
+    <section class="bg-slate-900/70 border border-amber-500/25 rounded-2xl shadow-sm mb-8 overflow-hidden" aria-label="AI Sourcing Search">
       <button
         type="button"
         id="toggle-gemini-search-btn"
         class="w-full p-5 sm:px-6 sm:py-4 flex items-center justify-between text-left hover:bg-slate-900/90 transition-colors cursor-pointer"
       >
         <h2 class="text-base font-semibold text-white flex items-center gap-2">
-          <span class="inline-block w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]"></span>
-          Gemini Sourcing Search
+          <span class="inline-block w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(212,168,83,0.7)]"></span>
+          AI Sourcing Search
         </h2>
         <span id="gemini-search-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
       </button>
 
       <div id="gemini-search-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
         <p class="text-xs text-slate-400 mb-4">
-          Builds a structured watchmaker query for parts or tech sheets, copies it to your clipboard, and opens Gemini so you can paste and search.
+          Builds a structured watchmaker query for parts or tech sheets and copies it to your clipboard so you can paste it into your AI app.
         </p>
 
         <form id="gemini-search-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -135,7 +146,7 @@
           <label for="gemini-watch-select" class="block text-xs font-medium text-slate-400 mb-1">Select Watch</label>
           <select
             id="gemini-watch-select"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
           ></select>
         </div>
 
@@ -143,7 +154,7 @@
           <label for="gemini-scope" class="block text-xs font-medium text-slate-400 mb-1">What Are You Sourcing?</label>
           <select
             id="gemini-scope"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
           >
             <option value="oem-and-suppliers">Parts: OEM # &amp; Suppliers</option>
             <option value="donor-compatibility">Parts: Compatible Donors</option>
@@ -159,16 +170,16 @@
             type="text"
             required
             placeholder="e.g. Mainspring, Crown, Stem"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
           />
         </div>
 
         <div class="flex items-end">
           <button
             type="submit"
-            class="w-full rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors cursor-pointer shadow-sm"
+            class="w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors cursor-pointer shadow-sm"
           >
-            Copy &amp; Open Gemini ↗
+            Copy AI Prompt
           </button>
         </div>
       </form>
@@ -176,8 +187,8 @@
       <!-- Regulated Prompt Preview -->
       <div id="gemini-output-box" class="hidden mt-4 rounded-xl bg-slate-950/90 border border-slate-800 p-4">
         <div class="flex items-center justify-between gap-2 mb-2">
-          <span id="gemini-output-label" class="text-[11px] font-semibold uppercase tracking-wider text-sky-300">
-            Prompt Copied — Paste in Gemini
+          <span id="gemini-output-label" class="text-[11px] font-semibold uppercase tracking-wider text-amber-300">
+            Prompt Copied — Paste in Your AI App
           </span>
           <button
             type="button"
@@ -193,7 +204,7 @@
     </section>
 
     <!-- Section 4: Caliber-Linked Tech Sheets Library (Mostly Collapsed by Default) -->
-    <section class="mb-6 bg-slate-900/70 border border-slate-800/80 rounded-2xl overflow-hidden" aria-label="Tech Sheets Library">
+    <section class="mb-6 bg-slate-900/70 border border-amber-500/25 rounded-2xl overflow-hidden" aria-label="Tech Sheets Library">
       <div class="p-5 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <button
           type="button"
@@ -277,14 +288,14 @@
     </section>
 
     <!-- Section: Service Videos (Collapsed by Default) -->
-    <section class="mb-6 bg-slate-900/70 border border-rose-500/20 rounded-2xl overflow-hidden" aria-label="Service Videos">
+    <section class="mb-6 bg-slate-900/70 border border-amber-500/25 rounded-2xl overflow-hidden" aria-label="Service Videos">
       <button
         type="button"
         id="toggle-videos-btn"
         class="w-full p-5 sm:px-6 sm:py-4 flex items-center justify-between text-left hover:bg-slate-900/90 transition-colors cursor-pointer"
       >
         <h2 class="text-base font-semibold text-white flex items-center gap-2">
-          <span class="inline-block w-2 h-2 rounded-full bg-rose-400"></span>
+          <span class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
           Service Videos
         </h2>
         <span id="videos-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
@@ -295,61 +306,64 @@
           Pick a watch or movement from your collection to open targeted YouTube search results—no API key needed.
         </p>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-          <div>
-            <label for="video-watch-select" class="block text-xs font-medium text-slate-400 mb-1">Select Watch / Caliber</label>
-            <select
-              id="video-watch-select"
-              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/70"
-            ></select>
-          </div>
-
-          <div>
-            <label for="video-extra-query" class="block text-xs font-medium text-slate-400 mb-1">Topic (Optional)</label>
-            <input
-              id="video-extra-query"
-              type="text"
-              placeholder="e.g. service, disassembly, oiling"
-              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/70"
-            />
-          </div>
+        <div class="mb-3">
+          <label for="video-watch-select" class="block text-xs font-medium text-slate-400 mb-1">Select Watch / Caliber</label>
+          <select
+            id="video-watch-select"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          ></select>
         </div>
 
-        <!-- Presets above the main Search YouTube button -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-3">
+        <!-- Presets -->
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
+          Quick YouTube Searches (Tap to Open)
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-4">
           <button
             type="button"
             data-video-preset="watch service disassembly"
-            class="video-preset-btn rounded-xl border border-slate-800 bg-slate-950/60 hover:border-rose-500/40 hover:bg-slate-900 px-3.5 py-2.5 text-xs font-medium text-slate-200 flex items-center justify-between transition-colors cursor-pointer"
+            class="video-preset-btn rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 hover:border-amber-400/60 px-3.5 py-2.5 text-xs font-semibold text-amber-100 flex items-center justify-between gap-2 transition-all shadow-sm cursor-pointer"
           >
-            <span>Service &amp; Disassembly</span>
-            <span class="text-rose-300">↗</span>
+            <span class="flex items-center gap-2"><span class="text-amber-400">▶</span> Service &amp; Disassembly</span>
+            <span class="text-amber-300 text-[11px] font-bold">Open ↗</span>
           </button>
           <button
             type="button"
             data-video-preset="watch oiling reassembly"
-            class="video-preset-btn rounded-xl border border-slate-800 bg-slate-950/60 hover:border-rose-500/40 hover:bg-slate-900 px-3.5 py-2.5 text-xs font-medium text-slate-200 flex items-center justify-between transition-colors cursor-pointer"
+            class="video-preset-btn rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 hover:border-amber-400/60 px-3.5 py-2.5 text-xs font-semibold text-amber-100 flex items-center justify-between gap-2 transition-all shadow-sm cursor-pointer"
           >
-            <span>Oiling &amp; Reassembly</span>
-            <span class="text-rose-300">↗</span>
+            <span class="flex items-center gap-2"><span class="text-amber-400">▶</span> Oiling &amp; Reassembly</span>
+            <span class="text-amber-300 text-[11px] font-bold">Open ↗</span>
           </button>
           <button
             type="button"
             data-video-preset="watch regulation troubleshooting"
-            class="video-preset-btn rounded-xl border border-slate-800 bg-slate-950/60 hover:border-rose-500/40 hover:bg-slate-900 px-3.5 py-2.5 text-xs font-medium text-slate-200 flex items-center justify-between transition-colors cursor-pointer"
+            class="video-preset-btn rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 hover:border-amber-400/60 px-3.5 py-2.5 text-xs font-semibold text-amber-100 flex items-center justify-between gap-2 transition-all shadow-sm cursor-pointer"
           >
-            <span>Regulation &amp; Troubleshooting</span>
-            <span class="text-rose-300">↗</span>
+            <span class="flex items-center gap-2"><span class="text-amber-400">▶</span> Regulation &amp; Troubleshooting</span>
+            <span class="text-amber-300 text-[11px] font-bold">Open ↗</span>
           </button>
         </div>
 
-        <button
-          type="button"
-          id="video-youtube-btn"
-          class="w-full rounded-xl bg-rose-500 hover:bg-rose-400 text-slate-950 text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors shadow-sm cursor-pointer"
-        >
-          Search YouTube ↗
-        </button>
+        <div class="pt-3 border-t border-slate-800/70">
+          <div class="mb-2.5">
+            <label for="video-extra-query" class="block text-xs font-medium text-slate-400 mb-1">Or Search a Custom Topic</label>
+            <input
+              id="video-extra-query"
+              type="text"
+              placeholder="e.g. mainspring replacement, chrono reset"
+              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+            />
+          </div>
+
+          <button
+            type="button"
+            id="video-youtube-btn"
+            class="w-full rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors cursor-pointer"
+          >
+            Search Custom Topic on YouTube ↗
+          </button>
+        </div>
 
         <div id="video-link-box" class="hidden mt-3 rounded-xl bg-slate-950/80 border border-slate-800 p-3 flex items-center justify-between gap-2">
           <a
@@ -357,7 +371,7 @@
             href="#"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-xs text-rose-300 hover:text-rose-200 underline truncate"
+            class="text-xs text-amber-300 hover:text-amber-200 underline truncate"
           ></a>
           <button
             type="button"
@@ -371,7 +385,7 @@
     </section>
 
     <!-- Section 4: By the numbers (Collapsed by Default) -->
-    <section class="mb-6 bg-slate-900/70 border border-slate-800/80 rounded-2xl overflow-hidden" aria-label="By the numbers">
+    <section class="mb-6 bg-slate-900/70 border border-amber-500/25 rounded-2xl overflow-hidden" aria-label="By the numbers">
       <button
         type="button"
         id="toggle-totals-btn"
@@ -404,7 +418,7 @@
     </section>
 
     <!-- Section 5 (Bottom): Add a Watch Form (Collapsed by Default) -->
-    <section class="bg-slate-900/70 border border-slate-800/80 rounded-2xl overflow-hidden">
+    <section class="bg-slate-900/70 border border-amber-500/25 rounded-2xl overflow-hidden">
       <button
         type="button"
         id="toggle-add-watch-btn"
@@ -495,7 +509,7 @@
     </section>
 
     <!-- Section 6 (Very Bottom): Collection Count & JSON Backup -->
-    <section class="mt-6 flex flex-wrap items-center justify-between gap-3 bg-slate-900/70 border border-slate-800/80 rounded-xl px-4 py-2.5" aria-label="Backup">
+    <section class="mt-6 flex flex-wrap items-center justify-between gap-3 bg-slate-900/70 border border-amber-500/25 rounded-xl px-4 py-2.5" aria-label="Backup">
       <div class="text-xs text-slate-400">
         Collection: <span id="watch-count" class="font-semibold text-white tabular-nums">0</span>
         <span class="ml-2 text-slate-600">· Stored in IndexedDB</span>
@@ -1696,7 +1710,7 @@
       canvas.width = outW;
       canvas.height = outH;
       const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#020617";
+      ctx.fillStyle = "#121210";
       ctx.fillRect(0, 0, outW, outH);
       ctx.save();
       ctx.translate(outW / 2 + cropState.offsetX * outRatio, outH / 2 + cropState.offsetY * outRatio);
@@ -1830,11 +1844,10 @@
       const label = document.getElementById("gemini-output-label");
       const content = document.getElementById("gemini-output-content");
       box.classList.remove("hidden");
-      label.textContent = "Prompt Copied — Paste in Gemini";
+      label.textContent = "Prompt Copied — Paste in Your AI App";
       content.textContent = lastGeneratedPrompt;
 
-      window.open("https://gemini.google.com/app", "_blank", "noopener,noreferrer");
-      showStatus("Prompt copied! Paste it into your Gemini tab to search.");
+      showStatus("Prompt copied! Paste it into your AI app to search.");
     });
 
     document.getElementById("copy-prompt-btn").addEventListener("click", function () {
@@ -1852,15 +1865,6 @@
     document.getElementById("filter-select").addEventListener("change", function (event) {
       activeFilter = event.target.value;
       renderCatalog();
-    });
-
-    // Horizontal scroll buttons
-    document.getElementById("scroll-left-btn").addEventListener("click", function () {
-      document.getElementById("watch-list").scrollBy({ left: -360, behavior: "smooth" });
-    });
-
-    document.getElementById("scroll-right-btn").addEventListener("click", function () {
-      document.getElementById("watch-list").scrollBy({ left: 360, behavior: "smooth" });
     });
 
     // Export & Import JSON Backup
