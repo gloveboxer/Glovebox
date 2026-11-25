@@ -10,6 +10,9 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1916'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23d4a853' stroke-width='3.5'/%3E%3Cpath d='M32 22v10l6 4' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Pegwood%22%2C%22short_name%22%3A%22Pegwood%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23121210%22%2C%22theme_color%22%3A%22%23121210%22%7D" />
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -74,15 +77,41 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-amber-500/30 selection:text-amber-200">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 py-7 sm:py-9">
-    <!-- Minimal Brand Header -->
-    <header class="mb-6 flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shadow-sm">
-        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="5.5" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.5v2.5l1.5 1M9.5 3h5M9.5 21h5" />
-        </svg>
+    <!-- Brand Header & Account Sync -->
+    <header class="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-slate-900 border border-amber-500/30 flex items-center justify-center shadow-sm">
+          <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5.5" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.5v2.5l1.5 1M9.5 3h5M9.5 21h5" />
+          </svg>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Pegwood</h1>
       </div>
-      <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Pegwood</h1>
+
+      <div class="flex items-center gap-2">
+        <div id="signed-out-bar" class="flex items-center gap-2.5">
+          <span class="hidden sm:inline text-[11px] text-slate-400">Saved on this device</span>
+          <button
+            type="button"
+            id="open-auth-modal-btn"
+            class="rounded-xl border border-amber-500/35 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-xs font-semibold px-3.5 py-2 transition-colors cursor-pointer"
+          >
+            Sign In · Cloud Sync
+          </button>
+        </div>
+        <div id="signed-in-bar" class="hidden flex items-center gap-2 bg-slate-900 border border-amber-500/25 rounded-xl px-3 py-1.5">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="auth-user-label" class="text-xs text-slate-200 font-medium max-w-[160px] truncate"></span>
+          <button
+            type="button"
+            id="sign-out-btn"
+            class="text-xs text-slate-400 hover:text-white pl-2 border-l border-slate-700 cursor-pointer"
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
     </header>
 
     <!-- Toast / Status Message -->
@@ -512,7 +541,7 @@
     <section class="mt-6 flex flex-wrap items-center justify-between gap-3 bg-slate-900/70 border border-amber-500/25 rounded-xl px-4 py-2.5" aria-label="Backup">
       <div class="text-xs text-slate-400">
         Collection: <span id="watch-count" class="font-semibold text-white tabular-nums">0</span>
-        <span class="ml-2 text-slate-600">· Stored in IndexedDB</span>
+        <span id="storage-mode-label" class="ml-2 text-slate-500">· Stored locally (IndexedDB)</span>
       </div>
       <div class="flex items-center gap-2">
         <button
@@ -891,7 +920,195 @@
     </div>
   </div>
 
+  <!-- Firebase Auth Modal -->
+  <div
+    id="auth-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="auth-modal-title"
+  >
+    <div class="w-full max-w-md bg-slate-900 border border-amber-500/25 rounded-2xl shadow-2xl p-5 sm:p-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 id="auth-modal-title" class="text-lg font-semibold text-white">Pegwood Cloud Sync</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Optional: sign in to back up and sync across devices. Without signing in, everything stays saved locally on this device.</p>
+        </div>
+        <button
+          type="button"
+          id="close-auth-modal-btn"
+          aria-label="Close sign in dialog"
+          class="text-slate-400 hover:text-white text-lg px-2 py-1 rounded-lg hover:bg-slate-800 cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <button
+        type="button"
+        id="google-signin-btn"
+        class="w-full rounded-xl border border-slate-700 bg-slate-950/80 hover:bg-slate-800 text-white text-sm font-semibold px-4 py-2.5 transition-colors flex items-center justify-center gap-2 cursor-pointer mb-4"
+      >
+        <span>Continue with Google</span>
+      </button>
+
+      <div class="relative flex items-center justify-center mb-4">
+        <div class="border-t border-slate-800 w-full"></div>
+        <span class="bg-slate-900 px-3 text-[11px] uppercase tracking-wider text-slate-500">or</span>
+        <div class="border-t border-slate-800 w-full"></div>
+      </div>
+
+      <form id="email-auth-form" class="space-y-3">
+        <div>
+          <label for="auth-email" class="block text-xs font-medium text-slate-400 mb-1">Email</label>
+          <input
+            id="auth-email"
+            type="email"
+            required
+            placeholder="you@example.com"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+        <div>
+          <label for="auth-password" class="block text-xs font-medium text-slate-400 mb-1">Password</label>
+          <input
+            id="auth-password"
+            type="password"
+            required
+            minlength="6"
+            placeholder="At least 6 characters"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+          />
+        </div>
+
+        <p id="auth-error-msg" class="hidden text-xs text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-lg px-3 py-2"></p>
+
+        <div class="flex items-center gap-2 pt-1">
+          <button
+            type="submit"
+            class="flex-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors cursor-pointer"
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            id="create-account-btn"
+            class="flex-1 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors cursor-pointer"
+          >
+            Create Account
+          </button>
+        </div>
+
+        <div class="text-right">
+          <button
+            type="button"
+            id="forgot-password-btn"
+            class="text-xs text-slate-400 hover:text-amber-300 transition-colors cursor-pointer"
+          >
+            Forgot password?
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
+    // Firebase Configuration & Initialization
+    const firebaseConfig = {
+      apiKey: "AIzaSyCd9cJJoOGebHSCbW4xJrkUP0NuDyEgQwQ",
+      authDomain: "pegwood-91487.firebaseapp.com",
+      projectId: "pegwood-91487",
+      storageBucket: "pegwood-91487.firebasestorage.app",
+      messagingSenderId: "805592021376",
+      appId: "1:805592021376:web:770925fd9dd304a65b6965",
+      measurementId: "G-LJGXHVFZXK"
+    };
+
+    let fbAuth = null;
+    let fbDb = null;
+    let currentUser = null;
+    let cloudWatchIds = new Set();
+    let cloudTechSheetIds = new Set();
+
+    try {
+      if (window.firebase) {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+        fbAuth = firebase.auth();
+        fbDb = firebase.firestore();
+      }
+    } catch (err) {
+      // Offline or blocked fallback: continue using IndexedDB
+    }
+
+    async function syncCollectionToFirestore(subcollection, items, trackedIdsSet) {
+      if (!fbDb || !currentUser) return;
+      const colRef = fbDb.collection("users").doc(currentUser.uid).collection(subcollection);
+      const currentIds = new Set(items.map((item) => String(item.id)));
+
+      const ops = [];
+      items.forEach((item) => {
+        const docId = String(item.id);
+        const payload = JSON.parse(JSON.stringify(item));
+        const approxSize = JSON.stringify(payload).length;
+        if (approxSize > 950000) {
+          showStatus("Item '" + (item.title || item.brand || docId) + "' is over 950 KB; saved locally only.", true);
+          return;
+        }
+        ops.push(colRef.doc(docId).set(payload));
+      });
+
+      trackedIdsSet.forEach((oldId) => {
+        if (!currentIds.has(oldId)) {
+          ops.push(colRef.doc(oldId).delete());
+        }
+      });
+
+      try {
+        await Promise.all(ops);
+        trackedIdsSet.clear();
+        currentIds.forEach((id) => trackedIdsSet.add(id));
+      } catch (err) {
+        showStatus("Cloud sync failed (" + err.message + "). Saved locally.", true);
+      }
+    }
+
+    async function loadCloudDataForUser(user) {
+      if (!fbDb || !user) return;
+      try {
+        const userDoc = fbDb.collection("users").doc(user.uid);
+        const [watchSnap, tsSnap] = await Promise.all([
+          userDoc.collection("watches").get(),
+          userDoc.collection("techSheets").get()
+        ]);
+
+        const cloudWatches = watchSnap.docs.map((d) => d.data());
+        const cloudSheets = tsSnap.docs.map((d) => d.data());
+
+        if (cloudWatches.length === 0 && cloudSheets.length === 0 && (watches.length > 0 || techSheets.length > 0)) {
+          // First-time sign in with existing local data: push local catalog to cloud
+          await Promise.all([
+            syncCollectionToFirestore("watches", watches, cloudWatchIds),
+            syncCollectionToFirestore("techSheets", techSheets, cloudTechSheetIds)
+          ]);
+          showStatus("Synced your local catalog to your cloud account!");
+        } else {
+          watches = cloudWatches.sort((a, b) => (b.id || 0) - (a.id || 0));
+          techSheets = cloudSheets.sort((a, b) => (b.id || 0) - (a.id || 0));
+          cloudWatchIds = new Set(watches.map((w) => String(w.id)));
+          cloudTechSheetIds = new Set(techSheets.map((t) => String(t.id)));
+          await saveWatchesToDB(watches);
+          await saveTechSheetsToDB(techSheets);
+          recomputeNextId();
+          renderTechSheets();
+          renderCatalog();
+        }
+      } catch (err) {
+        showStatus("Could not load cloud catalog: " + err.message, true);
+      }
+    }
+
     const LEGACY_STORAGE_KEY = "watch_restoration_catalog_v1";
     const IDB_NAME = "glovebox_db";
     const IDB_STORE = "catalog";
@@ -996,6 +1213,9 @@
 
     function saveWatches() {
       saveWatchesToDB(watches);
+      if (currentUser) {
+        syncCollectionToFirestore("watches", watches, cloudWatchIds);
+      }
     }
 
     async function loadTechSheetsFromDB() {
@@ -1032,6 +1252,9 @@
 
     function saveTechSheets() {
       saveTechSheetsToDB(techSheets);
+      if (currentUser) {
+        syncCollectionToFirestore("techSheets", techSheets, cloudTechSheetIds);
+      }
     }
 
     let watches = defaultWatches;
@@ -2684,13 +2907,141 @@
       }
     });
 
-    // Boot: Load from IndexedDB
+    // Auth Modal & Firebase Auth State
+    function showAuthError(msg) {
+      const el = document.getElementById("auth-error-msg");
+      if (!el) return;
+      if (msg) {
+        el.textContent = msg;
+        el.classList.remove("hidden");
+      } else {
+        el.classList.add("hidden");
+      }
+    }
+
+    function openAuthModal() {
+      showAuthError("");
+      document.getElementById("auth-modal").classList.remove("hidden");
+    }
+
+    function closeAuthModal() {
+      document.getElementById("auth-modal").classList.add("hidden");
+    }
+
+    document.getElementById("open-auth-modal-btn").addEventListener("click", openAuthModal);
+    document.getElementById("close-auth-modal-btn").addEventListener("click", closeAuthModal);
+    document.getElementById("auth-modal").addEventListener("click", function (e) {
+      if (e.target === this) closeAuthModal();
+    });
+
+    document.getElementById("google-signin-btn").addEventListener("click", async function () {
+      if (!fbAuth) {
+        showAuthError("Firebase is unavailable offline.");
+        return;
+      }
+      showAuthError("");
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await fbAuth.signInWithPopup(provider);
+        closeAuthModal();
+      } catch (err) {
+        if (err.code === "auth/popup-blocked") {
+          fbAuth.signInWithRedirect(provider);
+        } else {
+          showAuthError(err.message);
+        }
+      }
+    });
+
+    document.getElementById("email-auth-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      if (!fbAuth) return;
+      showAuthError("");
+      const email = document.getElementById("auth-email").value.trim();
+      const pass = document.getElementById("auth-password").value;
+      try {
+        await fbAuth.signInWithEmailAndPassword(email, pass);
+        closeAuthModal();
+      } catch (err) {
+        showAuthError(err.message);
+      }
+    });
+
+    document.getElementById("create-account-btn").addEventListener("click", async function () {
+      if (!fbAuth) return;
+      showAuthError("");
+      const email = document.getElementById("auth-email").value.trim();
+      const pass = document.getElementById("auth-password").value;
+      if (!email || pass.length < 6) {
+        showAuthError("Enter a valid email and a password of at least 6 characters.");
+        return;
+      }
+      try {
+        await fbAuth.createUserWithEmailAndPassword(email, pass);
+        closeAuthModal();
+      } catch (err) {
+        showAuthError(err.message);
+      }
+    });
+
+    document.getElementById("forgot-password-btn").addEventListener("click", async function () {
+      if (!fbAuth) return;
+      const email = document.getElementById("auth-email").value.trim();
+      if (!email) {
+        showAuthError("Enter your email above first, then click Forgot password.");
+        return;
+      }
+      try {
+        await fbAuth.sendPasswordResetEmail(email);
+        showAuthError("");
+        closeAuthModal();
+        showStatus("Password reset email sent to " + email + ".");
+      } catch (err) {
+        showAuthError(err.message);
+      }
+    });
+
+    document.getElementById("sign-out-btn").addEventListener("click", async function () {
+      if (!fbAuth) return;
+      await fbAuth.signOut();
+      showStatus("Signed out. Viewing local catalog.");
+    });
+
+    function updateAuthUI(user) {
+      const signedOutBar = document.getElementById("signed-out-bar");
+      const signedInBar = document.getElementById("signed-in-bar");
+      const label = document.getElementById("auth-user-label");
+      const storageLabel = document.getElementById("storage-mode-label");
+
+      if (user) {
+        signedOutBar.classList.add("hidden");
+        signedInBar.classList.remove("hidden");
+        label.textContent = user.email || user.displayName || "Signed In";
+        if (storageLabel) storageLabel.textContent = "· Synced to Cloud";
+      } else {
+        signedOutBar.classList.remove("hidden");
+        signedInBar.classList.add("hidden");
+        if (storageLabel) storageLabel.textContent = "· Stored locally on this device";
+      }
+    }
+
+    // Boot: Load from IndexedDB, then attach Firebase Auth listener
     (async function initApp() {
       watches = await loadWatchesFromDB();
       techSheets = await loadTechSheetsFromDB();
       recomputeNextId();
       renderTechSheets();
       renderCatalog();
+
+      if (fbAuth) {
+        fbAuth.onAuthStateChanged(async (user) => {
+          currentUser = user || null;
+          updateAuthUI(currentUser);
+          if (currentUser) {
+            await loadCloudDataForUser(currentUser);
+          }
+        });
+      }
     })();
   </script>
 </body>
