@@ -13,6 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -3145,16 +3146,22 @@
 
     let activeTechSheetBlobUrl = "";
     let tsViewerIsFullscreen = false;
+    let activePdfRenderToken = 0;
+
+    function dataUrlToUint8Array(dataUrl) {
+      const parts = dataUrl.split(",");
+      const bin = atob(parts[1] || "");
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return arr;
+    }
 
     function dataUrlToBlobUrl(dataUrl) {
       try {
         const parts = dataUrl.split(",");
         const mimeMatch = parts[0].match(/:(.*?);/);
         const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
-        const bin = atob(parts[1]);
-        const len = bin.length;
-        const arr = new Uint8Array(len);
-        for (let i = 0; i < len; i++) arr[i] = bin.charCodeAt(i);
+        const arr = dataUrlToUint8Array(dataUrl);
         return URL.createObjectURL(new Blob([arr], { type: mime }));
       } catch (err) {
         return dataUrl;
@@ -3178,6 +3185,7 @@
     }
 
     function closeTechSheetViewer() {
+      activePdfRenderToken++;
       if (document.fullscreenElement && document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
       }
@@ -3190,9 +3198,77 @@
       activeTechSheetBlobUrl = "";
     }
 
+    async function renderPdfPagesInViewer(ts, token) {
+      const body = document.getElementById("ts-viewer-body");
+      const pdfLib = window.pdfjsLib || window["pdfjs-dist/build/pdf"];
+      if (!pdfLib) {
+        body.innerHTML = `
+          <div class="p-6 text-center">
+            <p class="text-sm text-slate-200 mb-3">PDF renderer is still loading or unavailable offline.</p>
+            <a href="${activeTechSheetBlobUrl}" target="_blank" rel="noopener noreferrer" class="inline-block rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-4 py-2.5">Open Native Viewer ↗</a>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        pdfLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        const pdfDoc = await pdfLib.getDocument({ data: dataUrlToUint8Array(ts.fileData) }).promise;
+        if (token !== activePdfRenderToken) return;
+
+        body.className = "flex-1 min-h-[60vh] overflow-y-auto rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-start p-2 sm:p-4 gap-3";
+        body.innerHTML = "";
+
+        const containerWidth = Math.max(280, body.clientWidth - 24);
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+          if (token !== activePdfRenderToken) return;
+          const page = await pdfDoc.getPage(pageNum);
+          if (token !== activePdfRenderToken) return;
+
+          const baseViewport = page.getViewport({ scale: 1 });
+          const cssScale = containerWidth / baseViewport.width;
+          const renderViewport = page.getViewport({ scale: cssScale * dpr });
+
+          const pageWrap = document.createElement("div");
+          pageWrap.className = "w-full flex flex-col items-center gap-1";
+
+          const pageLabel = document.createElement("span");
+          pageLabel.className = "text-[10px] font-medium text-slate-500 uppercase tracking-wider";
+          pageLabel.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
+          pageWrap.appendChild(pageLabel);
+
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.floor(renderViewport.width);
+          canvas.height = Math.floor(renderViewport.height);
+          canvas.style.width = "100%";
+          canvas.style.height = "auto";
+          canvas.className = "rounded-lg shadow-lg bg-white max-w-full";
+          pageWrap.appendChild(canvas);
+          body.appendChild(pageWrap);
+
+          const ctx = canvas.getContext("2d");
+          await page.render({ canvasContext: ctx, viewport: renderViewport }).promise;
+        }
+      } catch (err) {
+        if (token !== activePdfRenderToken) return;
+        body.className = "flex-1 min-h-[60vh] overflow-auto rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center";
+        body.innerHTML = `
+          <div class="p-6 text-center">
+            <p class="text-sm text-rose-300 mb-3">Could not render PDF inline (${escapeHtml(err.message || "error")}).</p>
+            <a href="${activeTechSheetBlobUrl}" target="_blank" rel="noopener noreferrer" class="inline-block rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-4 py-2.5">Open Native Viewer ↗</a>
+          </div>
+        `;
+      }
+    }
+
     function openTechSheetViewer(tsId) {
       const ts = techSheets.find((t) => t.id === tsId);
       if (!ts || !ts.fileData) return;
+
+      activePdfRenderToken++;
+      const token = activePdfRenderToken;
 
       if (activeTechSheetBlobUrl && activeTechSheetBlobUrl.startsWith("blob:")) {
         URL.revokeObjectURL(activeTechSheetBlobUrl);
@@ -3205,17 +3281,20 @@
       const openTab = document.getElementById("ts-viewer-open-tab");
       const body = document.getElementById("ts-viewer-body");
 
+      setTsViewerFullscreen(false);
+      document.getElementById("techsheet-viewer-modal").classList.remove("hidden");
+
       if (ts.fileType === "pdf") {
         openTab.href = activeTechSheetBlobUrl;
         openTab.classList.remove("hidden");
-        body.innerHTML = `<iframe src="${activeTechSheetBlobUrl}" title="${escapeHtml(ts.title)}" class="w-full flex-1 min-h-[68vh] rounded-xl bg-white"></iframe>`;
+        body.className = "flex-1 min-h-[60vh] overflow-auto rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center";
+        body.innerHTML = '<p class="text-xs text-slate-400 p-6">Rendering PDF pages...</p>';
+        renderPdfPagesInViewer(ts, token);
       } else {
         openTab.classList.add("hidden");
+        body.className = "flex-1 min-h-[60vh] overflow-auto rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center";
         body.innerHTML = `<img src="${activeTechSheetBlobUrl}" alt="${escapeHtml(ts.title)}" class="max-h-full max-w-full object-contain rounded-xl" />`;
       }
-
-      setTsViewerFullscreen(false);
-      document.getElementById("techsheet-viewer-modal").classList.remove("hidden");
     }
 
     document.getElementById("ts-viewer-fullscreen-btn").addEventListener("click", function () {
