@@ -1042,22 +1042,55 @@
       // Offline or blocked fallback: continue using IndexedDB
     }
 
+    function shrinkDataUrl(dataUrl, maxDim = 600, quality = 0.72) {
+      return new Promise((resolve) => {
+        if (!dataUrl || !dataUrl.startsWith("data:image/")) {
+          resolve(dataUrl);
+          return;
+        }
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+      });
+    }
+
     async function syncCollectionToFirestore(subcollection, items, trackedIdsSet) {
       if (!fbDb || !currentUser) return;
       const colRef = fbDb.collection("users").doc(currentUser.uid).collection(subcollection);
       const currentIds = new Set(items.map((item) => String(item.id)));
 
       const ops = [];
-      items.forEach((item) => {
+      for (const item of items) {
         const docId = String(item.id);
         const payload = JSON.parse(JSON.stringify(item));
-        const approxSize = JSON.stringify(payload).length;
-        if (approxSize > 950000) {
+        if (JSON.stringify(payload).length > 900000) {
+          if (payload.image) payload.image = await shrinkDataUrl(payload.image, 560, 0.7);
+          if (payload.beforeImage) payload.beforeImage = await shrinkDataUrl(payload.beforeImage, 560, 0.7);
+        }
+        if (JSON.stringify(payload).length > 950000) {
           showStatus("Item '" + (item.title || item.brand || docId) + "' is over 950 KB; saved locally only.", true);
-          return;
+          continue;
         }
         ops.push(colRef.doc(docId).set(payload));
-      });
+      }
 
       trackedIdsSet.forEach((oldId) => {
         if (!currentIds.has(oldId)) {
@@ -1074,6 +1107,26 @@
       }
     }
 
+    function mergeLocalAndCloud(localItems, cloudItems, skipDefaultIdOne) {
+      const map = new Map();
+      cloudItems.forEach((item) => map.set(String(item.id), item));
+      let addedLocal = 0;
+      localItems.forEach((item) => {
+        const key = String(item.id);
+        if (skipDefaultIdOne && cloudItems.length > 0 && item.id === 1 && item.brand === "Seiko" && item.ref === "6139-6002") {
+          return;
+        }
+        if (!map.has(key)) {
+          map.set(key, item);
+          addedLocal++;
+        }
+      });
+      return {
+        merged: Array.from(map.values()).sort((a, b) => (b.id || 0) - (a.id || 0)),
+        addedLocal
+      };
+    }
+
     async function loadCloudDataForUser(user) {
       if (!fbDb || !user) return;
       try {
@@ -1086,23 +1139,30 @@
         const cloudWatches = watchSnap.docs.map((d) => d.data());
         const cloudSheets = tsSnap.docs.map((d) => d.data());
 
-        if (cloudWatches.length === 0 && cloudSheets.length === 0 && (watches.length > 0 || techSheets.length > 0)) {
-          // First-time sign in with existing local data: push local catalog to cloud
-          await Promise.all([
-            syncCollectionToFirestore("watches", watches, cloudWatchIds),
-            syncCollectionToFirestore("techSheets", techSheets, cloudTechSheetIds)
-          ]);
-          showStatus("Synced your local catalog to your cloud account!");
-        } else {
-          watches = cloudWatches.sort((a, b) => (b.id || 0) - (a.id || 0));
-          techSheets = cloudSheets.sort((a, b) => (b.id || 0) - (a.id || 0));
-          cloudWatchIds = new Set(watches.map((w) => String(w.id)));
-          cloudTechSheetIds = new Set(techSheets.map((t) => String(t.id)));
-          await saveWatchesToDB(watches);
-          await saveTechSheetsToDB(techSheets);
-          recomputeNextId();
-          renderTechSheets();
-          renderCatalog();
+        const watchMerge = mergeLocalAndCloud(watches, cloudWatches, true);
+        const tsMerge = mergeLocalAndCloud(techSheets, cloudSheets, false);
+
+        watches = watchMerge.merged;
+        techSheets = tsMerge.merged;
+
+        cloudWatchIds = new Set(cloudWatches.map((w) => String(w.id)));
+        cloudTechSheetIds = new Set(cloudSheets.map((t) => String(t.id)));
+
+        if (watchMerge.addedLocal > 0) {
+          await syncCollectionToFirestore("watches", watches, cloudWatchIds);
+        }
+        if (tsMerge.addedLocal > 0) {
+          await syncCollectionToFirestore("techSheets", techSheets, cloudTechSheetIds);
+        }
+
+        await saveWatchesToDB(watches);
+        await saveTechSheetsToDB(techSheets);
+        recomputeNextId();
+        renderTechSheets();
+        renderCatalog();
+
+        if (watchMerge.addedLocal > 0 || tsMerge.addedLocal > 0) {
+          showStatus("Merged local and cloud catalogs!");
         }
       } catch (err) {
         showStatus("Could not load cloud catalog: " + err.message, true);
