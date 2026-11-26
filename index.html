@@ -151,190 +151,6 @@
       ></div>
     </section>
 
-    <!-- Section 2 (Below Horizontal Scroll): Regulated Gemini Sourcing Search (Collapsed by Default) -->
-    <section class="bg-slate-900/70 border border-amber-500/25 rounded-2xl shadow-sm mb-8 overflow-hidden" aria-label="AI Sourcing Search">
-      <button
-        type="button"
-        id="toggle-gemini-search-btn"
-        class="w-full p-5 sm:px-6 sm:py-4 flex items-center justify-between text-left hover:bg-slate-900/90 transition-colors cursor-pointer"
-      >
-        <h2 class="text-base font-semibold text-white flex items-center gap-2.5">
-          <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="7" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="m20 20-3.5-3.5" />
-          </svg>
-          AI Sourcing Search
-        </h2>
-        <span id="gemini-search-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
-      </button>
-
-      <div id="gemini-search-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
-        <p class="text-xs text-slate-400 mb-4">
-          Builds a structured watchmaker query for parts or tech sheets and copies it to your clipboard so you can paste it into your AI app.
-        </p>
-
-        <form id="gemini-search-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <div>
-          <label for="gemini-watch-select" class="block text-xs font-medium text-slate-400 mb-1">Select Watch</label>
-          <select
-            id="gemini-watch-select"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          ></select>
-        </div>
-
-        <div>
-          <label for="gemini-scope" class="block text-xs font-medium text-slate-400 mb-1">What Are You Sourcing?</label>
-          <select
-            id="gemini-scope"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          >
-            <option value="oem-and-suppliers">Parts: OEM # &amp; Suppliers</option>
-            <option value="donor-compatibility">Parts: Compatible Donors</option>
-            <option value="dimensions-specs">Parts: Dimensions &amp; Specs</option>
-            <option value="tech-sheet">Tech Sheet / Oiling Chart</option>
-          </select>
-        </div>
-
-        <div>
-          <label id="gemini-query-label" for="gemini-part-query" class="block text-xs font-medium text-slate-400 mb-1">Part Needed *</label>
-          <input
-            id="gemini-part-query"
-            type="text"
-            required
-            placeholder="e.g. Mainspring, Crown, Stem"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
-
-        <div class="flex items-end">
-          <button
-            type="submit"
-            class="w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors cursor-pointer shadow-sm"
-          >
-            Copy AI Prompt
-          </button>
-        </div>
-      </form>
-
-      <!-- Regulated Prompt Preview -->
-      <div id="gemini-output-box" class="hidden mt-4 rounded-xl bg-slate-950/90 border border-slate-800 p-4">
-        <div class="flex items-center justify-between gap-2 mb-2">
-          <span id="gemini-output-label" class="text-[11px] font-semibold uppercase tracking-wider text-amber-300">
-            Prompt Copied — Paste in Your AI App
-          </span>
-          <button
-            type="button"
-            id="copy-prompt-btn"
-            class="text-xs text-slate-400 hover:text-white border border-slate-800 bg-slate-900 rounded-lg px-2.5 py-1 transition-colors cursor-pointer"
-          >
-            Copy Prompt
-          </button>
-        </div>
-        <div id="gemini-output-content" class="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed"></div>
-      </div>
-      </div>
-    </section>
-
-    <!-- Section: Service Videos (Collapsed by Default) -->
-    <section class="mb-6 bg-slate-900/70 border border-amber-500/25 rounded-2xl overflow-hidden" aria-label="Service Videos">
-      <button
-        type="button"
-        id="toggle-videos-btn"
-        class="w-full p-5 sm:px-6 sm:py-4 flex items-center justify-between text-left hover:bg-slate-900/90 transition-colors cursor-pointer"
-      >
-        <h2 class="text-base font-semibold text-white flex items-center gap-2.5">
-          <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 8.5v7l6-3.5-6-3.5Z" />
-          </svg>
-          Service Videos
-        </h2>
-        <span id="videos-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
-      </button>
-
-      <div id="videos-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
-        <p class="text-xs text-slate-400 mb-4">
-          Pick a watch or movement from your collection to open targeted YouTube search results—no API key needed.
-        </p>
-
-        <div class="mb-3">
-          <label for="video-watch-select" class="block text-xs font-medium text-slate-400 mb-1">Select Watch / Caliber</label>
-          <select
-            id="video-watch-select"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          ></select>
-        </div>
-
-        <!-- Presets -->
-        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
-          Quick YouTube Searches (Tap to Open)
-        </p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-4">
-          <button
-            type="button"
-            data-video-preset="watch service disassembly"
-            class="video-preset-btn rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 hover:border-amber-400/60 px-3.5 py-2.5 text-xs font-semibold text-amber-100 flex items-center justify-between gap-2 transition-all shadow-sm cursor-pointer"
-          >
-            <span class="flex items-center gap-2"><span class="text-amber-400">▶</span> Service &amp; Disassembly</span>
-            <span class="text-amber-300 text-[11px] font-bold">Open ↗</span>
-          </button>
-          <button
-            type="button"
-            data-video-preset="watch oiling reassembly"
-            class="video-preset-btn rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 hover:border-amber-400/60 px-3.5 py-2.5 text-xs font-semibold text-amber-100 flex items-center justify-between gap-2 transition-all shadow-sm cursor-pointer"
-          >
-            <span class="flex items-center gap-2"><span class="text-amber-400">▶</span> Oiling &amp; Reassembly</span>
-            <span class="text-amber-300 text-[11px] font-bold">Open ↗</span>
-          </button>
-          <button
-            type="button"
-            data-video-preset="watch regulation troubleshooting"
-            class="video-preset-btn rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 hover:border-amber-400/60 px-3.5 py-2.5 text-xs font-semibold text-amber-100 flex items-center justify-between gap-2 transition-all shadow-sm cursor-pointer"
-          >
-            <span class="flex items-center gap-2"><span class="text-amber-400">▶</span> Regulation &amp; Troubleshooting</span>
-            <span class="text-amber-300 text-[11px] font-bold">Open ↗</span>
-          </button>
-        </div>
-
-        <div class="pt-3 border-t border-slate-800/70">
-          <div class="mb-2.5">
-            <label for="video-extra-query" class="block text-xs font-medium text-slate-400 mb-1">Or Search a Custom Topic</label>
-            <input
-              id="video-extra-query"
-              type="text"
-              placeholder="e.g. mainspring replacement, chrono reset"
-              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-            />
-          </div>
-
-          <button
-            type="button"
-            id="video-youtube-btn"
-            class="w-full rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors cursor-pointer"
-          >
-            Search Custom Topic on YouTube ↗
-          </button>
-        </div>
-
-        <div id="video-link-box" class="hidden mt-3 rounded-xl bg-slate-950/80 border border-slate-800 p-3 flex items-center justify-between gap-2">
-          <a
-            id="video-direct-link"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-xs text-amber-300 hover:text-amber-200 underline truncate"
-          ></a>
-          <button
-            type="button"
-            id="copy-video-link-btn"
-            class="text-[11px] text-slate-300 hover:text-white border border-slate-700 bg-slate-900 rounded-lg px-2.5 py-1 shrink-0 cursor-pointer"
-          >
-            Copy Link
-          </button>
-        </div>
-      </div>
-    </section>
-
     <!-- Section 4: By the numbers (Collapsed by Default) -->
     <section class="mb-6 bg-slate-900/70 border border-amber-500/25 rounded-2xl overflow-hidden" aria-label="By the numbers">
       <button
@@ -348,7 +164,7 @@
           </svg>
           By the numbers
         </h2>
-        <span id="totals-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
+        <svg id="totals-chevron" class="w-4 h-4 text-slate-400 transition-all duration-300 shrink-0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.0" /><circle cx="12" cy="12" r="2.2" /><path d="M19.0 12.0L21.9 14.5L21.0 15.8M17.7 16.1L18.6 19.8L17.0 20.4M14.2 18.7L12.7 22.2L11.1 21.8M9.8 18.7L6.6 20.7L5.6 19.4M6.3 16.1L2.5 15.8L2.5 14.2M5.0 12.0L2.1 9.5L3.0 8.2M6.3 7.9L5.4 4.2L7.0 3.6M9.8 5.3L11.3 1.8L12.9 2.2M14.2 5.3L17.4 3.3L18.4 4.6M17.7 7.9L21.5 8.2L21.5 9.8M12.0 9.8L12.0 5.0M13.9 13.1L18.1 15.5M10.1 13.1L5.9 15.5" /></svg>
       </button>
 
       <div id="totals-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
@@ -387,7 +203,7 @@
           </svg>
           Spare Parts Inventory (<span id="spare-parts-count" class="tabular-nums">0</span>)
         </h2>
-        <span id="spares-chevron" class="text-xs text-slate-400 transition-transform duration-200">▾</span>
+        <svg id="spares-chevron" class="w-4 h-4 text-slate-400 transition-all duration-300 shrink-0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.0" /><circle cx="12" cy="12" r="2.2" /><path d="M19.0 12.0L21.9 14.5L21.0 15.8M17.7 16.1L18.6 19.8L17.0 20.4M14.2 18.7L12.7 22.2L11.1 21.8M9.8 18.7L6.6 20.7L5.6 19.4M6.3 16.1L2.5 15.8L2.5 14.2M5.0 12.0L2.1 9.5L3.0 8.2M6.3 7.9L5.4 4.2L7.0 3.6M9.8 5.3L11.3 1.8L12.9 2.2M14.2 5.3L17.4 3.3L18.4 4.6M17.7 7.9L21.5 8.2L21.5 9.8M12.0 9.8L12.0 5.0M13.9 13.1L18.1 15.5M10.1 13.1L5.9 15.5" /></svg>
       </button>
 
       <div id="spares-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
@@ -425,7 +241,7 @@
           </svg>
           Add a Watch to Your Bench
         </h2>
-        <span id="add-watch-chevron" class="text-xs text-slate-950 font-bold transition-transform duration-200">▾</span>
+        <svg id="add-watch-chevron" class="w-4 h-4 text-slate-950 transition-all duration-300 shrink-0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.0" /><circle cx="12" cy="12" r="2.2" /><path d="M19.0 12.0L21.9 14.5L21.0 15.8M17.7 16.1L18.6 19.8L17.0 20.4M14.2 18.7L12.7 22.2L11.1 21.8M9.8 18.7L6.6 20.7L5.6 19.4M6.3 16.1L2.5 15.8L2.5 14.2M5.0 12.0L2.1 9.5L3.0 8.2M6.3 7.9L5.4 4.2L7.0 3.6M9.8 5.3L11.3 1.8L12.9 2.2M14.2 5.3L17.4 3.3L18.4 4.6M17.7 7.9L21.5 8.2L21.5 9.8M12.0 9.8L12.0 5.0M13.9 13.1L18.1 15.5M10.1 13.1L5.9 15.5" /></svg>
       </button>
 
       <div id="add-watch-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
@@ -464,6 +280,25 @@
               <option value="Testing">Testing</option>
               <option value="Listed">Listed</option>
               <option value="Sold">Sold</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="watch-case-size" class="block text-xs font-medium text-slate-400 mb-1">Case Size</label>
+            <input id="watch-case-size" type="text" placeholder="e.g. 39mm" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div>
+            <label for="watch-case-material" class="block text-xs font-medium text-slate-400 mb-1">Case Material</label>
+            <input id="watch-case-material" type="text" placeholder="e.g. Stainless Steel" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          </div>
+
+          <div>
+            <label for="watch-band-type" class="block text-xs font-medium text-slate-400 mb-1">Bracelet / Strap</label>
+            <select id="watch-band-type" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70">
+              <option value="">Select...</option>
+              <option value="Bracelet">Bracelet</option>
+              <option value="Strap">Strap</option>
             </select>
           </div>
 
@@ -547,7 +382,7 @@
           aria-label="Close edit dialog"
           class="text-slate-400 hover:text-white text-lg px-2 py-1 rounded-lg hover:bg-slate-800 cursor-pointer"
         >
-          ✕
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </div>
 
@@ -588,6 +423,25 @@
             <option value="Testing">Testing</option>
             <option value="Listed">Listed</option>
             <option value="Sold">Sold</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="edit-watch-case-size" class="block text-xs font-medium text-slate-400 mb-1">Case Size</label>
+          <input id="edit-watch-case-size" type="text" placeholder="e.g. 39mm" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+        </div>
+
+        <div>
+          <label for="edit-watch-case-material" class="block text-xs font-medium text-slate-400 mb-1">Case Material</label>
+          <input id="edit-watch-case-material" type="text" placeholder="e.g. Stainless Steel" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="edit-watch-band-type" class="block text-xs font-medium text-slate-400 mb-1">Bracelet / Strap</label>
+          <select id="edit-watch-band-type" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70">
+            <option value="">Unspecified</option>
+            <option value="Bracelet">Bracelet</option>
+            <option value="Strap">Strap</option>
           </select>
         </div>
 
@@ -689,7 +543,7 @@
           id="close-lightbox-btn"
           class="text-slate-300 hover:text-white bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-medium cursor-pointer"
         >
-          Close ✕
+          <span class="inline-flex items-center gap-1.5">Close <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg></span>
         </button>
       </div>
       <div class="relative inline-flex items-center justify-center">
@@ -719,7 +573,7 @@
           aria-label="Cancel photo crop"
           class="text-slate-400 hover:text-white text-base px-2 py-1 rounded-lg hover:bg-slate-800 cursor-pointer"
         >
-          ✕
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </div>
 
@@ -795,7 +649,7 @@
             id="ts-viewer-fullscreen-btn"
             class="rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-sky-200 text-xs font-semibold px-3 py-1.5 transition-colors cursor-pointer"
           >
-            ⛶ Full Screen
+            <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg> Full Screen</span>
           </button>
           <a
             id="ts-viewer-open-tab"
@@ -806,20 +660,12 @@
           >
             Open Native Viewer ↗
           </a>
-          <a
-            id="ts-viewer-download"
-            href="#"
-            download="tech-sheet"
-            class="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors"
-          >
-            Save Copy
-          </a>
           <button
             type="button"
             id="close-ts-viewer-btn"
             class="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 cursor-pointer"
           >
-            Close ✕
+            <span class="inline-flex items-center gap-1.5">Close <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg></span>
           </button>
         </div>
       </div>
@@ -847,7 +693,7 @@
           aria-label="Close listing generator"
           class="text-slate-400 hover:text-white text-lg px-2 py-1 rounded-lg hover:bg-slate-800 cursor-pointer"
         >
-          ✕
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </div>
 
@@ -911,7 +757,7 @@
           aria-label="Close attach guide dialog"
           class="text-slate-400 hover:text-white text-lg px-2 py-1 rounded-lg hover:bg-slate-800 cursor-pointer"
         >
-          ✕
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </div>
 
@@ -990,6 +836,137 @@
     </div>
   </div>
 
+  <!-- Contextual AI Sourcing Search Modal -->
+  <div
+    id="ai-search-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ai-modal-title"
+  >
+    <div class="w-full max-w-lg bg-slate-900 border border-amber-500/25 rounded-2xl shadow-2xl p-5 sm:p-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 id="ai-modal-title" class="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <g transform="translate(-1 1) rotate(-24 11 12)">
+                <ellipse cx="11" cy="7.5" rx="6.5" ry="3.4" />
+                <ellipse cx="11" cy="7.5" rx="4.2" ry="2" />
+                <path d="M4.8 10.1c2 1.9 10.4 1.9 12.4 0" />
+                <path d="M4.5 7.8v2c0 2.4-1.3 4.8-1.6 6.8 2.2 2.2 13.8 2.2 16 0-.3-2-1.6-4.4-1.6-6.8v-2" />
+              </g>
+              <path d="M19.5 3.5v4M17.5 5.5h4" />
+            </svg>
+            AI Sourcing Search
+          </h2>
+          <p id="ai-watch-subtitle" class="text-xs text-amber-300 mt-0.5"></p>
+        </div>
+        <button type="button" id="close-ai-modal-btn" aria-label="Close AI search" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400 mb-3">
+        Builds a structured watchmaker prompt using this watch's brand, caliber, and reference, and copies it to your clipboard.
+      </p>
+
+      <form id="gemini-search-form" class="space-y-3">
+        <div>
+          <label for="gemini-scope" class="block text-xs font-medium text-slate-400 mb-1">What Are You Sourcing?</label>
+          <select id="gemini-scope" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70">
+            <option value="oem-and-suppliers">Parts: OEM # &amp; Suppliers</option>
+            <option value="donor-compatibility">Parts: Compatible Donors</option>
+            <option value="dimensions-specs">Parts: Dimensions &amp; Specs</option>
+            <option value="tech-sheet">Tech Sheet / Oiling Chart</option>
+          </select>
+        </div>
+
+        <div>
+          <label id="gemini-query-label" for="gemini-part-query" class="block text-xs font-medium text-slate-400 mb-1">Part Needed *</label>
+          <input id="gemini-part-query" type="text" required placeholder="e.g. Mainspring, Crown, Stem" class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+        </div>
+
+        <button type="submit" class="w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-semibold px-4 py-2.5 transition-colors cursor-pointer shadow-sm">
+          Copy AI Prompt
+        </button>
+      </form>
+
+      <div id="gemini-output-box" class="hidden mt-4 rounded-xl bg-slate-950/90 border border-slate-800 p-4">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span id="gemini-output-label" class="text-[11px] font-semibold uppercase tracking-wider text-amber-300">
+            Prompt Copied — Paste in Your AI App
+          </span>
+          <button type="button" id="copy-prompt-btn" class="text-xs text-slate-400 hover:text-white border border-slate-800 bg-slate-900 rounded-lg px-2.5 py-1 transition-colors cursor-pointer">
+            Copy Prompt
+          </button>
+        </div>
+        <div id="gemini-output-content" class="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contextual Service Videos Modal -->
+  <div
+    id="video-search-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="video-modal-title"
+  >
+    <div class="w-full max-w-lg bg-slate-900 border border-amber-500/25 rounded-2xl shadow-2xl p-5 sm:p-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 id="video-modal-title" class="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 8.5v7l6-3.5-6-3.5Z" />
+            </svg>
+            Service Videos
+          </h2>
+          <p id="video-watch-subtitle" class="text-xs text-amber-300 mt-0.5"></p>
+        </div>
+        <button type="button" id="close-video-modal-btn" aria-label="Close service videos" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
+        Quick YouTube Searches (Tap to Open)
+      </p>
+      <div class="grid grid-cols-1 gap-2 mb-4">
+        <button type="button" data-video-preset="watch service disassembly" class="video-preset-btn rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 hover:border-amber-400/60 px-3.5 py-2.5 text-xs font-semibold text-amber-100 flex items-center justify-between gap-2 transition-all shadow-sm cursor-pointer">
+          <span class="flex items-center gap-2"><span class="text-amber-400">▶</span> Service &amp; Disassembly</span>
+          <span class="text-amber-300 text-[11px] font-bold">Open ↗</span>
+        </button>
+        <button type="button" data-video-preset="watch oiling reassembly" class="video-preset-btn rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 hover:border-amber-400/60 px-3.5 py-2.5 text-xs font-semibold text-amber-100 flex items-center justify-between gap-2 transition-all shadow-sm cursor-pointer">
+          <span class="flex items-center gap-2"><span class="text-amber-400">▶</span> Oiling &amp; Reassembly</span>
+          <span class="text-amber-300 text-[11px] font-bold">Open ↗</span>
+        </button>
+        <button type="button" data-video-preset="watch regulation troubleshooting" class="video-preset-btn rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 hover:border-amber-400/60 px-3.5 py-2.5 text-xs font-semibold text-amber-100 flex items-center justify-between gap-2 transition-all shadow-sm cursor-pointer">
+          <span class="flex items-center gap-2"><span class="text-amber-400">▶</span> Regulation &amp; Troubleshooting</span>
+          <span class="text-amber-300 text-[11px] font-bold">Open ↗</span>
+        </button>
+      </div>
+
+      <div class="pt-3 border-t border-slate-800/70">
+        <label for="video-extra-query" class="block text-xs font-medium text-slate-400 mb-1">Or Search a Custom Topic</label>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="video-extra-query" type="text" placeholder="e.g. mainspring replacement, chrono reset" class="flex-1 rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70" />
+          <button type="button" id="video-youtube-btn" class="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-semibold px-4 py-2 transition-colors cursor-pointer shrink-0">
+            Search YouTube ↗
+          </button>
+        </div>
+      </div>
+
+      <div id="video-link-box" class="hidden mt-3 rounded-xl bg-slate-950/80 border border-slate-800 p-3 flex items-center justify-between gap-2">
+        <a id="video-direct-link" href="#" target="_blank" rel="noopener noreferrer" class="text-xs text-amber-300 hover:text-amber-200 underline truncate"></a>
+        <button type="button" id="copy-video-link-btn" class="text-[11px] text-slate-300 hover:text-white border border-slate-700 bg-slate-900 rounded-lg px-2.5 py-1 shrink-0 cursor-pointer">
+          Copy Link
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Firebase Auth Modal -->
   <div
     id="auth-modal"
@@ -1010,7 +987,7 @@
           aria-label="Close sign in dialog"
           class="text-slate-400 hover:text-white text-lg px-2 py-1 rounded-lg hover:bg-slate-800 cursor-pointer"
         >
-          ✕
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </div>
 
@@ -1398,6 +1375,7 @@
     const expandedWatches = new Set();
     const beforeViewSet = new Set();
     let pendingDeleteId = null;
+    let pendingDeleteTechSheetId = null;
     let editingPart = null;
     let lastGeneratedPrompt = "";
     let nextId = 300;
@@ -1515,30 +1493,17 @@
       `;
     }
 
-    function updateGeminiWatchSelector() {
-      const optionsHtml = watches.map((w) => {
-        const label = [w.brand, w.model, w.caliber, w.ref ? `(${w.ref})` : "", w.year].filter(Boolean).join(" ");
-        return `<option value="${w.id}">${escapeHtml(label)}</option>`;
-      }).join("") + `<option value="custom">General / Other Watch</option>`;
+    let activeToolWatchId = null;
 
-      ["gemini-watch-select", "video-watch-select"].forEach((id) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const prev = el.value;
-        el.innerHTML = optionsHtml;
-        if (prev && Array.from(el.options).some((o) => o.value === prev)) {
-          el.value = prev;
-        }
-      });
-      if (typeof updateYouTubeLinks === "function") updateYouTubeLinks();
+    function updateGeminiWatchSelector() {
+      // Tools now open contextually from each watch card
     }
 
     function buildRegulatedGeminiPrompt() {
-      const selectVal = document.getElementById("gemini-watch-select").value;
       const queryText = document.getElementById("gemini-part-query").value.trim();
       const scope = document.getElementById("gemini-scope").value;
 
-      const watch = watches.find((w) => String(w.id) === selectVal);
+      const watch = watches.find((w) => w.id === activeToolWatchId);
       const watchContext = watch
         ? `${watch.brand}${watch.model ? " " + watch.model : ""} (${[watch.ref ? "Ref: " + watch.ref : "", watch.caliber ? "Caliber: " + watch.caliber : "", watch.year ? "Year: " + watch.year : ""].filter(Boolean).join(", ") || "No ref/caliber"})`
         : "Vintage mechanical watch (unspecified reference)";
@@ -1615,7 +1580,7 @@
           if (activeFilter !== "all" && activeFilter !== "active" && activeFilter !== "unsold" && stage !== activeFilter) return false;
 
           if (q) {
-            const haystack = [w.brand, w.model, w.ref, w.caliber, w.year, stage].filter(Boolean).join(" ").toLowerCase();
+            const haystack = [w.brand, w.model, w.ref, w.caliber, w.year, w.caseSize, w.caseMaterial, w.bandType, stage].filter(Boolean).join(" ").toLowerCase();
             if (!haystack.includes(q)) return false;
           }
           return true;
@@ -1701,7 +1666,7 @@
                       <div class="flex items-center gap-1.5">
                         <input type="number" name="editPartPrice" step="0.01" min="0" required value="${Number(part.price) || 0}" class="w-20 rounded-lg border border-amber-500/50 bg-slate-900 text-slate-100 px-2 py-1 text-xs tabular-nums focus:outline-none focus:ring-2 focus:ring-amber-500/60" />
                         <button type="submit" class="rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-2.5 py-1 transition-colors cursor-pointer">Save</button>
-                        <button type="button" data-action="cancel-edit-part" class="rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white text-xs px-2 py-1 transition-colors cursor-pointer">✕</button>
+                        <button type="button" data-action="cancel-edit-part" class="rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white p-1.5 transition-colors cursor-pointer" title="Cancel"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg></button>
                       </div>
                     </form>
                   </li>
@@ -1722,18 +1687,21 @@
                         : "bg-slate-800/80 border-slate-700 text-slate-400 hover:text-amber-300"
                     }"
                   >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 5h12l-1.8 6.5a4.5 4.5 0 0 1-8.4 0L6 5Z" />
-                      <ellipse cx="12" cy="5" rx="6" ry="1.8" />
-                      <circle cx="12" cy="14.5" r="4" />
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                      <g transform="rotate(-24 12 12)">
+                        <ellipse cx="12" cy="7.5" rx="7" ry="3.6" />
+                        <ellipse cx="12" cy="7.5" rx="4.6" ry="2.2" />
+                        <path d="M5.3 10.2c2.2 2 11.2 2 13.4 0" />
+                        <path d="M5 7.8v2.1c0 2.5-1.4 5-1.7 7.1 2.4 2.3 15 2.3 17.4 0-.3-2.1-1.7-4.6-1.7-7.1V7.8" />
+                      </g>
                     </svg>
                   </button>
                   <span class="truncate ${isSourced ? "line-through text-slate-500" : "text-slate-200"}">${escapeHtml(part.name)}</span>
                 </div>
                 <div class="flex items-center gap-2.5 shrink-0">
                   <span class="font-medium tabular-nums ${isSourced ? "text-slate-500" : "text-white"}">${formatMoney(part.price)}</span>
-                  <button type="button" data-action="start-edit-part" data-watch-id="${watch.id}" data-part-id="${part.id}" class="text-xs text-slate-500 hover:text-amber-300 transition-colors cursor-pointer" title="Edit part">✎</button>
-                  <button type="button" data-action="delete-part" data-watch-id="${watch.id}" data-part-id="${part.id}" class="text-xs text-slate-500 hover:text-rose-400 transition-colors cursor-pointer" title="Remove part">✕</button>
+                  <button type="button" data-action="start-edit-part" data-watch-id="${watch.id}" data-part-id="${part.id}" class="text-xs text-slate-500 hover:text-amber-300 transition-colors cursor-pointer" title="Edit part"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z" /></svg></button>
+                  <button type="button" data-action="delete-part" data-watch-id="${watch.id}" data-part-id="${part.id}" class="text-xs text-slate-500 hover:text-rose-400 transition-colors cursor-pointer" title="Remove part"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg></button>
                 </div>
               </li>
             `;
@@ -1784,15 +1752,16 @@
           : "border-slate-800/90 hover:border-slate-700";
 
         return `
-          <article class="w-[82vw] sm:w-[340px] shrink-0 snap-start bg-slate-900/90 border ${cardBorder} rounded-2xl shadow-lg overflow-hidden flex flex-col transition-all duration-200">
+          <article data-watch-card-id="${watch.id}" class="${isExpanded ? "w-full md:flex-row md:items-start" : "w-[82vw] sm:w-[340px]"} shrink-0 snap-start bg-slate-900/90 border ${cardBorder} rounded-2xl shadow-lg overflow-hidden flex flex-col transition-all duration-200">
             <!-- 4:5 Gallery Photo with Press-for-Before & Zoom -->
-            <div class="w-full aspect-[4/5] overflow-hidden border-b border-slate-800/80 bg-slate-900 relative">
+            <div class="${isExpanded ? "w-full md:w-[320px] lg:w-[360px] shrink-0 border-b md:border-b-0 md:border-r" : "w-full border-b"} aspect-[4/5] overflow-hidden border-slate-800/80 bg-slate-900 relative">
               ${imageHtml}
               ${beforeAfterToggle}
               ${zoomBtn}
               <div class="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5"></div>
             </div>
 
+            <div class="${isExpanded ? "flex-1 min-w-0 flex flex-col" : "flex flex-col"}">
             <!-- Decluttered Watch Details -->
             <div class="p-4 sm:p-5 border-b border-slate-800/80">
               <div class="flex items-start justify-between gap-2">
@@ -1808,6 +1777,10 @@
                     if (watch.caliber) metaParts.push(`<span class="text-slate-300">${escapeHtml(watch.caliber)}</span>`);
                     if (watch.year) metaParts.push(`<span>${escapeHtml(watch.year)}</span>`);
                     return metaParts.length ? `<p class="text-xs text-slate-400 mt-0.5 truncate">${metaParts.join(" · ")}</p>` : "";
+                  })()}
+                  ${(() => {
+                    const caseParts = [watch.caseSize, watch.caseMaterial, watch.bandType].filter(Boolean).map((x) => escapeHtml(x));
+                    return caseParts.length ? `<p class="text-[11px] text-slate-400 mt-0.5 truncate">${caseParts.join(" · ")}</p>` : "";
                   })()}
                 </div>
                 <button
@@ -1840,7 +1813,7 @@
             </div>
 
             <!-- Collapsible Parts, Bench Log & Edit/Delete Drawer -->
-            <div class="bg-slate-950/55">
+            <div class="bg-slate-950/55 ${isExpanded ? "flex-1" : ""}">
               <button
                 type="button"
                 data-action="toggle-parts"
@@ -1850,10 +1823,43 @@
                 <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">
                   ${partsSummaryText}
                 </span>
-                <span class="text-xs text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}">▾</span>
+                <svg class="w-4 h-4 ${isExpanded ? "rotate-45 text-amber-400" : "text-slate-400"} transition-all duration-300 shrink-0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.0" /><circle cx="12" cy="12" r="2.2" /><path d="M19.0 12.0L21.9 14.5L21.0 15.8M17.7 16.1L18.6 19.8L17.0 20.4M14.2 18.7L12.7 22.2L11.1 21.8M9.8 18.7L6.6 20.7L5.6 19.4M6.3 16.1L2.5 15.8L2.5 14.2M5.0 12.0L2.1 9.5L3.0 8.2M6.3 7.9L5.4 4.2L7.0 3.6M9.8 5.3L11.3 1.8L12.9 2.2M14.2 5.3L17.4 3.3L18.4 4.6M17.7 7.9L21.5 8.2L21.5 9.8M12.0 9.8L12.0 5.0M13.9 13.1L18.1 15.5M10.1 13.1L5.9 15.5" /></svg>
               </button>
 
               <div class="${isExpanded ? "px-4 sm:px-5 pb-4 pt-1 flex flex-col justify-between" : "hidden"}">
+                <!-- Contextual AI Sourcing & Service Videos -->
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                  <button
+                    type="button"
+                    data-action="open-ai-search"
+                    data-watch-id="${watch.id}"
+                    class="rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-xs font-semibold px-2.5 py-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                      <g transform="translate(-1 1) rotate(-24 11 12)">
+                        <ellipse cx="11" cy="7.5" rx="6.5" ry="3.4" />
+                        <ellipse cx="11" cy="7.5" rx="4.2" ry="2" />
+                        <path d="M4.8 10.1c2 1.9 10.4 1.9 12.4 0" />
+                        <path d="M4.5 7.8v2c0 2.4-1.3 4.8-1.6 6.8 2.2 2.2 13.8 2.2 16 0-.3-2-1.6-4.4-1.6-6.8v-2" />
+                      </g>
+                      <path d="M19.5 3.5v4M17.5 5.5h4" />
+                    </svg>
+                    <span>Source (AI)</span>
+                  </button>
+                  <button
+                    type="button"
+                    data-action="open-video-search"
+                    data-watch-id="${watch.id}"
+                    class="rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-xs font-semibold px-2.5 py-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="9" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10 8.5v7l6-3.5-6-3.5Z" />
+                    </svg>
+                    <span>Service Videos</span>
+                  </button>
+                </div>
+
                 ${(() => {
                   const matched = getGuidesForWatch(watch);
                   if (matched.length === 0) {
@@ -1894,8 +1900,16 @@
                             : `<a href="${escapeHtml(ts.url)}" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-slate-100 hover:text-amber-200 truncate">${escapeHtml(ts.title)} ↗${badge}</a>`;
                           return `
                             <div class="flex items-center justify-between gap-2 bg-slate-950/60 border border-slate-800/80 rounded-lg px-2.5 py-1.5">
-                              ${openEl}
-                              <button type="button" data-action="delete-techsheet" data-ts-id="${ts.id}" class="text-xs text-slate-500 hover:text-rose-400 shrink-0 cursor-pointer" title="Delete guide">✕</button>
+                              ${pendingDeleteTechSheetId === ts.id ? `
+                                <span class="text-[11px] text-rose-300 truncate">Remove "${escapeHtml(ts.title)}"?</span>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                  <button type="button" data-action="confirm-delete-techsheet" data-ts-id="${ts.id}" class="text-[11px] font-semibold text-rose-200 hover:text-white bg-rose-500/20 hover:bg-rose-600 border border-rose-500/40 rounded-md px-2 py-0.5 transition-colors cursor-pointer">Confirm</button>
+                                  <button type="button" data-action="cancel-delete-techsheet" data-ts-id="${ts.id}" class="text-[11px] text-slate-400 hover:text-slate-200 px-1.5 py-0.5 rounded-md hover:bg-slate-800 transition-colors cursor-pointer">Cancel</button>
+                                </div>
+                              ` : `
+                                ${openEl}
+                                <button type="button" data-action="request-delete-techsheet" data-ts-id="${ts.id}" class="text-xs text-slate-500 hover:text-rose-400 shrink-0 cursor-pointer" title="Remove guide"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg></button>
+                              `}
                             </div>
                           `;
                         }).join("")}
@@ -1928,7 +1942,7 @@
                           <span class="text-slate-200 truncate">${escapeHtml(sp.name)}</span>
                           <div class="flex items-center gap-2 shrink-0">
                             <span class="text-[11px] font-semibold text-amber-300 tabular-nums">×${sp.qty || 1}</span>
-                            <button type="button" data-action="delete-spare-part" data-watch-id="${watch.id}" data-spare-id="${sp.id}" class="text-slate-500 hover:text-rose-400 cursor-pointer" title="Remove spare part">✕</button>
+                            <button type="button" data-action="delete-spare-part" data-watch-id="${watch.id}" data-spare-id="${sp.id}" class="text-slate-500 hover:text-rose-400 cursor-pointer" title="Remove spare part"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg></button>
                           </div>
                         </li>
                       `).join("")}
@@ -1954,6 +1968,7 @@
                   `}
                 </div>
               </div>
+            </div>
             </div>
           </article>
         `;
@@ -2257,7 +2272,9 @@
       const body = document.getElementById("spares-body");
       const chevron = document.getElementById("spares-chevron");
       body.classList.toggle("hidden");
-      chevron.classList.toggle("rotate-180");
+      chevron.classList.toggle("rotate-45");
+      chevron.classList.toggle("text-amber-400");
+      chevron.classList.toggle("text-slate-400");
     });
 
     document.getElementById("spare-caliber-select").addEventListener("change", function () {
@@ -2296,13 +2313,30 @@
       renderCatalog();
     });
 
-    // Service Videos
+    // Contextual Service Videos Modal
     function getSelectedWatchVideoBase() {
-      const selectVal = document.getElementById("video-watch-select").value;
-      const watch = watches.find((w) => String(w.id) === selectVal);
+      const watch = watches.find((w) => w.id === activeToolWatchId);
       if (!watch) return "vintage mechanical watch";
       return [watch.brand, watch.caliber || watch.model || watch.ref].filter(Boolean).join(" ");
     }
+
+    function openVideoSearchModal(watch) {
+      activeToolWatchId = watch.id;
+      document.getElementById("video-watch-subtitle").textContent =
+        [watch.brand, watch.model, watch.caliber, watch.ref].filter(Boolean).join(" · ");
+      document.getElementById("video-extra-query").value = "";
+      document.getElementById("video-link-box").classList.add("hidden");
+      document.getElementById("video-search-modal").classList.remove("hidden");
+    }
+
+    function closeVideoSearchModal() {
+      document.getElementById("video-search-modal").classList.add("hidden");
+    }
+
+    document.getElementById("close-video-modal-btn").addEventListener("click", closeVideoSearchModal);
+    document.getElementById("video-search-modal").addEventListener("click", function (e) {
+      if (e.target === this) closeVideoSearchModal();
+    });
 
     function openYouTubeSearch(topicOverride) {
       const base = getSelectedWatchVideoBase();
@@ -2332,17 +2366,6 @@
       }
     });
 
-    function updateYouTubeLinks() {
-      // Kept for selector refresh compatibility
-    }
-
-    document.getElementById("toggle-videos-btn").addEventListener("click", function () {
-      const body = document.getElementById("videos-body");
-      const chevron = document.getElementById("videos-chevron");
-      body.classList.toggle("hidden");
-      chevron.classList.toggle("rotate-180");
-    });
-
     document.getElementById("video-youtube-btn").addEventListener("click", function () {
       openYouTubeSearch("");
     });
@@ -2353,12 +2376,27 @@
       });
     });
 
-    // Gemini Sourcing Search
-    document.getElementById("toggle-gemini-search-btn").addEventListener("click", function () {
-      const body = document.getElementById("gemini-search-body");
-      const chevron = document.getElementById("gemini-search-chevron");
-      body.classList.toggle("hidden");
-      chevron.classList.toggle("rotate-180");
+    // Contextual AI Sourcing Search Modal
+    function openAiSearchModal(watch) {
+      activeToolWatchId = watch.id;
+      document.getElementById("ai-watch-subtitle").textContent =
+        [watch.brand, watch.model, watch.caliber, watch.ref].filter(Boolean).join(" · ");
+      document.getElementById("gemini-scope").value = "oem-and-suppliers";
+      document.getElementById("gemini-query-label").textContent = "Part Needed *";
+      document.getElementById("gemini-part-query").required = true;
+      document.getElementById("gemini-part-query").placeholder = "e.g. Mainspring, Crown, Stem";
+      document.getElementById("gemini-part-query").value = "";
+      document.getElementById("gemini-output-box").classList.add("hidden");
+      document.getElementById("ai-search-modal").classList.remove("hidden");
+    }
+
+    function closeAiSearchModal() {
+      document.getElementById("ai-search-modal").classList.add("hidden");
+    }
+
+    document.getElementById("close-ai-modal-btn").addEventListener("click", closeAiSearchModal);
+    document.getElementById("ai-search-modal").addEventListener("click", function (e) {
+      if (e.target === this) closeAiSearchModal();
     });
     document.getElementById("gemini-scope").addEventListener("change", function () {
       const isTechSheet = this.value === "tech-sheet";
@@ -2479,6 +2517,9 @@
       const caliber = document.getElementById("watch-caliber").value.trim();
       const year = document.getElementById("watch-year").value.trim();
       const stage = document.getElementById("watch-stage").value;
+      const caseSize = document.getElementById("watch-case-size").value.trim();
+      const caseMaterial = document.getElementById("watch-case-material").value.trim();
+      const bandType = document.getElementById("watch-band-type").value;
       const purchaseVal = document.getElementById("watch-purchase").value.trim();
       const saleVal = document.getElementById("watch-sale").value.trim();
       const albumUrl = document.getElementById("watch-album").value.trim();
@@ -2501,6 +2542,9 @@
         caliber,
         year,
         stage,
+        caseSize,
+        caseMaterial,
+        bandType,
         image: mainImg,
         beforeImage: beforeImg,
         albumUrl,
@@ -2600,6 +2644,9 @@
       document.getElementById("edit-watch-caliber").value = watch.caliber || "";
       document.getElementById("edit-watch-year").value = watch.year || "";
       document.getElementById("edit-watch-stage").value = watch.stage || (watch.salePrice ? "Sold" : "Triage");
+      document.getElementById("edit-watch-case-size").value = watch.caseSize || "";
+      document.getElementById("edit-watch-case-material").value = watch.caseMaterial || "";
+      document.getElementById("edit-watch-band-type").value = watch.bandType || "";
       document.getElementById("edit-watch-purchase").value =
         watch.purchasePrice !== null && watch.purchasePrice !== undefined ? watch.purchasePrice : "";
       document.getElementById("edit-watch-sale").value =
@@ -2649,6 +2696,9 @@
       watch.caliber = document.getElementById("edit-watch-caliber").value.trim();
       watch.year = document.getElementById("edit-watch-year").value.trim();
       watch.stage = document.getElementById("edit-watch-stage").value;
+      watch.caseSize = document.getElementById("edit-watch-case-size").value.trim();
+      watch.caseMaterial = document.getElementById("edit-watch-case-material").value.trim();
+      watch.bandType = document.getElementById("edit-watch-band-type").value;
 
       const purchaseVal = document.getElementById("edit-watch-purchase").value.trim();
       const saleVal = document.getElementById("edit-watch-sale").value.trim();
@@ -2820,6 +2870,9 @@
         watch.ref ? `• Reference: ${watch.ref}` : "",
         watch.caliber ? `• Caliber / Movement: ${watch.caliber}` : "",
         watch.year ? `• Year: ${watch.year}` : "",
+        watch.caseSize ? `• Case Size: ${watch.caseSize}` : "",
+        watch.caseMaterial ? `• Case Material: ${watch.caseMaterial}` : "",
+        watch.bandType ? `• Bracelet / Strap: ${watch.bandType}` : "",
         "",
         "RESTORATION & SERVICE"
       ].filter((l) => l !== "");
@@ -2902,6 +2955,22 @@
         return;
       }
 
+      const aiSearchBtn = event.target.closest('button[data-action="open-ai-search"]');
+      if (aiSearchBtn) {
+        const watchId = Number(aiSearchBtn.dataset.watchId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) openAiSearchModal(watch);
+        return;
+      }
+
+      const videoSearchBtn = event.target.closest('button[data-action="open-video-search"]');
+      if (videoSearchBtn) {
+        const watchId = Number(videoSearchBtn.dataset.watchId);
+        const watch = watches.find((w) => w.id === watchId);
+        if (watch) openVideoSearchModal(watch);
+        return;
+      }
+
       const attachGuideBtn = event.target.closest('button[data-action="open-attach-guide"]');
       if (attachGuideBtn) {
         const watchId = Number(attachGuideBtn.dataset.watchId);
@@ -2910,10 +2979,25 @@
         return;
       }
 
-      const deleteTsBtn = event.target.closest('button[data-action="delete-techsheet"]');
-      if (deleteTsBtn) {
-        const tsId = Number(deleteTsBtn.dataset.tsId);
+      const reqDeleteTsBtn = event.target.closest('button[data-action="request-delete-techsheet"]');
+      if (reqDeleteTsBtn) {
+        pendingDeleteTechSheetId = Number(reqDeleteTsBtn.dataset.tsId);
+        renderCatalog();
+        return;
+      }
+
+      const cancelDeleteTsBtn = event.target.closest('button[data-action="cancel-delete-techsheet"]');
+      if (cancelDeleteTsBtn) {
+        pendingDeleteTechSheetId = null;
+        renderCatalog();
+        return;
+      }
+
+      const confirmDeleteTsBtn = event.target.closest('button[data-action="confirm-delete-techsheet"]');
+      if (confirmDeleteTsBtn) {
+        const tsId = Number(confirmDeleteTsBtn.dataset.tsId);
         techSheets = techSheets.filter((t) => t.id !== tsId);
+        pendingDeleteTechSheetId = null;
         saveTechSheets();
         renderCatalog();
         showStatus("Technical guide removed.");
@@ -2970,12 +3054,17 @@
       const togglePartsBtn = event.target.closest('button[data-action="toggle-parts"]');
       if (togglePartsBtn) {
         const watchId = Number(togglePartsBtn.dataset.watchId);
-        if (expandedWatches.has(watchId)) {
-          expandedWatches.delete(watchId);
-        } else {
+        const opening = !expandedWatches.has(watchId);
+        if (opening) {
           expandedWatches.add(watchId);
+        } else {
+          expandedWatches.delete(watchId);
         }
         renderCatalog();
+        const cardEl = document.querySelector(`article[data-watch-card-id="${watchId}"]`);
+        if (cardEl) {
+          cardEl.scrollIntoView({ behavior: "smooth", block: "nearest", inline: opening ? "start" : "nearest" });
+        }
         return;
       }
 
@@ -3084,7 +3173,7 @@
       } else {
         modal.className = "fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4";
         panel.className = "w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-4 sm:p-5 flex flex-col max-h-[90vh] transition-all";
-        btn.textContent = "⛶ Full Screen";
+        btn.innerHTML = '<span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg> Full Screen</span>';
       }
     }
 
@@ -3113,24 +3202,13 @@
       document.getElementById("ts-viewer-title").textContent = ts.title;
       document.getElementById("ts-viewer-caliber").textContent = ts.caliber;
 
-      const dl = document.getElementById("ts-viewer-download");
-      dl.href = activeTechSheetBlobUrl;
-      dl.download = (ts.caliber + "-" + ts.title).replace(/[^a-z0-9_-]+/gi, "_") + (ts.fileType === "pdf" ? ".pdf" : ".png");
-
       const openTab = document.getElementById("ts-viewer-open-tab");
       const body = document.getElementById("ts-viewer-body");
 
       if (ts.fileType === "pdf") {
-        const win = window.open(activeTechSheetBlobUrl, "_blank", "noopener,noreferrer");
-        if (win) return;
         openTab.href = activeTechSheetBlobUrl;
         openTab.classList.remove("hidden");
-        body.innerHTML = `
-          <div class="p-6 text-center">
-            <p class="text-sm text-slate-200 mb-3">Tap below to open the PDF in your device's native viewer:</p>
-            <a href="${activeTechSheetBlobUrl}" target="_blank" rel="noopener noreferrer" class="inline-block rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-4 py-2.5">Open Native Viewer ↗</a>
-          </div>
-        `;
+        body.innerHTML = `<iframe src="${activeTechSheetBlobUrl}" title="${escapeHtml(ts.title)}" class="w-full flex-1 min-h-[68vh] rounded-xl bg-white"></iframe>`;
       } else {
         openTab.classList.add("hidden");
         body.innerHTML = `<img src="${activeTechSheetBlobUrl}" alt="${escapeHtml(ts.title)}" class="max-h-full max-w-full object-contain rounded-xl" />`;
@@ -3160,14 +3238,16 @@
       const body = document.getElementById("totals-body");
       const chevron = document.getElementById("totals-chevron");
       body.classList.toggle("hidden");
-      chevron.classList.toggle("rotate-180");
+      chevron.classList.toggle("rotate-45");
+      chevron.classList.toggle("text-amber-400");
+      chevron.classList.toggle("text-slate-400");
     });
 
     document.getElementById("toggle-add-watch-btn").addEventListener("click", function () {
       const body = document.getElementById("add-watch-body");
       const chevron = document.getElementById("add-watch-chevron");
       body.classList.toggle("hidden");
-      chevron.classList.toggle("rotate-180");
+      chevron.classList.toggle("rotate-45");
     });
 
     // Contextual Attach Technical Guide Modal
