@@ -372,7 +372,7 @@
           </div>
 
           <div class="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-between gap-3 pt-2">
-            <p id="form-feedback" class="text-xs text-slate-500">Data saves automatically on your device via IndexedDB.</p>
+            <p id="form-feedback" class="text-xs text-slate-500">Data saves automatically on this device.</p>
             <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-semibold px-5 py-2.5 transition-colors cursor-pointer shadow-sm">+ Add Watch</button>
           </div>
         </form>
@@ -383,7 +383,7 @@
     <section class="mt-6 flex flex-wrap items-center justify-between gap-3 bg-slate-900/70 border border-amber-500/25 rounded-xl px-4 py-2.5" aria-label="Backup">
       <div class="text-xs text-slate-400">
         Collection: <span id="watch-count" class="font-semibold text-white tabular-nums">0</span>
-        <span id="storage-mode-label" class="ml-2 text-slate-500">· Stored locally (IndexedDB)</span>
+        <span id="storage-mode-label" class="ml-2 text-slate-500">· Stored locally on this device</span>
       </div>
       <div class="flex items-center gap-2">
         <button
@@ -391,10 +391,10 @@
           id="export-json-btn"
           class="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors cursor-pointer"
         >
-          Export JSON
+          Export Backup
         </button>
         <label class="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 transition-colors cursor-pointer">
-          Import JSON
+          Import Backup
           <input id="import-json-input" type="file" accept=".json,application/json" class="hidden" />
         </label>
       </div>
@@ -1185,7 +1185,7 @@
       <div class="flex items-center justify-between gap-3 mb-4 shrink-0">
         <div>
           <h2 id="admin-lib-title" class="text-base sm:text-lg font-semibold text-white">Admin · Community Library</h2>
-          <p class="text-xs text-amber-300 mt-0.5">Bulk upload manuals (auto-deduped by SHA-256 &amp; PDF content) and manage shared docs.</p>
+          <p class="text-xs text-amber-300 mt-0.5">Bulk upload manuals (auto-checked for duplicates) and manage shared docs.</p>
         </div>
         <button
           type="button"
@@ -2063,6 +2063,7 @@
                     return metaParts.length ? `<p class="text-xs text-slate-400 mt-0.5 truncate">${metaParts.join(" · ")}</p>` : "";
                   })()}
                   ${(() => {
+                    if (!isExpanded) return "";
                     const caseParts = [watch.caseSize, watch.caseMaterial, watch.bandType].filter(Boolean).map((x) => escapeHtml(x));
                     return caseParts.length ? `<p class="text-[11px] text-slate-400 mt-0.5 truncate">${caseParts.join(" · ")}</p>` : "";
                   })()}
@@ -2757,7 +2758,7 @@
       renderCatalog();
     });
 
-    // Export & Import JSON Backup
+    // Export & Import Backup Backup
     document.getElementById("export-json-btn").addEventListener("click", function () {
       const dataStr = JSON.stringify({ watches, techSheets }, null, 2);
       const blob = new Blob([dataStr], { type: "application/json" });
@@ -2769,7 +2770,7 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showStatus("Backup exported as pegwood-backup.json.");
+      showStatus("Backup exported to your device.");
     });
 
     document.getElementById("import-json-input").addEventListener("change", function (event) {
@@ -2796,7 +2797,7 @@
           renderCatalog();
           showStatus(`Imported ${watches.length} watch(es) and ${techSheets.length} tech sheet(s).`);
         } catch (err) {
-          showStatus("Could not import that file—make sure it is a valid JSON backup.", true);
+          showStatus("Could not import that file—make sure it is a valid Pegwood backup file.", true);
         }
       };
       reader.readAsText(file);
@@ -4849,7 +4850,7 @@
       if (!SpeechRec) {
         document.getElementById("work-mode-notes-status").textContent = "Use your keyboard mic key";
         document.getElementById("work-mode-notes").focus();
-        showStatus("Browser speech API unavailable — use your keyboard's mic key.", true);
+        showStatus("Voice dictation isn't supported here — use your keyboard's mic key.", true);
         return;
       }
 
@@ -4975,7 +4976,7 @@
         return;
       }
       if (!fbFunctions) {
-        showStatus("Firebase Functions SDK unavailable.", true);
+        showStatus("AI Watch Scan is temporarily unavailable.", true);
         return;
       }
 
@@ -5006,7 +5007,7 @@
         showStatus("Watch details auto-filled from photos! Please review before saving.");
       } catch (err) {
         status.textContent = "Scan unavailable";
-        showStatus("AI scan failed: " + (err.message || "Deploy analyzeWatchPhotos Cloud Function first."), true);
+        showStatus("AI scan couldn't complete right now. Please try again.", true);
       } finally {
         btn.textContent = "3. Auto-Fill with AI";
         updateScanAnalyzeButton();
