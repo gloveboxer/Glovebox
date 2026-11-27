@@ -15,6 +15,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-functions-compat.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     tailwind.config = {
@@ -252,6 +253,34 @@
       </button>
 
       <div id="add-watch-body" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-slate-800/70">
+        <!-- AI Camera Scan (Front & Back Auto-Fill) -->
+        <div class="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-amber-300">AI Watch Scan (Optional)</p>
+              <p class="text-[11px] text-slate-300 mt-0.5">Snap the front dial and back caseback/movement to auto-fill card details.</p>
+            </div>
+            <span id="scan-ai-status" class="hidden text-[11px] font-medium text-emerald-300"></span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <label id="scan-front-btn" class="rounded-xl border border-amber-500/35 bg-slate-900/80 hover:bg-slate-800 text-amber-100 text-xs font-semibold px-3 py-2.5 text-center transition-colors cursor-pointer">
+              1. Snap Front (Dial)
+              <input id="scan-front-input" type="file" accept="image/*" capture="environment" class="hidden" />
+            </label>
+            <label id="scan-back-btn" class="rounded-xl border border-amber-500/35 bg-slate-900/80 hover:bg-slate-800 text-amber-100 text-xs font-semibold px-3 py-2.5 text-center transition-colors cursor-pointer">
+              2. Snap Back (Case/Mvt)
+              <input id="scan-back-input" type="file" accept="image/*" capture="environment" class="hidden" />
+            </label>
+            <button
+              type="button"
+              id="scan-analyze-btn"
+              disabled
+              class="rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 text-xs font-bold px-3 py-2.5 transition-colors cursor-pointer"
+            >
+              3. Auto-Fill with AI
+            </button>
+          </div>
+        </div>
         <form id="add-watch-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           <div>
             <label for="watch-brand" class="block text-xs font-medium text-slate-400 mb-1">Brand *</label>
@@ -1319,6 +1348,7 @@
     let fbAuth = null;
     let fbDb = null;
     let fbStorage = null;
+    let fbFunctions = null;
     let currentUser = null;
     let isAdminUser = false;
     let cloudWatchIds = new Set();
@@ -1333,6 +1363,9 @@
         fbDb = firebase.firestore();
         if (typeof firebase.storage === "function") {
           fbStorage = firebase.storage();
+        }
+        if (typeof firebase.functions === "function") {
+          fbFunctions = firebase.functions();
         }
       }
     } catch (err) {
@@ -2838,6 +2871,7 @@
       document.getElementById("add-picked-photo-status").classList.add("hidden");
       document.getElementById("add-picked-before-status").classList.add("hidden");
       event.target.reset();
+      resetWatchScanUi();
       saveWatches();
       renderCatalog();
       document.getElementById("add-watch-body").classList.add("hidden");
@@ -4881,6 +4915,103 @@
 
     document.getElementById("work-mode-voice-btn").addEventListener("click", handleVoiceDictationToggle);
     document.getElementById("ts-viewer-voice-btn").addEventListener("click", handleVoiceDictationToggle);
+
+    // AI Watch Scan (Front & Back Camera -> Cloud Function analyzeWatchPhotos)
+    function updateScanAnalyzeButton() {
+      const hasFront = Boolean(pendingCroppedImages["add-main"]);
+      const hasBack = Boolean(pendingCroppedImages["add-before"]);
+      const btn = document.getElementById("scan-analyze-btn");
+      if (btn) btn.disabled = !(hasFront || hasBack);
+    }
+
+    function resetWatchScanUi() {
+      const frontBtn = document.getElementById("scan-front-btn");
+      const backBtn = document.getElementById("scan-back-btn");
+      const status = document.getElementById("scan-ai-status");
+      if (frontBtn) frontBtn.firstChild.textContent = "1. Snap Front (Dial) ";
+      if (backBtn) backBtn.firstChild.textContent = "2. Snap Back (Case/Mvt) ";
+      if (status) {
+        status.classList.add("hidden");
+        status.textContent = "";
+      }
+      updateScanAnalyzeButton();
+    }
+
+    async function handleScanPhotoCapture(inputEl, targetKey, statusId, labelBtn, doneLabel) {
+      const file = inputEl.files && inputEl.files[0];
+      if (!file) return;
+      try {
+        const compressed = await compressImageBlobToDataUrl(file, 900, 0.84);
+        pendingCroppedImages[targetKey] = compressed;
+        const st = document.getElementById(statusId);
+        if (st) {
+          st.textContent = "Photo captured & ready";
+          st.classList.remove("hidden");
+        }
+        if (labelBtn) labelBtn.firstChild.textContent = doneLabel + " ";
+        updateScanAnalyzeButton();
+      } catch (err) {
+        showStatus("Could not process captured photo.", true);
+      }
+      inputEl.value = "";
+    }
+
+    document.getElementById("scan-front-input").addEventListener("change", function () {
+      handleScanPhotoCapture(this, "add-main", "add-main-status", document.getElementById("scan-front-btn"), "✓ Front Ready");
+    });
+
+    document.getElementById("scan-back-input").addEventListener("change", function () {
+      handleScanPhotoCapture(this, "add-before", "add-before-status", document.getElementById("scan-back-btn"), "✓ Back Ready");
+    });
+
+    document.getElementById("scan-analyze-btn").addEventListener("click", async function () {
+      const frontImage = pendingCroppedImages["add-main"] || "";
+      const backImage = pendingCroppedImages["add-before"] || "";
+      if (!frontImage && !backImage) return;
+
+      if (!currentUser) {
+        showStatus("Sign in with Cloud Sync first to use AI Watch Scan.", true);
+        openAuthModal();
+        return;
+      }
+      if (!fbFunctions) {
+        showStatus("Firebase Functions SDK unavailable.", true);
+        return;
+      }
+
+      const btn = this;
+      const status = document.getElementById("scan-ai-status");
+      btn.disabled = true;
+      btn.textContent = "Analyzing watch...";
+      status.textContent = "Reading dial & caseback...";
+      status.classList.remove("hidden");
+
+      try {
+        const analyzeFn = fbFunctions.httpsCallable("analyzeWatchPhotos");
+        const res = await analyzeFn({ frontImage, backImage });
+        const data = (res && res.data) || {};
+
+        if (data.brand) document.getElementById("watch-brand").value = data.brand;
+        if (data.model) document.getElementById("watch-model").value = data.model;
+        if (data.ref) document.getElementById("watch-ref").value = data.ref;
+        if (data.caliber) document.getElementById("watch-caliber").value = data.caliber;
+        if (data.year && !isNaN(Number(data.year))) document.getElementById("watch-year").value = String(data.year);
+        if (data.caseSize) document.getElementById("watch-case-size").value = data.caseSize;
+        if (data.caseMaterial) document.getElementById("watch-case-material").value = data.caseMaterial;
+        if (data.bandType === "Bracelet" || data.bandType === "Strap") {
+          document.getElementById("watch-band-type").value = data.bandType;
+        }
+
+        status.textContent = "AI-filled — please verify details before saving";
+        showStatus("Watch details auto-filled from photos! Please review before saving.");
+      } catch (err) {
+        status.textContent = "Scan unavailable";
+        showStatus("AI scan failed: " + (err.message || "Deploy analyzeWatchPhotos Cloud Function first."), true);
+      } finally {
+        btn.textContent = "3. Auto-Fill with AI";
+        updateScanAnalyzeButton();
+      }
+    });
   </script>
 </body>
 </html>
