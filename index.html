@@ -14,6 +14,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     tailwind.config = {
@@ -99,6 +100,13 @@
             Sign In · Cloud Sync
           </button>
         </div>
+        <button
+          type="button"
+          id="open-admin-library-btn"
+          class="hidden rounded-xl border border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 text-amber-200 text-xs font-semibold px-3 py-1.5 transition-colors cursor-pointer"
+        >
+          Admin · Library
+        </button>
         <div id="signed-in-bar" class="hidden flex items-center gap-2 bg-slate-900 border border-amber-500/25 rounded-xl px-3 py-1.5">
           <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
           <span id="auth-user-label" class="text-xs text-slate-200 font-medium max-w-[160px] truncate"></span>
@@ -750,7 +758,7 @@
     </div>
   </div>
 
-  <!-- Attach Technical Guide Modal -->
+  <!-- Attach Technical Guide Modal (Community Library First + Dedupe) -->
   <div
     id="attach-guide-modal"
     class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4"
@@ -758,8 +766,8 @@
     aria-modal="true"
     aria-labelledby="attach-guide-title"
   >
-    <div class="w-full max-w-md bg-slate-900 border border-amber-500/25 rounded-2xl shadow-2xl p-5 sm:p-6">
-      <div class="flex items-center justify-between gap-3 mb-4">
+    <div class="w-full max-w-lg bg-slate-900 border border-amber-500/25 rounded-2xl shadow-2xl p-5 sm:p-6 flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between gap-3 mb-4 shrink-0">
         <div>
           <h2 id="attach-guide-title" class="text-base sm:text-lg font-semibold text-white">Attach Technical Guide</h2>
           <p id="attach-guide-subtitle" class="text-xs text-amber-300 mt-0.5"></p>
@@ -774,78 +782,109 @@
         </button>
       </div>
 
-      <form id="attach-guide-form" class="space-y-3.5">
-        <input type="hidden" id="guide-watch-id" />
-
-        <div>
-          <label for="guide-caliber-input" class="block text-xs font-medium text-slate-400 mb-1">
-            Movement / Caliber (tags guide for matching watches)
-          </label>
+      <div class="overflow-y-auto space-y-4 pr-1">
+        <!-- 1. Suggested & Searchable Community Library -->
+        <div class="rounded-xl bg-slate-950/60 border border-slate-800 p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-amber-300">Community Library</h3>
+            <span id="guide-lib-count" class="text-[11px] text-slate-400">0 docs</span>
+          </div>
           <input
-            id="guide-caliber-input"
-            type="text"
-            placeholder="e.g. Cal. 6139B"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+            id="guide-lib-search"
+            type="search"
+            placeholder="Search library by brand, caliber, or title..."
+            class="w-full rounded-xl border border-slate-800 bg-slate-900 text-slate-100 placeholder-slate-500 px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/70"
           />
+          <div id="guide-lib-results" class="max-h-44 overflow-y-auto space-y-1.5"></div>
         </div>
 
-        <div>
-          <label for="guide-type-select" class="block text-xs font-medium text-slate-400 mb-1">Guide Type</label>
-          <select
-            id="guide-type-select"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          >
-            <option value="Service Manual">Service Manual</option>
-            <option value="Parts List">Parts List</option>
-            <option value="Custom">Custom (Enter your own)</option>
-          </select>
-        </div>
+        <!-- 2. Upload New Doc (with SHA-256 + Content Dedupe) -->
+        <form id="attach-guide-form" class="space-y-3 pt-2 border-t border-slate-800">
+          <input type="hidden" id="guide-watch-id" />
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Not in the library? Upload a new doc</p>
 
-        <div id="guide-custom-title-wrap" class="hidden">
-          <label for="guide-custom-title" class="block text-xs font-medium text-slate-400 mb-1">Custom Guide Name *</label>
-          <input
-            id="guide-custom-title"
-            type="text"
-            placeholder="e.g. Oiling Chart, Exploded View"
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label for="guide-brand-input" class="block text-xs font-medium text-slate-400 mb-1">Brand</label>
+              <input
+                id="guide-brand-input"
+                type="text"
+                placeholder="e.g. Omega"
+                class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+              />
+            </div>
+            <div>
+              <label for="guide-caliber-input" class="block text-xs font-medium text-slate-400 mb-1">Caliber / Movement</label>
+              <input
+                id="guide-caliber-input"
+                type="text"
+                placeholder="e.g. Cal. 861"
+                class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+              />
+            </div>
+          </div>
 
-        <div>
-          <span class="block text-xs font-medium text-slate-400 mb-1">Upload PDF or Image</span>
-          <label class="block w-full rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-xs font-semibold px-3 py-2.5 text-center transition-colors cursor-pointer">
-            Choose PDF or Image
-            <input id="guide-file" type="file" accept="application/pdf,image/*" class="hidden" />
-          </label>
-          <span id="guide-file-status" class="hidden block mt-1 text-[11px] text-emerald-300 font-medium truncate"></span>
-        </div>
+          <div>
+            <label for="guide-type-select" class="block text-xs font-medium text-slate-400 mb-1">Guide Type</label>
+            <select
+              id="guide-type-select"
+              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+            >
+              <option value="Service Manual">Service Manual</option>
+              <option value="Parts List">Parts List</option>
+              <option value="Oiling Chart">Oiling Chart</option>
+              <option value="Custom">Custom (Enter your own)</option>
+            </select>
+          </div>
 
-        <div>
-          <label for="guide-url" class="block text-xs font-medium text-slate-400 mb-1">Or Paste Link (Optional)</label>
-          <input
-            id="guide-url"
-            type="url"
-            placeholder="https://..."
-            class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
-          />
-        </div>
+          <div id="guide-custom-title-wrap" class="hidden">
+            <label for="guide-custom-title" class="block text-xs font-medium text-slate-400 mb-1">Custom Guide Name *</label>
+            <input
+              id="guide-custom-title"
+              type="text"
+              placeholder="e.g. Exploded View, Tech Sheet"
+              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+            />
+          </div>
 
-        <div class="pt-2 border-t border-slate-800 flex items-center justify-end gap-2">
-          <button
-            type="button"
-            id="cancel-attach-guide-btn"
-            class="rounded-xl border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-200 text-xs font-medium px-4 py-2 transition-colors cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            class="rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-4 py-2 transition-colors cursor-pointer"
-          >
-            Attach Guide
-          </button>
-        </div>
-      </form>
+          <div>
+            <span class="block text-xs font-medium text-slate-400 mb-1">Upload PDF or Image (checked for duplicates)</span>
+            <label class="block w-full rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-xs font-semibold px-3 py-2.5 text-center transition-colors cursor-pointer">
+              Choose PDF or Image
+              <input id="guide-file" type="file" accept="application/pdf,image/*" class="hidden" />
+            </label>
+            <span id="guide-file-status" class="hidden block mt-1 text-[11px] text-emerald-300 font-medium truncate"></span>
+            <div id="guide-dedupe-banner" class="hidden mt-2 rounded-xl border border-amber-500/40 bg-amber-500/15 p-3 text-xs text-amber-100 space-y-2"></div>
+          </div>
+
+          <div>
+            <label for="guide-url" class="block text-xs font-medium text-slate-400 mb-1">Or Paste Link (Optional)</label>
+            <input
+              id="guide-url"
+              type="url"
+              placeholder="https://..."
+              class="w-full rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+            />
+          </div>
+
+          <div class="pt-2 border-t border-slate-800 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              id="cancel-attach-guide-btn"
+              class="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-4 py-2 transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              id="submit-attach-guide-btn"
+              class="rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-4 py-2 transition-colors cursor-pointer"
+            >
+              Upload &amp; Attach
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -1100,6 +1139,74 @@
     </div>
   </div>
 
+  <!-- Admin: Community Library Bulk Upload & Management Modal -->
+  <div
+    id="admin-library-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="admin-lib-title"
+  >
+    <div class="w-full max-w-3xl bg-slate-900 border border-amber-500/25 rounded-2xl shadow-2xl p-5 sm:p-6 flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between gap-3 mb-4 shrink-0">
+        <div>
+          <h2 id="admin-lib-title" class="text-base sm:text-lg font-semibold text-white">Admin · Community Library</h2>
+          <p class="text-xs text-amber-300 mt-0.5">Bulk upload manuals (auto-deduped by SHA-256 &amp; PDF content) and manage shared docs.</p>
+        </div>
+        <button
+          type="button"
+          id="close-admin-lib-btn"
+          class="text-slate-400 hover:text-white text-base px-2.5 py-1 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+
+      <div class="overflow-y-auto space-y-5 pr-1">
+        <!-- Bulk Upload Queue -->
+        <section class="rounded-xl bg-slate-950/60 border border-slate-800 p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-xs font-semibold uppercase tracking-wider text-amber-300">Bulk Upload Manuals</h3>
+              <p class="text-[11px] text-slate-400 mt-0.5">Select multiple PDFs or images. Filenames are auto-parsed and checked for duplicates.</p>
+            </div>
+            <label class="rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3.5 py-2 transition-colors cursor-pointer shrink-0">
+              Select Files
+              <input id="admin-bulk-files" type="file" multiple accept="application/pdf,image/*" class="hidden" />
+            </label>
+          </div>
+
+          <div id="admin-bulk-queue" class="hidden space-y-2 max-h-60 overflow-y-auto"></div>
+
+          <div id="admin-bulk-actions" class="hidden flex items-center justify-between gap-2 pt-2 border-t border-slate-800">
+            <span id="admin-bulk-summary" class="text-xs text-slate-300"></span>
+            <button
+              type="button"
+              id="admin-bulk-start-btn"
+              class="rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-4 py-2 transition-colors cursor-pointer"
+            >
+              Upload Unique Files
+            </button>
+          </div>
+        </section>
+
+        <!-- Manage Existing Library -->
+        <section class="rounded-xl bg-slate-950/60 border border-slate-800 p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-amber-300">Manage Library (<span id="admin-lib-total">0</span>)</h3>
+            <input
+              id="admin-lib-search"
+              type="search"
+              placeholder="Filter by brand, caliber, title..."
+              class="w-full sm:w-64 rounded-xl border border-slate-800 bg-slate-900 text-slate-100 placeholder-slate-500 px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/70"
+            />
+          </div>
+          <div id="admin-lib-list" class="space-y-2 max-h-72 overflow-y-auto"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
   <!-- Firebase Auth Modal -->
   <div
     id="auth-modal"
@@ -1206,7 +1313,9 @@
 
     let fbAuth = null;
     let fbDb = null;
+    let fbStorage = null;
     let currentUser = null;
+    let isAdminUser = false;
     let cloudWatchIds = new Set();
     let cloudTechSheetIds = new Set();
 
@@ -1217,6 +1326,9 @@
         }
         fbAuth = firebase.auth();
         fbDb = firebase.firestore();
+        if (typeof firebase.storage === "function") {
+          fbStorage = firebase.storage();
+        }
       }
     } catch (err) {
       // Offline or blocked fallback: continue using IndexedDB
@@ -1344,6 +1456,7 @@
         if (watchMerge.addedLocal > 0 || tsMerge.addedLocal > 0) {
           showStatus("Merged local and cloud catalogs!");
         }
+        await checkAdminAndRefreshLibrary(user);
       } catch (err) {
         showStatus("Could not load cloud catalog: " + err.message, true);
       }
@@ -2009,7 +2122,8 @@
 
                 ${(() => {
                   const matched = getGuidesForWatch(watch);
-                  if (matched.length === 0) {
+                  const libSuggested = getLibrarySuggestionsForWatch(watch);
+                  if (matched.length === 0 && libSuggested.length === 0) {
                     return `
                       <div class="mb-3">
                         <button
@@ -2035,31 +2149,40 @@
                           data-watch-id="${watch.id}"
                           class="text-[11px] font-semibold text-amber-300 hover:text-amber-200 cursor-pointer"
                         >
-                          + Attach
+                          + Attach / Library
                         </button>
                       </div>
                       <div class="flex flex-col gap-1.5">
                         ${matched.map((ts) => {
                           const isSuggested = ts.sourceWatchId && ts.sourceWatchId !== watch.id;
-                          const badge = isSuggested ? `<span class="text-[10px] text-emerald-300 ml-1">· Suggested</span>` : "";
-                          const openEl = ts.fileData
+                          const badge = isSuggested ? `<span class="text-[10px] text-emerald-300 ml-1">· Shared</span>` : "";
+                          const canOpen = Boolean(ts.fileData || ts.storagePath || ts.downloadUrl || ts.librarySha256);
+                          const openEl = canOpen
                             ? `<button type="button" data-action="open-techsheet" data-ts-id="${ts.id}" class="text-xs font-medium text-slate-100 hover:text-amber-200 text-left truncate cursor-pointer">${escapeHtml(ts.title)} (${ts.fileType === "pdf" ? "PDF" : "Image"})${badge}</button>`
                             : `<a href="${escapeHtml(ts.url)}" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-slate-100 hover:text-amber-200 truncate">${escapeHtml(ts.title)} ↗${badge}</a>`;
                           return `
                             <div class="flex items-center justify-between gap-2 bg-slate-950/60 border border-slate-800/80 rounded-xl px-2.5 py-1.5">
                               ${pendingDeleteTechSheetId === ts.id ? `
-                                <span class="text-[11px] text-rose-300 truncate">Remove "${escapeHtml(ts.title)}"?</span>
+                                <span class="text-[11px] text-rose-300 truncate">Remove from your watch?</span>
                                 <div class="flex items-center gap-1.5 shrink-0">
                                   <button type="button" data-action="confirm-delete-techsheet" data-ts-id="${ts.id}" class="text-[11px] font-semibold text-rose-200 hover:text-white bg-rose-500/20 hover:bg-rose-600 border border-rose-500/40 rounded-xl px-2 py-0.5 transition-colors cursor-pointer">Confirm</button>
                                   <button type="button" data-action="cancel-delete-techsheet" data-ts-id="${ts.id}" class="text-[11px] text-slate-400 hover:text-slate-200 px-1.5 py-0.5 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer">Cancel</button>
                                 </div>
                               ` : `
                                 ${openEl}
-                                <button type="button" data-action="request-delete-techsheet" data-ts-id="${ts.id}" class="text-xs text-slate-500 hover:text-rose-400 shrink-0 cursor-pointer" title="Remove guide"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg></button>
+                                <button type="button" data-action="request-delete-techsheet" data-ts-id="${ts.id}" class="text-xs text-slate-500 hover:text-rose-400 shrink-0 cursor-pointer" title="Remove from your watch"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg></button>
                               `}
                             </div>
                           `;
                         }).join("")}
+                        ${libSuggested.map((libDoc) => `
+                          <div class="flex items-center justify-between gap-2 bg-slate-950/40 border border-emerald-500/25 rounded-xl px-2.5 py-1.5">
+                            <button type="button" data-action="open-lib-doc" data-lib-sha="${escapeHtml(libDoc.sha256)}" data-watch-id="${watch.id}" class="text-xs font-medium text-emerald-200 hover:text-emerald-100 text-left truncate cursor-pointer">
+                              ${escapeHtml(libDoc.title)} (${libDoc.fileType === "pdf" ? "PDF" : "Image"}) <span class="text-[10px] text-emerald-400">· Library</span>
+                            </button>
+                            <button type="button" data-action="link-lib-doc" data-lib-sha="${escapeHtml(libDoc.sha256)}" data-watch-id="${watch.id}" class="text-[11px] font-semibold text-amber-300 hover:text-amber-200 shrink-0 cursor-pointer">+ Add</button>
+                          </div>
+                        `).join("")}
                       </div>
                     </div>
                   `;
@@ -3165,6 +3288,18 @@
         return;
       }
 
+      const openLibBtn = event.target.closest('button[data-action="open-lib-doc"]');
+      if (openLibBtn) {
+        openLibraryDocViewer(openLibBtn.dataset.libSha, Number(openLibBtn.dataset.watchId));
+        return;
+      }
+
+      const linkLibBtn = event.target.closest('button[data-action="link-lib-doc"]');
+      if (linkLibBtn) {
+        linkLibraryDocToWatch(linkLibBtn.dataset.libSha, Number(linkLibBtn.dataset.watchId));
+        return;
+      }
+
       const openSellBtn = event.target.closest('button[data-action="open-sell-listing"]');
       if (openSellBtn) {
         const watchId = Number(openSellBtn.dataset.watchId);
@@ -3423,39 +3558,78 @@
       }
     }
 
-    function openTechSheetViewer(tsId, watchIdOverride = null) {
-      const ts = techSheets.find((t) => t.id === tsId);
-      if (!ts || !ts.fileData) return;
+    async function resolveFileDataForDoc(docObj) {
+      if (docObj.fileData) return docObj.fileData;
+      const sha = docObj.librarySha256 || docObj.sha256;
+      if (sha) {
+        const cached = await loadCachedLibraryFile(sha);
+        if (cached) return cached;
+      }
+      let url = docObj.downloadUrl || "";
+      if (!url && docObj.storagePath && fbStorage) {
+        url = await fbStorage.ref(docObj.storagePath).getDownloadURL();
+      }
+      if (!url) return "";
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error("Failed to download document from Storage");
+      const blob = await resp.blob();
+      const dataUrl = await readFileAsDataUrl(blob);
+      if (sha) await saveCachedLibraryFile(sha, dataUrl);
+      return dataUrl;
+    }
 
-      activeTechSheetWatchId = watchIdOverride || activeWorkModeWatchId || ts.sourceWatchId || null;
+    async function displayDocInViewer(docObj, watchIdOverride = null) {
+      activeTechSheetWatchId = watchIdOverride || activeWorkModeWatchId || docObj.sourceWatchId || null;
       activePdfRenderToken++;
       const token = activePdfRenderToken;
 
-      if (activeTechSheetBlobUrl && activeTechSheetBlobUrl.startsWith("blob:")) {
-        URL.revokeObjectURL(activeTechSheetBlobUrl);
-      }
-      activeTechSheetBlobUrl = dataUrlToBlobUrl(ts.fileData);
-
-      document.getElementById("ts-viewer-title").textContent = ts.title;
-      document.getElementById("ts-viewer-caliber").textContent = ts.caliber;
+      document.getElementById("ts-viewer-title").textContent = docObj.title || "Technical Guide";
+      document.getElementById("ts-viewer-caliber").textContent = docObj.caliber || docObj.brand || "";
 
       const openTab = document.getElementById("ts-viewer-open-tab");
       const body = document.getElementById("ts-viewer-body");
-
       setTsViewerFullscreen(false);
       document.getElementById("techsheet-viewer-modal").classList.remove("hidden");
+      body.className = "flex-1 min-h-[60vh] overflow-auto rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center";
+      body.innerHTML = '<p class="text-xs text-slate-400 p-6">Loading document...</p>';
 
-      if (ts.fileType === "pdf") {
-        openTab.href = activeTechSheetBlobUrl;
-        openTab.classList.remove("hidden");
-        body.className = "flex-1 min-h-[60vh] overflow-auto rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center";
-        body.innerHTML = '<p class="text-xs text-slate-400 p-6">Rendering PDF pages...</p>';
-        renderPdfPagesInViewer(ts, token);
-      } else {
-        openTab.classList.add("hidden");
-        body.className = "flex-1 min-h-[60vh] overflow-auto rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center";
-        body.innerHTML = `<img src="${activeTechSheetBlobUrl}" alt="${escapeHtml(ts.title)}" class="max-h-full max-w-full object-contain rounded-xl" />`;
+      try {
+        const fileData = await resolveFileDataForDoc(docObj);
+        if (token !== activePdfRenderToken) return;
+        if (!fileData) {
+          body.innerHTML = '<p class="text-xs text-rose-300 p-6">Document file unavailable.</p>';
+          return;
+        }
+        if (activeTechSheetBlobUrl && activeTechSheetBlobUrl.startsWith("blob:")) {
+          URL.revokeObjectURL(activeTechSheetBlobUrl);
+        }
+        activeTechSheetBlobUrl = dataUrlToBlobUrl(fileData);
+
+        if (docObj.fileType === "pdf") {
+          openTab.href = activeTechSheetBlobUrl;
+          openTab.classList.remove("hidden");
+          body.innerHTML = '<p class="text-xs text-slate-400 p-6">Rendering PDF pages...</p>';
+          renderPdfPagesInViewer({ ...docObj, fileData }, token);
+        } else {
+          openTab.classList.add("hidden");
+          body.innerHTML = `<img src="${activeTechSheetBlobUrl}" alt="${escapeHtml(docObj.title)}" class="max-h-full max-w-full object-contain rounded-xl" />`;
+        }
+      } catch (err) {
+        if (token !== activePdfRenderToken) return;
+        body.innerHTML = `<p class="text-xs text-rose-300 p-6">Could not open document (${escapeHtml(err.message || "error")}).</p>`;
       }
+    }
+
+    function openTechSheetViewer(tsId, watchIdOverride = null) {
+      const ts = techSheets.find((t) => t.id === tsId);
+      if (!ts) return;
+      displayDocInViewer(ts, watchIdOverride);
+    }
+
+    function openLibraryDocViewer(sha256, watchIdOverride = null) {
+      const libDoc = communityLibrary.find((d) => d.sha256 === sha256);
+      if (!libDoc) return;
+      displayDocInViewer(libDoc, watchIdOverride);
     }
 
     document.getElementById("ts-viewer-fullscreen-btn").addEventListener("click", function () {
@@ -3490,23 +3664,298 @@
       chevron.classList.toggle("rotate-45");
     });
 
-    // Contextual Attach Technical Guide Modal
+    const IDB_LIBRARY_KEY = "communityLibrary";
+    let communityLibrary = [];
+    let pendingUploadCandidate = null;
+    let adminBulkQueue = [];
+    let pendingDeleteLibSha = null;
+
+    async function loadCachedLibraryFile(sha256) {
+      try {
+        const db = await openGloveboxDB();
+        return await new Promise((resolve) => {
+          const tx = db.transaction(IDB_STORE, "readonly");
+          const req = tx.objectStore(IDB_STORE).get("libfile_" + sha256);
+          req.onsuccess = () => resolve(req.result || "");
+          req.onerror = () => resolve("");
+        });
+      } catch (err) {
+        return "";
+      }
+    }
+
+    async function saveCachedLibraryFile(sha256, dataUrl) {
+      try {
+        const db = await openGloveboxDB();
+        await new Promise((resolve) => {
+          const tx = db.transaction(IDB_STORE, "readwrite");
+          const req = tx.objectStore(IDB_STORE).put(dataUrl, "libfile_" + sha256);
+          req.onsuccess = () => resolve();
+          req.onerror = () => resolve();
+        });
+      } catch (err) {}
+    }
+
+    async function loadCommunityLibraryMetadata() {
+      if (!fbDb) return;
+      try {
+        const snap = await fbDb.collection("communityLibrary").get();
+        communityLibrary = snap.docs.map((d) => d.data()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        const db = await openGloveboxDB();
+        const tx = db.transaction(IDB_STORE, "readwrite");
+        tx.objectStore(IDB_STORE).put(communityLibrary, IDB_LIBRARY_KEY);
+        renderCatalog();
+        if (activeWorkModeWatchId) renderWorkModeGuides();
+      } catch (err) {
+        try {
+          const db = await openGloveboxDB();
+          const cached = await new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE, "readonly");
+            const req = tx.objectStore(IDB_STORE).get(IDB_LIBRARY_KEY);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve([]);
+          });
+          if (Array.isArray(cached)) communityLibrary = cached;
+        } catch (e) {}
+      }
+    }
+
+    async function checkAdminAndRefreshLibrary(user) {
+      isAdminUser = false;
+      const adminBtn = document.getElementById("open-admin-library-btn");
+      if (fbDb && user) {
+        try {
+          const doc = await fbDb.collection("admins").doc(user.uid).get();
+          isAdminUser = doc.exists;
+        } catch (err) {
+          isAdminUser = false;
+        }
+      }
+      if (adminBtn) adminBtn.classList.toggle("hidden", !isAdminUser);
+      await loadCommunityLibraryMetadata();
+    }
+
+    function getLibrarySuggestionsForWatch(watch) {
+      if (!watch || !communityLibrary.length) return [];
+      const calNorm = normalizeCaliber(watch.caliber || "");
+      const brandNorm = (watch.brand || "").trim().toLowerCase();
+      const linkedShas = new Set(techSheets.filter((t) => t.librarySha256 && (!t.sourceWatchId || t.sourceWatchId === watch.id || (calNorm && normalizeCaliber(t.caliber) === calNorm))).map((t) => t.librarySha256));
+
+      return communityLibrary.filter((doc) => {
+        if (linkedShas.has(doc.sha256)) return false;
+        const docCal = normalizeCaliber(doc.caliber || "");
+        if (calNorm && docCal && (docCal === calNorm || docCal.includes(calNorm) || calNorm.includes(docCal))) {
+          return true;
+        }
+        if (!calNorm && brandNorm && (doc.brand || "").trim().toLowerCase() === brandNorm) {
+          return true;
+        }
+        return false;
+      });
+    }
+
+    function linkLibraryDocToWatch(sha256, watchId) {
+      const libDoc = communityLibrary.find((d) => d.sha256 === sha256);
+      const watch = watches.find((w) => w.id === watchId);
+      if (!libDoc || !watch) return;
+
+      const already = techSheets.some((t) => t.librarySha256 === sha256 && t.sourceWatchId === watchId);
+      if (already) {
+        showStatus(`"${libDoc.title}" is already linked to this watch.`);
+        return;
+      }
+
+      techSheets.unshift({
+        id: ++nextId,
+        librarySha256: libDoc.sha256,
+        caliber: libDoc.caliber || watch.caliber || "",
+        brand: libDoc.brand || watch.brand || "",
+        sourceWatchId: watchId,
+        title: libDoc.title,
+        fileType: libDoc.fileType,
+        storagePath: libDoc.storagePath || "",
+        downloadUrl: libDoc.downloadUrl || "",
+        url: ""
+      });
+
+      saveTechSheets();
+      renderCatalog();
+      if (activeWorkModeWatchId) renderWorkModeGuides();
+      showStatus(`Linked "${libDoc.title}" from Community Library.`);
+    }
+
+    async function computeSha256Hex(arrayBuffer) {
+      const digest = await crypto.subtle.digest("SHA-256", arrayBuffer);
+      return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function computeContentFingerprint(file, arrayBuffer) {
+      const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+      if (!isPdf) return { pageCount: 1, contentHash: "" };
+      const pdfLib = window.pdfjsLib || window["pdfjs-dist/build/pdf"];
+      if (!pdfLib) return { pageCount: 0, contentHash: "" };
+      try {
+        pdfLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        const pdfDoc = await pdfLib.getDocument({ data: new Uint8Array(arrayBuffer.slice(0)) }).promise;
+        const pageCount = pdfDoc.numPages || 0;
+        let textSample = "";
+        const pagesToRead = Math.min(3, pageCount);
+        for (let p = 1; p <= pagesToRead; p++) {
+          const page = await pdfDoc.getPage(p);
+          const tc = await page.getTextContent();
+          textSample += tc.items.map((it) => it.str).join(" ");
+        }
+        const normalized = textSample.toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (normalized.length > 40) {
+          const hash = await computeSha256Hex(new TextEncoder().encode(normalized.slice(0, 8000)).buffer);
+          return { pageCount, contentHash: "txt_" + hash.slice(0, 24) };
+        }
+        if (pageCount >= 1) {
+          const page1 = await pdfDoc.getPage(1);
+          const vp = page1.getViewport({ scale: 0.25 });
+          const c = document.createElement("canvas");
+          c.width = 16;
+          c.height = 16;
+          const ctx = c.getContext("2d");
+          await page1.render({ canvasContext: ctx, viewport: vp }).promise;
+          const pixels = ctx.getImageData(0, 0, 16, 16).data;
+          let sum = 0;
+          const grays = [];
+          for (let i = 0; i < pixels.length; i += 4) {
+            const g = Math.round(0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2]);
+            grays.push(g);
+            sum += g;
+          }
+          const avg = sum / grays.length;
+          const bits = grays.map((g) => (g >= avg ? "1" : "0")).join("");
+          return { pageCount, contentHash: "img_" + bits.slice(0, 64) };
+        }
+      } catch (err) {}
+      return { pageCount: 0, contentHash: "" };
+    }
+
+    function findLibraryDuplicate(sha256, fingerprint, caliber) {
+      const exact = communityLibrary.find((d) => d.sha256 === sha256);
+      if (exact) return { type: "exact", doc: exact };
+      if (fingerprint && fingerprint.contentHash) {
+        const calNorm = normalizeCaliber(caliber || "");
+        const near = communityLibrary.find((d) =>
+          d.contentHash === fingerprint.contentHash &&
+          d.pageCount === fingerprint.pageCount &&
+          (!calNorm || !d.caliberNormalized || d.caliberNormalized === calNorm)
+        );
+        if (near) return { type: "near", doc: near };
+      }
+      return null;
+    }
+
+    async function uploadFileToCommunityLibrary(file, meta, arrayBuffer, sha256, fingerprint) {
+      const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+      const fileType = isPdf ? "pdf" : "image";
+      const ext = isPdf ? ".pdf" : (file.name.match(/\.[a-z0-9]+$/i)?.[0] || ".png");
+      const storagePath = `communityLibrary/${sha256}${ext}`;
+
+      let downloadUrl = "";
+      if (fbStorage && currentUser) {
+        const ref = fbStorage.ref(storagePath);
+        await ref.put(new Blob([arrayBuffer], { type: file.type || (isPdf ? "application/pdf" : "image/png") }));
+        downloadUrl = await ref.getDownloadURL();
+      }
+
+      const dataUrl = await readFileAsDataUrl(file);
+      await saveCachedLibraryFile(sha256, dataUrl);
+
+      const docRecord = {
+        sha256,
+        contentHash: (fingerprint && fingerprint.contentHash) || "",
+        pageCount: (fingerprint && fingerprint.pageCount) || 0,
+        title: meta.title,
+        brand: meta.brand || "",
+        caliber: meta.caliber || "",
+        caliberNormalized: normalizeCaliber(meta.caliber || ""),
+        fileType,
+        byteSize: arrayBuffer.byteLength,
+        storagePath,
+        downloadUrl,
+        uploadedByUid: currentUser ? currentUser.uid : "",
+        createdAt: Date.now()
+      };
+
+      if (fbDb && currentUser) {
+        await fbDb.collection("communityLibrary").doc(sha256).set(docRecord);
+      }
+
+      communityLibrary = [docRecord, ...communityLibrary.filter((d) => d.sha256 !== sha256)];
+      return { docRecord, dataUrl };
+    }
+
+    function renderAttachModalLibraryList() {
+      const watchId = Number(document.getElementById("guide-watch-id").value);
+      const watch = watches.find((w) => w.id === watchId);
+      const q = (document.getElementById("guide-lib-search").value || "").trim().toLowerCase();
+      const listEl = document.getElementById("guide-lib-results");
+      const countEl = document.getElementById("guide-lib-count");
+      if (!listEl) return;
+
+      countEl.textContent = `${communityLibrary.length} doc${communityLibrary.length === 1 ? "" : "s"}`;
+      const calNorm = watch ? normalizeCaliber(watch.caliber || "") : "";
+
+      const scored = communityLibrary
+        .filter((d) => {
+          if (!q) return true;
+          return [d.title, d.brand, d.caliber].join(" ").toLowerCase().includes(q);
+        })
+        .map((d) => {
+          const docCal = normalizeCaliber(d.caliber || "");
+          const isMatch = calNorm && docCal && (docCal === calNorm || docCal.includes(calNorm) || calNorm.includes(docCal));
+          return { doc: d, isMatch };
+        })
+        .sort((a, b) => Number(b.isMatch) - Number(a.isMatch));
+
+      if (scored.length === 0) {
+        listEl.innerHTML = '<p class="text-xs text-slate-400 py-2">No matching docs in the library yet—upload one below.</p>';
+        return;
+      }
+
+      listEl.innerHTML = scored.slice(0, 30).map(({ doc, isMatch }) => `
+        <div class="flex items-center justify-between gap-2 bg-slate-900/80 border ${isMatch ? "border-emerald-500/35" : "border-slate-800"} rounded-xl px-2.5 py-2">
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-slate-100 truncate">
+              ${escapeHtml(doc.title)}
+              ${isMatch ? '<span class="ml-1 text-[10px] text-emerald-300">· Suggested</span>' : ""}
+            </p>
+            <p class="text-[11px] text-slate-400 truncate">${escapeHtml([doc.brand, doc.caliber, doc.pageCount ? doc.pageCount + "p" : ""].filter(Boolean).join(" · "))}</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" data-attach-open-sha="${escapeHtml(doc.sha256)}" class="text-[11px] text-slate-300 hover:text-white px-2 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 cursor-pointer">View</button>
+            <button type="button" data-attach-link-sha="${escapeHtml(doc.sha256)}" class="text-[11px] font-semibold text-slate-950 bg-amber-500 hover:bg-amber-400 px-2.5 py-1 rounded-xl cursor-pointer">Link</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
     function openAttachGuideModal(watch) {
+      pendingUploadCandidate = null;
       document.getElementById("guide-watch-id").value = watch.id;
       document.getElementById("attach-guide-subtitle").textContent =
         [watch.brand, watch.model, watch.ref].filter(Boolean).join(" · ");
+      document.getElementById("guide-brand-input").value = watch.brand || "";
       document.getElementById("guide-caliber-input").value = watch.caliber || "";
       document.getElementById("guide-type-select").value = "Service Manual";
       document.getElementById("guide-custom-title-wrap").classList.add("hidden");
       document.getElementById("guide-custom-title").value = "";
       document.getElementById("guide-custom-title").required = false;
+      document.getElementById("guide-url").value = "";
       document.getElementById("guide-file").value = "";
       document.getElementById("guide-file-status").classList.add("hidden");
-      document.getElementById("guide-url").value = "";
+      document.getElementById("guide-dedupe-banner").classList.add("hidden");
+      document.getElementById("guide-lib-search").value = "";
+      renderAttachModalLibraryList();
       document.getElementById("attach-guide-modal").classList.remove("hidden");
     }
 
     function closeAttachGuideModal() {
+      pendingUploadCandidate = null;
       document.getElementById("attach-guide-modal").classList.add("hidden");
     }
 
@@ -3514,6 +3963,22 @@
     document.getElementById("cancel-attach-guide-btn").addEventListener("click", closeAttachGuideModal);
     document.getElementById("attach-guide-modal").addEventListener("click", function (e) {
       if (e.target === this) closeAttachGuideModal();
+    });
+
+    document.getElementById("guide-lib-search").addEventListener("input", renderAttachModalLibraryList);
+
+    document.getElementById("guide-lib-results").addEventListener("click", function (event) {
+      const watchId = Number(document.getElementById("guide-watch-id").value);
+      const openBtn = event.target.closest("button[data-attach-open-sha]");
+      if (openBtn) {
+        openLibraryDocViewer(openBtn.dataset.attachOpenSha, watchId);
+        return;
+      }
+      const linkBtn = event.target.closest("button[data-attach-link-sha]");
+      if (linkBtn) {
+        linkLibraryDocToWatch(linkBtn.dataset.attachLinkSha, watchId);
+        closeAttachGuideModal();
+      }
     });
 
     document.getElementById("guide-type-select").addEventListener("change", function () {
@@ -3524,14 +3989,61 @@
       customInput.required = isCustom;
     });
 
-    document.getElementById("guide-file").addEventListener("change", function () {
-      const status = document.getElementById("guide-file-status");
+    document.getElementById("guide-file").addEventListener("change", async function () {
       const file = this.files[0];
-      if (file) {
-        status.textContent = "Selected: " + file.name;
-        status.classList.remove("hidden");
-      } else {
+      const status = document.getElementById("guide-file-status");
+      const banner = document.getElementById("guide-dedupe-banner");
+      pendingUploadCandidate = null;
+      banner.classList.add("hidden");
+      if (!file) {
         status.classList.add("hidden");
+        return;
+      }
+      status.textContent = "Checking file fingerprint...";
+      status.classList.remove("hidden");
+
+      const arrayBuffer = await file.arrayBuffer();
+      const sha256 = await computeSha256Hex(arrayBuffer);
+      const caliber = document.getElementById("guide-caliber-input").value.trim();
+      const fingerprint = await computeContentFingerprint(file, arrayBuffer);
+      const dup = findLibraryDuplicate(sha256, fingerprint, caliber);
+
+      pendingUploadCandidate = { file, arrayBuffer, sha256, fingerprint, dup, allowNearOverride: false };
+      status.textContent = `Ready: ${file.name} (${Math.round(arrayBuffer.byteLength / 1024)} KB${fingerprint.pageCount ? ", " + fingerprint.pageCount + "p" : ""})`;
+
+      if (dup && dup.type === "exact") {
+        banner.innerHTML = `
+          <p class="font-semibold text-amber-200">Already in Community Library: "${escapeHtml(dup.doc.title)}"</p>
+          <p class="text-[11px] text-slate-300">Exact file content match found. Duplicate uploads are blocked to keep the library clean.</p>
+          <button type="button" id="use-dedupe-match-btn" data-sha="${escapeHtml(dup.doc.sha256)}" class="rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3 py-1.5 cursor-pointer">Link Existing Copy</button>
+        `;
+        banner.classList.remove("hidden");
+      } else if (dup && dup.type === "near") {
+        banner.innerHTML = `
+          <p class="font-semibold text-amber-200">Possible duplicate (${dup.doc.pageCount}p): "${escapeHtml(dup.doc.title)}"</p>
+          <p class="text-[11px] text-slate-300">Content matches an existing manual for this caliber.</p>
+          <div class="flex items-center gap-2">
+            <button type="button" id="use-dedupe-match-btn" data-sha="${escapeHtml(dup.doc.sha256)}" class="rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3 py-1.5 cursor-pointer">Use Existing</button>
+            <button type="button" id="override-near-dup-btn" class="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 cursor-pointer">Upload Anyway</button>
+          </div>
+        `;
+        banner.classList.remove("hidden");
+      }
+    });
+
+    document.getElementById("guide-dedupe-banner").addEventListener("click", function (event) {
+      const useBtn = event.target.closest("#use-dedupe-match-btn");
+      if (useBtn) {
+        const watchId = Number(document.getElementById("guide-watch-id").value);
+        linkLibraryDocToWatch(useBtn.dataset.sha, watchId);
+        closeAttachGuideModal();
+        return;
+      }
+      const overrideBtn = event.target.closest("#override-near-dup-btn");
+      if (overrideBtn && pendingUploadCandidate) {
+        pendingUploadCandidate.allowNearOverride = true;
+        this.classList.add("hidden");
+        showStatus("Confirmed: will upload as a separate edition.");
       }
     });
 
@@ -3539,6 +4051,7 @@
       event.preventDefault();
       const watchId = Number(document.getElementById("guide-watch-id").value);
       const watch = watches.find((w) => w.id === watchId);
+      const brand = document.getElementById("guide-brand-input").value.trim();
       const caliber = document.getElementById("guide-caliber-input").value.trim();
       const typeVal = document.getElementById("guide-type-select").value;
       const customTitle = document.getElementById("guide-custom-title").value.trim();
@@ -3548,7 +4061,7 @@
 
       if (!title) return;
       if (!file && !isSafeUrl(url)) {
-        showStatus("Upload a PDF/image or paste a valid https:// link.", true);
+        showStatus("Choose a library doc, upload a PDF/image, or paste a valid https:// link.", true);
         return;
       }
 
@@ -3557,28 +4070,294 @@
         saveWatches();
       }
 
-      let fileData = "";
-      let fileType = "";
       if (file) {
-        fileType = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf") ? "pdf" : "image";
-        fileData = await readFileAsDataUrl(file);
-      }
+        const cand = pendingUploadCandidate || {};
+        const arrayBuffer = cand.arrayBuffer || await file.arrayBuffer();
+        const sha256 = cand.sha256 || await computeSha256Hex(arrayBuffer);
+        const fingerprint = cand.fingerprint || await computeContentFingerprint(file, arrayBuffer);
+        const dup = cand.dup || findLibraryDuplicate(sha256, fingerprint, caliber);
 
-      techSheets.unshift({
-        id: ++nextId,
-        caliber: caliber || (watch ? watch.caliber || "" : ""),
-        sourceWatchId: watchId,
-        title,
-        url: isSafeUrl(url) ? url : "",
-        fileData,
-        fileType
-      });
+        if (dup && dup.type === "exact") {
+          linkLibraryDocToWatch(dup.doc.sha256, watchId);
+          closeAttachGuideModal();
+          return;
+        }
+        if (dup && dup.type === "near" && !cand.allowNearOverride) {
+          showStatus("Possible duplicate detected—choose Use Existing or Upload Anyway above.", true);
+          return;
+        }
+
+        const btn = document.getElementById("submit-attach-guide-btn");
+        btn.disabled = true;
+        btn.textContent = "Uploading...";
+        try {
+          if (currentUser && fbStorage) {
+            const { docRecord } = await uploadFileToCommunityLibrary(file, { title, brand, caliber }, arrayBuffer, sha256, fingerprint);
+            techSheets.unshift({
+              id: ++nextId,
+              librarySha256: docRecord.sha256,
+              caliber: docRecord.caliber,
+              brand: docRecord.brand,
+              sourceWatchId: watchId,
+              title: docRecord.title,
+              fileType: docRecord.fileType,
+              storagePath: docRecord.storagePath,
+              downloadUrl: docRecord.downloadUrl,
+              url: ""
+            });
+            showStatus(`Published "${title}" to Community Library & attached!`);
+          } else {
+            const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+            const fileData = await readFileAsDataUrl(file);
+            techSheets.unshift({
+              id: ++nextId,
+              caliber: caliber || (watch ? watch.caliber || "" : ""),
+              sourceWatchId: watchId,
+              title,
+              url: "",
+              fileData,
+              fileType: isPdf ? "pdf" : "image"
+            });
+            showStatus(`Saved "${title}" locally (sign in to publish to Community Library).`);
+          }
+        } catch (err) {
+          showStatus("Upload failed: " + (err.message || "error"), true);
+          btn.disabled = false;
+          btn.textContent = "Upload & Attach";
+          return;
+        }
+        btn.disabled = false;
+        btn.textContent = "Upload & Attach";
+      } else {
+        techSheets.unshift({
+          id: ++nextId,
+          caliber: caliber || (watch ? watch.caliber || "" : ""),
+          sourceWatchId: watchId,
+          title,
+          url: isSafeUrl(url) ? url : "",
+          fileData: "",
+          fileType: ""
+        });
+        showStatus(`Attached "${title}"${caliber ? " for " + caliber : ""}.`);
+      }
 
       saveTechSheets();
       closeAttachGuideModal();
       renderCatalog();
       if (activeWorkModeWatchId) renderWorkModeGuides();
-      showStatus(`Attached "${title}"${caliber ? " for " + caliber : ""}.`);
+    });
+
+    // Admin · Community Library (Bulk Upload + Manage Library)
+    function guessMetaFromFilename(filename) {
+      const base = filename.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
+      const parts = base.split(/\s+/);
+      const brand = parts[0] || "";
+      const calMatch = base.match(/(?:cal\.?\s*)?([0-9]{3,4}[a-z]{0,2}|eta\s*[0-9]{4}|valjoux\s*[0-9]{2,4})/i);
+      const caliber = calMatch ? calMatch[0].trim() : "";
+      let title = "Service Manual";
+      if (/parts/i.test(base)) title = "Parts List";
+      else if (/oil/i.test(base)) title = "Oiling Chart";
+      else if (/tech/i.test(base)) title = "Tech Sheet";
+      return { brand, caliber, title };
+    }
+
+    function renderAdminBulkQueue() {
+      const qEl = document.getElementById("admin-bulk-queue");
+      const actEl = document.getElementById("admin-bulk-actions");
+      const sumEl = document.getElementById("admin-bulk-summary");
+      if (!adminBulkQueue.length) {
+        qEl.classList.add("hidden");
+        actEl.classList.add("hidden");
+        return;
+      }
+      qEl.classList.remove("hidden");
+      actEl.classList.remove("hidden");
+
+      const readyCount = adminBulkQueue.filter((i) => i.status === "ready").length;
+      const dupCount = adminBulkQueue.filter((i) => i.status === "duplicate").length;
+      sumEl.textContent = `${readyCount} ready to upload · ${dupCount} duplicate${dupCount === 1 ? "" : "s"} skipped`;
+
+      qEl.innerHTML = adminBulkQueue.map((item, idx) => `
+        <div class="rounded-xl border ${item.status === "duplicate" ? "border-amber-500/30 bg-amber-500/10" : item.status === "done" ? "border-emerald-500/30 bg-emerald-500/10" : "border-slate-800 bg-slate-900/80"} p-2.5 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-medium text-slate-200 truncate">${escapeHtml(item.file.name)} (${Math.round(item.arrayBuffer.byteLength / 1024)} KB)</span>
+            <span class="text-[11px] font-semibold shrink-0 ${item.status === "duplicate" ? "text-amber-300" : item.status === "done" ? "text-emerald-300" : item.status === "error" ? "text-rose-300" : "text-slate-400"}">${escapeHtml(item.statusLabel)}</span>
+          </div>
+          ${item.status === "ready" ? `
+            <div class="grid grid-cols-3 gap-2">
+              <input type="text" data-bulk-idx="${idx}" data-bulk-field="brand" value="${escapeHtml(item.brand)}" placeholder="Brand" class="rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-2.5 py-1 text-xs" />
+              <input type="text" data-bulk-idx="${idx}" data-bulk-field="caliber" value="${escapeHtml(item.caliber)}" placeholder="Caliber" class="rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-2.5 py-1 text-xs" />
+              <input type="text" data-bulk-idx="${idx}" data-bulk-field="title" value="${escapeHtml(item.title)}" placeholder="Title" class="rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-2.5 py-1 text-xs" />
+            </div>
+          ` : ""}
+        </div>
+      `).join("");
+    }
+
+    function renderAdminLibraryList() {
+      const listEl = document.getElementById("admin-lib-list");
+      const totalEl = document.getElementById("admin-lib-total");
+      const q = (document.getElementById("admin-lib-search").value || "").trim().toLowerCase();
+      totalEl.textContent = communityLibrary.length;
+
+      const filtered = communityLibrary.filter((d) => !q || [d.title, d.brand, d.caliber].join(" ").toLowerCase().includes(q));
+      if (!filtered.length) {
+        listEl.innerHTML = '<p class="text-xs text-slate-400 py-2">No library documents match.</p>';
+        return;
+      }
+
+      listEl.innerHTML = filtered.map((doc) => `
+        <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-2.5 flex flex-wrap items-center justify-between gap-2">
+          <div class="min-w-0 flex-1">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+              <input type="text" data-admin-edit-sha="${escapeHtml(doc.sha256)}" data-field="brand" value="${escapeHtml(doc.brand || "")}" placeholder="Brand" class="rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-2 py-1 text-xs" />
+              <input type="text" data-admin-edit-sha="${escapeHtml(doc.sha256)}" data-field="caliber" value="${escapeHtml(doc.caliber || "")}" placeholder="Caliber" class="rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-2 py-1 text-xs" />
+              <input type="text" data-admin-edit-sha="${escapeHtml(doc.sha256)}" data-field="title" value="${escapeHtml(doc.title || "")}" placeholder="Title" class="rounded-xl border border-slate-800 bg-slate-950/70 text-slate-100 px-2 py-1 text-xs" />
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" data-admin-open-sha="${escapeHtml(doc.sha256)}" class="text-[11px] text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-xl cursor-pointer">Open</button>
+            ${pendingDeleteLibSha === doc.sha256 ? `
+              <button type="button" data-admin-confirm-del="${escapeHtml(doc.sha256)}" class="text-[11px] font-semibold text-rose-200 bg-rose-500/20 hover:bg-rose-600 border border-rose-500/40 px-2.5 py-1 rounded-xl cursor-pointer">Confirm</button>
+              <button type="button" data-admin-cancel-del class="text-[11px] text-slate-400 hover:text-slate-200 px-2 py-1 rounded-xl hover:bg-slate-800 cursor-pointer">Cancel</button>
+            ` : `
+              <button type="button" data-admin-req-del="${escapeHtml(doc.sha256)}" class="text-[11px] text-slate-400 hover:text-rose-400 px-2 py-1 rounded-xl hover:bg-rose-500/10 cursor-pointer">Delete</button>
+            `}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    document.getElementById("open-admin-library-btn").addEventListener("click", function () {
+      pendingDeleteLibSha = null;
+      renderAdminBulkQueue();
+      renderAdminLibraryList();
+      document.getElementById("admin-library-modal").classList.remove("hidden");
+    });
+
+    document.getElementById("close-admin-lib-btn").addEventListener("click", function () {
+      document.getElementById("admin-library-modal").classList.add("hidden");
+    });
+
+    document.getElementById("admin-lib-search").addEventListener("input", renderAdminLibraryList);
+
+    document.getElementById("admin-bulk-files").addEventListener("change", async function () {
+      const files = Array.from(this.files || []);
+      if (!files.length) return;
+      adminBulkQueue = [];
+      for (const file of files) {
+        const arrayBuffer = await file.arrayBuffer();
+        const sha256 = await computeSha256Hex(arrayBuffer);
+        const guessed = guessMetaFromFilename(file.name);
+        const fingerprint = await computeContentFingerprint(file, arrayBuffer);
+        const dup = findLibraryDuplicate(sha256, fingerprint, guessed.caliber);
+        adminBulkQueue.push({
+          file,
+          arrayBuffer,
+          sha256,
+          fingerprint,
+          brand: guessed.brand,
+          caliber: guessed.caliber,
+          title: guessed.title,
+          status: dup ? "duplicate" : "ready",
+          statusLabel: dup ? `Duplicate of "${dup.doc.title}"` : "Ready"
+        });
+      }
+      renderAdminBulkQueue();
+      this.value = "";
+    });
+
+    document.getElementById("admin-bulk-queue").addEventListener("input", function (event) {
+      const idx = event.target.dataset.bulkIdx;
+      const field = event.target.dataset.bulkField;
+      if (idx !== undefined && field && adminBulkQueue[Number(idx)]) {
+        adminBulkQueue[Number(idx)][field] = event.target.value;
+      }
+    });
+
+    document.getElementById("admin-bulk-start-btn").addEventListener("click", async function () {
+      const btn = this;
+      btn.disabled = true;
+      for (const item of adminBulkQueue) {
+        if (item.status !== "ready") continue;
+        item.status = "uploading";
+        item.statusLabel = "Uploading...";
+        renderAdminBulkQueue();
+        try {
+          await uploadFileToCommunityLibrary(
+            item.file,
+            { title: item.title.trim() || "Service Manual", brand: item.brand.trim(), caliber: item.caliber.trim() },
+            item.arrayBuffer,
+            item.sha256,
+            item.fingerprint
+          );
+          item.status = "done";
+          item.statusLabel = "Published";
+        } catch (err) {
+          item.status = "error";
+          item.statusLabel = err.message || "Error";
+        }
+        renderAdminBulkQueue();
+      }
+      btn.disabled = false;
+      renderAdminLibraryList();
+      renderCatalog();
+      showStatus("Bulk upload finished.");
+    });
+
+    document.getElementById("admin-lib-list").addEventListener("change", async function (event) {
+      const sha = event.target.dataset.adminEditSha;
+      const field = event.target.dataset.field;
+      if (!sha || !field) return;
+      const doc = communityLibrary.find((d) => d.sha256 === sha);
+      if (!doc) return;
+      doc[field] = event.target.value.trim();
+      if (field === "caliber") doc.caliberNormalized = normalizeCaliber(doc.caliber);
+      if (fbDb && isAdminUser) {
+        await fbDb.collection("communityLibrary").doc(sha).update({
+          [field]: doc[field],
+          ...(field === "caliber" ? { caliberNormalized: doc.caliberNormalized } : {})
+        });
+        showStatus("Library metadata updated.");
+        renderCatalog();
+      }
+    });
+
+    document.getElementById("admin-lib-list").addEventListener("click", async function (event) {
+      const openBtn = event.target.closest("button[data-admin-open-sha]");
+      if (openBtn) {
+        openLibraryDocViewer(openBtn.dataset.adminOpenSha);
+        return;
+      }
+      const reqDel = event.target.closest("button[data-admin-req-del]");
+      if (reqDel) {
+        pendingDeleteLibSha = reqDel.dataset.adminReqDel;
+        renderAdminLibraryList();
+        return;
+      }
+      if (event.target.closest("button[data-admin-cancel-del]")) {
+        pendingDeleteLibSha = null;
+        renderAdminLibraryList();
+        return;
+      }
+      const confirmDel = event.target.closest("button[data-admin-confirm-del]");
+      if (confirmDel) {
+        const sha = confirmDel.dataset.adminConfirmDel;
+        const doc = communityLibrary.find((d) => d.sha256 === sha);
+        try {
+          if (fbDb && isAdminUser) await fbDb.collection("communityLibrary").doc(sha).delete();
+          if (fbStorage && isAdminUser && doc && doc.storagePath) {
+            await fbStorage.ref(doc.storagePath).delete().catch(() => {});
+          }
+          communityLibrary = communityLibrary.filter((d) => d.sha256 !== sha);
+          pendingDeleteLibSha = null;
+          renderAdminLibraryList();
+          renderCatalog();
+          showStatus("Removed from Community Library.");
+        } catch (err) {
+          showStatus("Delete failed: " + (err.message || "error"), true);
+        }
+      }
     });
 
     // Auth Modal & Firebase Auth State
@@ -3706,6 +4485,7 @@
       recomputeNextId();
       renderTechSheets();
       renderCatalog();
+      loadCommunityLibraryMetadata();
 
       if (fbAuth) {
         fbAuth.onAuthStateChanged(async (user) => {
@@ -3782,14 +4562,16 @@
       const container = document.getElementById("work-mode-guides-list");
       if (!watch || !container) return;
       const matched = getGuidesForWatch(watch);
-      if (matched.length === 0) {
-        container.innerHTML = '<p class="text-sm text-slate-400">No technical guides attached yet. Tap "+ Attach Guide" above to add a service manual or oiling chart.</p>';
+      const libSuggested = getLibrarySuggestionsForWatch(watch);
+      if (matched.length === 0 && libSuggested.length === 0) {
+        container.innerHTML = '<p class="text-sm text-slate-400">No technical guides attached yet. Tap "+ Attach Guide" above to browse the library or upload a manual.</p>';
         return;
       }
-      container.innerHTML = matched.map((ts) => {
+      const userHtml = matched.map((ts) => {
         const isSuggested = ts.sourceWatchId && ts.sourceWatchId !== watch.id;
-        const sub = isSuggested ? "Suggested for this caliber" : (ts.caliber || "Attached guide");
-        if (ts.fileData) {
+        const sub = isSuggested ? "Shared across caliber" : (ts.caliber || "Attached guide");
+        const canOpen = Boolean(ts.fileData || ts.storagePath || ts.downloadUrl || ts.librarySha256);
+        if (canOpen) {
           return `
             <button
               type="button"
@@ -3819,6 +4601,22 @@
           </a>
         `;
       }).join("");
+
+      const libHtml = libSuggested.map((libDoc) => `
+        <button
+          type="button"
+          data-wm-lib-sha="${escapeHtml(libDoc.sha256)}"
+          class="w-full min-h-[52px] rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-left px-4 py-3 flex items-center justify-between gap-3 transition-colors cursor-pointer"
+        >
+          <div class="min-w-0">
+            <p class="text-sm sm:text-base font-semibold text-emerald-100 truncate">${escapeHtml(libDoc.title)} (${libDoc.fileType === "pdf" ? "PDF" : "Image"})</p>
+            <p class="text-xs text-emerald-300/80 truncate">Community Library · ${escapeHtml(libDoc.caliber || libDoc.brand || "")}</p>
+          </div>
+          <span class="text-xs font-semibold text-emerald-300 shrink-0">Open</span>
+        </button>
+      `).join("");
+
+      container.innerHTML = userHtml + libHtml;
     }
 
     function openWorkModeModal(watch) {
@@ -3882,7 +4680,14 @@
 
     document.getElementById("work-mode-guides-list").addEventListener("click", function (event) {
       const btn = event.target.closest("button[data-wm-ts-id]");
-      if (btn) openTechSheetViewer(Number(btn.dataset.wmTsId));
+      if (btn) {
+        openTechSheetViewer(Number(btn.dataset.wmTsId));
+        return;
+      }
+      const libBtn = event.target.closest("button[data-wm-lib-sha]");
+      if (libBtn) {
+        openLibraryDocViewer(libBtn.dataset.wmLibSha, activeWorkModeWatchId);
+      }
     });
 
     document.getElementById("work-mode-attach-guide-btn").addEventListener("click", function () {
