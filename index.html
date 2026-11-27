@@ -651,6 +651,11 @@
           <p id="ts-viewer-caliber" class="text-xs text-amber-300"></p>
         </div>
         <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <div class="inline-flex items-center rounded-xl border border-slate-700 bg-slate-800/80 overflow-hidden">
+            <button type="button" id="ts-zoom-out-btn" title="Zoom out" class="px-2.5 py-1.5 text-xs font-bold text-slate-200 hover:bg-slate-700 cursor-pointer">−</button>
+            <button type="button" id="ts-zoom-reset-btn" title="Reset zoom" class="px-2 py-1.5 text-[11px] font-semibold text-amber-300 hover:bg-slate-700 tabular-nums border-x border-slate-700 cursor-pointer">100%</button>
+            <button type="button" id="ts-zoom-in-btn" title="Zoom in" class="px-2.5 py-1.5 text-xs font-bold text-slate-200 hover:bg-slate-700 cursor-pointer">+</button>
+          </div>
           <button
             type="button"
             id="ts-viewer-fullscreen-btn"
@@ -3437,6 +3442,32 @@
     let tsViewerIsFullscreen = false;
     let activePdfRenderToken = 0;
     let activeTechSheetWatchId = null;
+    let tsZoomLevel = 1;
+
+    function applyTsZoom(newZoom, anchorX = null, anchorY = null) {
+      const body = document.getElementById("ts-viewer-body");
+      const wrap = document.getElementById("ts-viewer-zoom-wrap");
+      const resetBtn = document.getElementById("ts-zoom-reset-btn");
+      const clamped = Math.max(1, Math.min(4, Number(newZoom) || 1));
+      const prev = tsZoomLevel;
+      tsZoomLevel = clamped;
+      if (resetBtn) resetBtn.textContent = Math.round(clamped * 100) + "%";
+      if (!wrap || !body) return;
+
+      const rect = body.getBoundingClientRect();
+      const cx = anchorX !== null ? anchorX - rect.left : rect.width / 2;
+      const cy = anchorY !== null ? anchorY - rect.top : rect.height / 2;
+      const contentX = (body.scrollLeft + cx) / prev;
+      const contentY = (body.scrollTop + cy) / prev;
+
+      wrap.style.width = (clamped * 100) + "%";
+      if (clamped <= 1.01) {
+        body.scrollLeft = 0;
+      } else {
+        body.scrollLeft = Math.max(0, contentX * clamped - cx);
+        body.scrollTop = Math.max(0, contentY * clamped - cy);
+      }
+    }
 
     function dataUrlToUint8Array(dataUrl) {
       const parts = dataUrl.split(",");
@@ -3511,11 +3542,12 @@
         const pdfDoc = await pdfLib.getDocument({ data: dataUrlToUint8Array(ts.fileData) }).promise;
         if (token !== activePdfRenderToken) return;
 
-        body.className = "flex-1 min-h-[60vh] overflow-y-auto rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-start p-2 sm:p-4 gap-3";
-        body.innerHTML = "";
+        body.className = "flex-1 min-h-[60vh] overflow-auto touch-pan-x touch-pan-y rounded-xl bg-slate-950 border border-slate-800 p-2 sm:p-4";
+        body.innerHTML = '<div id="ts-viewer-zoom-wrap" class="flex flex-col items-center gap-3 mx-auto" style="width: 100%;"></div>';
+        const zoomWrap = document.getElementById("ts-viewer-zoom-wrap");
 
         const containerWidth = Math.max(280, body.clientWidth - 24);
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
 
         for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
           if (token !== activePdfRenderToken) return;
@@ -3541,7 +3573,7 @@
           canvas.style.height = "auto";
           canvas.className = "rounded-xl shadow-lg bg-white max-w-full";
           pageWrap.appendChild(canvas);
-          body.appendChild(pageWrap);
+          zoomWrap.appendChild(pageWrap);
 
           const ctx = canvas.getContext("2d");
           await page.render({ canvasContext: ctx, viewport: renderViewport }).promise;
@@ -3605,6 +3637,7 @@
         }
         activeTechSheetBlobUrl = dataUrlToBlobUrl(fileData);
 
+        applyTsZoom(1);
         if (docObj.fileType === "pdf") {
           openTab.href = activeTechSheetBlobUrl;
           openTab.classList.remove("hidden");
@@ -3612,7 +3645,8 @@
           renderPdfPagesInViewer({ ...docObj, fileData }, token);
         } else {
           openTab.classList.add("hidden");
-          body.innerHTML = `<img src="${activeTechSheetBlobUrl}" alt="${escapeHtml(docObj.title)}" class="max-h-full max-w-full object-contain rounded-xl" />`;
+          body.className = "flex-1 min-h-[60vh] overflow-auto touch-pan-x touch-pan-y rounded-xl bg-slate-950 border border-slate-800 p-2 sm:p-4";
+          body.innerHTML = `<div id="ts-viewer-zoom-wrap" class="mx-auto flex items-center justify-center" style="width: 100%;"><img src="${activeTechSheetBlobUrl}" alt="${escapeHtml(docObj.title)}" class="w-full h-auto object-contain rounded-xl" /></div>`;
         }
       } catch (err) {
         if (token !== activePdfRenderToken) return;
@@ -3647,6 +3681,54 @@
     document.getElementById("techsheet-viewer-modal").addEventListener("click", function (event) {
       if (event.target === this) closeTechSheetViewer();
     });
+
+    document.getElementById("ts-zoom-in-btn").addEventListener("click", () => applyTsZoom(tsZoomLevel + 0.4));
+    document.getElementById("ts-zoom-out-btn").addEventListener("click", () => applyTsZoom(tsZoomLevel - 0.4));
+    document.getElementById("ts-zoom-reset-btn").addEventListener("click", () => applyTsZoom(1));
+
+    (function initTsPinchZoom() {
+      const body = document.getElementById("ts-viewer-body");
+      let pinchStartDist = 0;
+      let pinchStartZoom = 1;
+      let lastTapTime = 0;
+
+      function touchDist(t1, t2) {
+        const dx = t1.clientX - t2.clientX;
+        const dy = t1.clientY - t2.clientY;
+        return Math.hypot(dx, dy);
+      }
+
+      body.addEventListener("touchstart", function (e) {
+        if (e.touches.length === 2) {
+          pinchStartDist = touchDist(e.touches[0], e.touches[1]);
+          pinchStartZoom = tsZoomLevel;
+        } else if (e.touches.length === 1) {
+          const now = Date.now();
+          if (now - lastTapTime < 280) {
+            e.preventDefault();
+            const t = e.touches[0];
+            applyTsZoom(tsZoomLevel > 1.2 ? 1 : 2.2, t.clientX, t.clientY);
+            lastTapTime = 0;
+          } else {
+            lastTapTime = now;
+          }
+        }
+      }, { passive: false });
+
+      body.addEventListener("touchmove", function (e) {
+        if (e.touches.length === 2 && pinchStartDist > 0) {
+          e.preventDefault();
+          const dist = touchDist(e.touches[0], e.touches[1]);
+          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          applyTsZoom(pinchStartZoom * (dist / pinchStartDist), midX, midY);
+        }
+      }, { passive: false });
+
+      body.addEventListener("touchend", function (e) {
+        if (e.touches.length < 2) pinchStartDist = 0;
+      });
+    })();
 
     document.getElementById("toggle-totals-btn").addEventListener("click", function () {
       const body = document.getElementById("totals-body");
