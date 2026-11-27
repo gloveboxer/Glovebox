@@ -2840,6 +2840,9 @@
       event.target.reset();
       saveWatches();
       renderCatalog();
+      document.getElementById("add-watch-body").classList.add("hidden");
+      document.getElementById("add-watch-chevron").classList.remove("rotate-45");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       showStatus(`Added ${brand}${model ? " " + model : ""} to Pegwood.`);
     });
 
