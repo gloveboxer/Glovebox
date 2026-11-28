@@ -5037,21 +5037,37 @@
       try {
         const analyzeFn = fbFunctions.httpsCallable("analyzeWatchPhotos");
         const res = await analyzeFn({ frontImage, backImage });
-        const data = (res && res.data) || {};
+        let data = (res && res.data) || {};
+        if (Array.isArray(data)) data = data[0] || {};
 
-        if (data.brand) document.getElementById("watch-brand").value = data.brand;
-        if (data.model) document.getElementById("watch-model").value = data.model;
-        if (data.ref) document.getElementById("watch-ref").value = data.ref;
-        if (data.caliber) document.getElementById("watch-caliber").value = data.caliber;
-        if (data.year && !isNaN(Number(data.year))) document.getElementById("watch-year").value = String(data.year);
-        if (data.caseSize) document.getElementById("watch-case-size").value = data.caseSize;
-        if (data.caseMaterial) document.getElementById("watch-case-material").value = data.caseMaterial;
-        if (data.bandType === "Bracelet" || data.bandType === "Strap") {
-          document.getElementById("watch-band-type").value = data.bandType;
+        let filledCount = 0;
+        const setVal = (id, val) => {
+          if (val !== undefined && val !== null && String(val).trim() !== "") {
+            document.getElementById(id).value = String(val).trim();
+            filledCount++;
+          }
+        };
+
+        setVal("watch-brand", data.brand);
+        setVal("watch-model", data.model);
+        setVal("watch-ref", data.ref || data.reference);
+        setVal("watch-caliber", data.caliber || data.movement);
+        if (data.year && !isNaN(Number(data.year))) setVal("watch-year", data.year);
+        setVal("watch-case-size", data.caseSize || data.case_size);
+        setVal("watch-case-material", data.caseMaterial || data.case_material);
+        const band = data.bandType || data.band_type || "";
+        if (band === "Bracelet" || band === "Strap") {
+          document.getElementById("watch-band-type").value = band;
+          filledCount++;
         }
 
-        status.textContent = "AI-filled — please verify details before saving";
-        showStatus("Watch details auto-filled from photos! Please review before saving.");
+        if (filledCount === 0) {
+          status.textContent = "Couldn't read details from those photos — please enter manually";
+          showStatus("Couldn't read watch details from those photos. Try a closer shot or enter them manually.", true);
+        } else {
+          status.textContent = "AI-filled — please verify details before saving";
+          showStatus("Watch details auto-filled from photos! Please review before saving.");
+        }
       } catch (err) {
         status.textContent = "Scan unavailable";
         showStatus("AI scan couldn't complete right now. Please try again.", true);
